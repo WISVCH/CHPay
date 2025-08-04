@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin-layout}">
+<head>
+    <title>System Settings</title>
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/settings.css}"/>
+    </th:block>
+    <th:block layout:fragment="script">
+        <script th:src="@{/js/settings.js}"></script>
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <div class="page-container">
+
+        <p class="title"><strong>System Settings</strong></p>
+
+        <form th:action="@{/admin/settings}" method="post">
+
+            <div class="form-group">
+                <label for="maximumBalance">Maximum Balance (EUR)</label>
+                <input type="number" id="maximumBalance" name="maximumBalance" class="form-control"
+                       step="0.01" min="0.01" th:placeholder="${maxBalance}">
+            </div>
+
+            <div class="form-group toggle-container">
+                <label class="toggle-switch">
+                    <input type="checkbox"
+                           id="isFrozen"
+                           name="isFrozen"
+                           value="true"
+                           th:checked="${systemFrozen}">
+                    <span class="slider"></span>
+                </label>
+
+                <span class="toggle-caption">System Freeze</span>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="submit-btn">Save Settings &gt;</button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

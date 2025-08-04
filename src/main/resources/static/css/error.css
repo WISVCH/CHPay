@@ -1,0 +1,87 @@
+/* error.css */
+
+.error-icon {
+    font-size: 5rem;
+    color: var(--red);
+    margin-bottom: 0.5rem;
+}
+
+.status-code {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--red);
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.error-title {
+    font-size: 2.5rem;
+    font-weight: 500;
+    color: var(--red);
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.error-details {
+    background-color: rgba(232, 48, 40, 0.1);
+    border: 2px solid var(--red);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    width: auto;
+    text-align: left;
+}
+
+.error-message {
+    color: var(--red);
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.error-message-detail, .error-timestamp, .error-trace {
+    color: var(--indigo);
+    margin: 0.5rem 0;
+    font-size: 1rem;
+}
+
+.basic-button {
+    background-color: var(--red) !important;
+}
+
+.user-info {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--gray-dark);
+    width: 100%;
+}
+
+.logout-form {
+    margin-top: 0.5rem;
+}
+
+.logout-button {
+    background-color: var(--indigo);
+    color: var(--wit);
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--indigo);
+    border-radius: 0.5rem;
+    cursor: pointer;
+}
+
+.logout-button:hover, .logout-button:active {
+    background-color: var(--wit);
+    color: var(--indigo);
+}
+
+@media (max-width: 768px) {
+    .error-title {
+        font-size: 2rem;
+    }
+
+    .status-code {
+        font-size: 2.5rem;
+    }
+
+}

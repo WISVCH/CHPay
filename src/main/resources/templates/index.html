@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}">
+<head>
+    <title>Index</title>
+    <th:block layout:fragment="script"></th:block>
+    <th:block layout:fragment="css"></th:block>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="index-wrapper">
+        <div class="index-main-info">
+            <div class="index-title">
+                <h1>Welcome to CHPay!</h1>
+                <p>CHPay is a digital wallet for the 'Christiaan Huygens' association. Top up your balance via iDEAL and make purchases within the association to avoid transaction fees.</p>
+            </div>
+            <div class="index-balance-container">
+                <h2>Balance:</h2>
+                <h1>€<span th:text="${currentUser.balance}"></span></h1>
+            </div>
+        </div>
+        <div class="index-actions-container">
+            <div class="index-action" onclick="location.href='/balance';">
+                <h1>Top-Up</h1>
+                <p>Instantly add funds to your CHPay account using iDEAL.</p>
+            </div>
+            <div class="index-action" onclick="location.href='/transactions';">
+                <h1>Transaction History</h1>
+                <p>Access a overview of all your past payments and deposits.</p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

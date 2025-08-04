@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/basic-layout}">
+<head>
+    <title>Error</title>
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/error.css}">
+    </th:block>
+    <th:block layout:fragment="script"></th:block>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="error-icon">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+    </div>
+
+    <div class="status-code"
+         th:text="${statuscode} ?: ${status}">
+        <!-- fallback text -->
+    </div>
+
+    <h1 class="error-title">Error Occurred</h1>
+
+    <div class="error-details">
+        <p class="error-message"
+           th:text="${errorname} ?: ${error}">
+            <!-- fallback text -->
+        </p>
+        <p class="error-message-detail"
+           th:if="${message}"
+           th:text="${currentUser != null and currentUser.getBanned()} ? 'You are banned from accessing this feature.' : ${message}">
+            Message details
+        </p>
+        <p class="error-timestamp"
+           th:if="${timestamp}"
+           th:text="${#dates.format(timestamp, 'dd-MM-yyyy HH:mm:ss')}">
+            Timestamp
+        </p>
+        <p class="error-trace"
+           th:if="${trace}"
+           th:text="${trace}">
+            Stack trace
+        </p>
+    </div>
+
+    <a href="/" class="basic-button">
+        Return to Home
+    </a>
+
+
+    <div sec:authorize="isAuthenticated()" class="user-info">
+        <p>Logged in as: <span sec:authentication="name"></span></p>
+        <form th:action="@{/logout}" method="post" class="logout-form">
+            <button type="submit" class="basic-button">Logout</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

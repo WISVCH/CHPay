@@ -1,0 +1,17 @@
+<!-- fragments/cookie-policy.html -->
+<div th:fragment="cookiePolicy" id="cookie-policy-modal" class="cookie-policy">
+    <div class="policy-box">
+        <h2>Cookie Policy</h2>
+
+        <p><strong>Which cookies do we set?</strong></p>
+        <ul>
+            <li><code>JSESSIONID</code> – maintains your session (deleted when you close the browser).</li>
+            <li><code>cookie_consent</code> – remembers that you dismissed the banner (1 year).</li>
+        </ul>
+
+        <p>No analytics, ads or tracking cookies are used.</p>
+        <p>You can delete these cookies any time in your browser settings.</p>
+
+        <button class="cookie-button" onclick="closeCookiePolicy()">Close</button>
+    </div>
+</div>

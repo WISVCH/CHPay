@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}">
+<head>
+    <title>Payment Successful</title>
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/failed.css}"/>
+    </th:block>
+    <th:block layout:fragment="script">
+        <script type="module" th:src="@{/js/boom.js}"></script>
+        <script type="module">
+            import { triggerExplosion } from '/js/boom.js';
+
+            window.addEventListener('DOMContentLoaded', () => {
+                const target = document.querySelector('.failure-icon');
+                triggerExplosion(target);
+            });
+        </script>
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container text-center py-5">
+        <h1 class="display-4 mb-4">Payment failed :(</h1>
+        <h2  th:text="${'Your balance is still ' + currentUser.balance} + ' EUR.'"></h2>
+        <i class="fa-solid fa-circle-xmark failure-icon mb-4"></i>
+        <p class="details" th:text="${'Transaction ID: ' + transactionID}"> </p>
+        <a href="/" class="btn btn-large btn-indigo">Go to homepage</a>
+    </div>
+</div>
+</body>
+</html>

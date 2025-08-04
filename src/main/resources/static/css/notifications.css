@@ -1,0 +1,131 @@
+.notification-container {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: flex-end;
+    gap: 1rem;
+    z-index: 1000;
+}
+
+.notification {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.9rem 2.5rem 0.9rem 1.2rem;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    color: var(--wit);
+    min-width: 240px;
+    max-width: 320px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s ease;
+    opacity: 1;
+    transform: translateY(0);
+    overflow: hidden;
+}
+
+.notification-timer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    width: 0%;
+    background: rgba(255, 255, 255, 0.3);
+    transform-origin: left;
+    animation: timerBar 3s linear forwards;
+    pointer-events: none;
+}
+
+.notification.paused .notification-timer {
+    animation-play-state: paused;
+}
+
+@keyframes timerBar {
+    from {
+        width: 0%;
+    }
+    to {
+        width: 100%;
+    }
+}
+
+.notification-icon {
+    font-size: 1.4rem;
+    color: var(--wit);
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.notification span {
+    flex-grow: 1;
+    line-height: 1.4;
+}
+
+.notification-close {
+    position: absolute;
+    top: 0.4rem;
+    right: 0.6rem;
+    background: transparent;
+    border: none;
+    color: var(--wit);
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+}
+.notification.success {
+    background-color: var(--green);
+}
+
+.notification.error {
+    background-color: var(--red);
+}
+
+.notification.message {
+    background-color: var(--indigo);
+}
+
+.notification-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.notification-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.notification-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.notification.fade-out {
+    animation: fadeOut 0.4s ease forwards;
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

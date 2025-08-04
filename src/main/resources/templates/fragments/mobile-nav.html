@@ -1,0 +1,23 @@
+<!-- fragments/mobile-nav.html -->
+<nav class="mobile-nav" th:fragment="mobileNav">
+    <a th:if="${urlPage}=='balance'" style="opacity: 60%"
+       href="#" class="nav-button">
+        <i class="fa-solid fa-wallet"></i>
+        <span>Balance</span>
+    </a>
+    <a th:unless="${urlPage}=='balance'"
+       href="/balance" class="nav-button">
+        <i class="fa-solid fa-wallet"></i>
+        <span>Balance</span>
+    </a>
+    <a th:if="${urlPage}=='transactions'" style="opacity: 60%"
+       href="#" class="nav-button">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        <span>Transactions</span>
+    </a>
+    <a th:unless="${urlPage}=='transactions'"
+       href="/transactions" class="nav-button">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        <span>Transactions</span>
+    </a>
+</nav>

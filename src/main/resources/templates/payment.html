@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}">
+<head>
+  <title>Pay</title>
+  <th:block layout:fragment="css">
+    <link rel="stylesheet" th:href="@{/css/payment.css}"/>
+  </th:block>
+  <th:block layout:fragment="script"></th:block>
+</head>
+<script th:src="@{/js/cookies.js}"></script>
+<body>
+<div layout:fragment="content">
+
+  <div class="container-payment">
+    <div class="purchase-info-container">
+      <p class="purchase-info">Purchasing:</p>
+      <p th:text="${transaction.description}" class="product-name"></p>
+      <p th:text="${transaction.amount.abs()}+' EUR'" class="price">€3.00</p>
+    </div>
+    <button th:if="${transaction.amount.abs()}<=${currentUser.balance}" th:attr="onclick=|location.href='/payTransaction?tx=${transaction.id}'|" class="pay-button">Pay</button>
+    <button th:unless="${transaction.amount.abs()}<=${currentUser.balance}" class="pay-button" disabled>Pay</button>
+    <div class="top-up-info">
+      <div class="top-up-text">
+        <p class="top-up-balance-text">Available Balance:</p>
+        <p class="top-up-balance-text" th:text="${currentUser.balance}+' EUR'"> EUR</p>
+      </div>
+      <button onclick="window.open('/balance', '_blank').focus();" class="top-up-button">Top-Up</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

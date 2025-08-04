@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin-layout}">
+<head>
+    <title>Pay</title>
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/style.css}"/>
+        <meta name="_csrf" th:content="${_csrf.token}"/>
+        <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    </th:block>
+    <th:block layout:fragment="script">
+        <script th:src="@{/js/rfid-change.js}"></script>
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            window.userOpenId = /*[[${user.getOpenID()}]]*/ '';
+            /*]]>*/
+        </script>
+    </th:block>
+</head>
+<script th:src="@{/js/cookies.js}"></script>
+<body>
+<div layout:fragment="content">
+
+    <div class="main-content-user">
+        <div class="card-user user-info-card">
+            <div class="card-header-user">
+                <h1>User Info</h1>
+            </div>
+            <div class="user-info-container">
+                <div class="user-info">
+                    <div class="user-info-desc">
+                        <p>ID:</p>
+                    </div>
+                    <p th:text="${user.getId()}"></p>
+                </div>
+                <div class="user-info">
+                    <div class="user-info-desc">
+                        <p>RFID:</p>
+                    </div>
+                    <p th:text="${user.getRfid()} ?: 'Not available'"></p>
+                    <i id="clear-rfid-button" class="fa-solid fa-trash-can remove-rfid"></i>
+                </div>
+                <div class="user-info">
+                    <div class="user-info-desc">
+                        <p>Name:</p>
+                    </div>
+                    <p th:text="${user.getName()}"></p>
+                </div>
+                <div class="user-info">
+                    <div class="user-info-desc">
+                        <p>OpenID:</p>
+                    </div>
+                    <p th:text="${user.getOpenID()}"></p>
+                </div>
+                <div class="user-info">
+                    <div class="user-info-desc">
+                        <p>Email:</p>
+                    </div>
+                    <p th:text="${user.getEmail()}"></p>
+                </div>
+            </div>
+        </div>
+        <div class="card-user" style="height: 40%; align-items: normal;">
+            <div class="card-header-user">
+                <h1>Financial Overview</h1>
+            </div>
+            <div class="user-info-balance">
+                <p>Balance:</p>
+                <p style="color:var(--turqoise); font-size: clamp(1rem, 2.75vw, 3rem);" th:text="${user.getBalance().toString()+'EUR'}"></p>
+            </div>
+            <div class="user-actions">
+                <button th:attr="onclick=|location.href='/admin/transactions?userOpenIdQuery=${user.getOpenID()}'|" class="user-action-button">View Transactions</button>
+                <button id="change-rfid-button" class="user-action-button">Change RFID</button>
+                <button th:attr="onclick=|location.href='/admin/users/${user.getId()}/stats/incoming-funds'|" class="user-action-button">View Statistics</button>
+                <button
+                        style="background-color:var(--red); color: white;"
+                        class="user-action-button"
+                        th:text="${user.getBanned() ? 'Unban User' : 'Ban User'}"
+                        th:attr="data-user-id=${user.getId()}, data-action=${user.getBanned() ? 'unban' : 'ban'}"
+                        onclick="confirmBanAction(this)">
+                </button>
+
+                <script th:inline="javascript">
+                    let banTarget = { userId: null, action: null };
+
+                    function confirmBanAction(button) {
+                        const userId = button.getAttribute('data-user-id');
+                        const selfId = [[${currentUser.getId()}]];
+
+                        if (userId === selfId) {
+                            triggerNotificationFromData({
+                                type: "message",
+                                message: "Warning: You cannot ban/unban your own account."
+                            });
+                            return;
+                        }
+
+                        banTarget.userId = userId;
+                        banTarget.action = button.getAttribute('data-action');
+
+                        document.getElementById("ban-modal-title").innerText = "Confirm " + banTarget.action;
+                        document.getElementById("ban-modal-message").innerText =
+                            `Are you sure you want to ${banTarget.action} this user?`;
+
+                        document.getElementById("ban-confirm-modal").classList.add("show");
+                    }
+
+                    function closeBanModal() {
+                        document.getElementById("ban-confirm-modal").classList.remove("show");
+                    }
+
+                    document.getElementById("ban-modal-confirm-button").addEventListener("click", () => {
+                        if (!banTarget.userId || !banTarget.action) return;
+
+                        fetch(`/admin/users/${banTarget.userId}/ban`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': /*[[${_csrf.token}]]*/ ''
+                            }
+                        })
+                            .then(response => {
+                                if (response.ok) {
+                                    location.reload();
+                                } else {
+                                    return response.json().then(error => {
+                                        throw new Error(error.message || 'Failed to process request.');
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                triggerNotificationFromData({
+                                    type: "error",
+                                    message: "Error: " + error.message
+                                });
+                            })
+                            .finally(() => closeBanModal());
+                    });
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

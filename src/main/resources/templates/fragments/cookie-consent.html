@@ -1,0 +1,13 @@
+<!-- cookie-consent fragment -->
+<div th:fragment="cookieConsent"
+     th:if="${cookieConsentGiven != true}"
+     id="cookie-banner"
+     class="cookie-banner">
+
+    <p class="cookie-text">
+        We use cookies that are strictly necessary to run this site.
+        <a href="#" class="cookie-link" onclick="openCookiePolicy()">Learn&nbsp;more</a>
+    </p>
+
+    <button class="cookie-button" onclick="dismissBanner()">Got&nbsp;it</button>
+</div>

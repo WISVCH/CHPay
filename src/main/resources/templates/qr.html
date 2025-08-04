@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/basic-layout}">
+<head>
+    <th:block layout:fragment="css">
+        <title>QR Payment</title>
+        <meta name="_csrf" th:content="${_csrf.token}"/>
+        <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+        <link rel="stylesheet" th:href="@{/css/qr.css}">
+    </th:block>
+    <th:block layout:fragment="script">
+        <script th:inline="javascript">
+            window.paymentRequestId = [[${paymentRequestId}]];
+            window.isMultiUse = [[${paymentRequest.multiUse}]];
+        </script>
+        <script th:src="@{/js/qr.js}"></script>
+        <script th:src="@{/js/rfid.js}"></script>
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+    <a href="/admin/createPaymentRequest" class="back-button">< Terminal</a>
+
+    <div class="qr-content">
+        <div class="qr-image">
+            <a th:href="@{'/payment/' + ${paymentRequestId}}">
+                <img th:src="'data:image/png;base64,' + ${qrCodeBase64}" alt="QR Code"/>
+            </a>
+        </div>
+
+        <div class="payment-info">
+            <div class="payment-amount" th:text="${'EUR ' + paymentRequest.amount}">EUR 100.00</div>
+            <div class="payment-description" th:text="${paymentRequest.description}">Payment Description</div>
+            <div class="payment-date" th:text="${#temporals.format(paymentRequest.createdAt, 'dd.MM.yyyy HH:mm')}">01.01.2023 12:00</div>
+            <div class="payment-id" th:text="${'ID: ' + paymentRequestId}">ID: abc123</div>
+        </div>
+    </div>
+
+    <i class="fa-brands fa-nfc-symbol nfc-icon"></i>
+</div>
+</body>
+</html>

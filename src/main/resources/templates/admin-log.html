@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin-layout}">
+<head>
+    <link rel="stylesheet" th:href="@{/css/log.css}">
+    <title >Admin Error Log</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <div class="page-container">
+        <h1>Spring Error Log</h1>
+        <p style="margin-bottom: 1.5rem;">Below is the most recent log output related to application errors:</p>
+
+        <div class="log-scroll-container">
+            <div class="log-container" id="logContainer" th:text="${errorLog}">Loading error log...</div>
+        </div>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const logContainer = document.getElementById("logContainer");
+                if (logContainer) {
+                    logContainer.parentElement.scrollTop = logContainer.parentElement.scrollHeight;
+                }
+            });
+        </script>
+    </div>
+</div>
+</body>
+</html>

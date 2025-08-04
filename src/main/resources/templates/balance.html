@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}">
+<head>
+  <title>Balance</title>
+  <th:block layout:fragment="css">
+    <link rel="stylesheet" th:href="@{/css/balance.css}"/>
+  </th:block>
+  <th:block layout:fragment="script">
+    <script th:inline="javascript">
+      const MAX_BALANCE = [[${maxBalance}]];
+      const MIN_TOPUP = [[${minTopUp}]]
+    </script>
+    <script th:src="@{/js/balance.js}"></script>
+  </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+  <div class="balance-container"
+       th:attr="data-current-balance=${currentUser.balance}">
+
+    <div class="balance-info-row">
+      <p class="balance-label">
+        <strong>Balance:</strong> <span th:text="${#numbers.formatDecimal(currentUser.balance, 1, 2)} + '€'">Some money</span>
+      </p>
+      <span class="transaction-fees">Transaction fees of
+        <span th:text="${transactionFee} + '€ '">0.00€</span>
+        <br>applied to checkout
+      </span>
+
+    </div>
+
+    <div class="topup-header">
+      <p class="topup-label"><strong>Top-up Balance</strong></p>
+      <span class="topup-max" th:text="'Max Balance: ' + ${#numbers.formatDecimal(maxBalance, 1, 2)} + '€'">PLACEHOLDER</span>
+    </div>
+
+    <form th:action="@{/balance/topup}" method="post" id="topup-form">
+      <div class="topup-grid">
+        <input type="hidden" id="topupAmount" name="topupAmount"/>
+
+        <button type="button" class="btn btn-large btn-indigo" onclick="updateTopupAmount(5)">€5</button>
+        <button type="button" class="btn btn-large btn-indigo" onclick="updateTopupAmount(10)">€10</button>
+        <button type="button" class="btn btn-large btn-indigo" onclick="updateTopupAmount(20)">€20</button>
+
+        <input
+                type="text"
+                id="customAmount"
+                class="custom-input"
+                placeholder="€"
+                inputmode="decimal"
+                pattern="^[0-9]+([.,][0-9]{0,2})?$"
+                oninput="clearSelection()"
+        />
+        <button type="submit" class="btn btn-large btn-blauw" id="payButton">Pay</button>
+      </div>
+    </form>
+  </div>
+</div>
+</body>
+</html>

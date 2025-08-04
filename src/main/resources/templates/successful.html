@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}">
+<head>
+    <title>Payment Successful</title>
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/successful.css}"/>
+    </th:block>
+    <th:block layout:fragment="script">
+        <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+        <script th:src="@{/js/confetti.js}"></script>
+    </th:block>
+</head>
+
+<body>
+<div layout:fragment="content">
+    <div class="container text-center py-5">
+        <h1 class="display-4 mb-4">Payment successful!</h1>
+        <h2  th:text="${'Your balance is now ' + currentUser.balance} + ' EUR!'"></h2>
+        <i class="fa-solid fa-circle-check success-icon mb-4"></i>
+        <p class="details" th:text="${'Transaction ID: ' + transactionID}"> </p>
+        <a href="/" class="btn btn-large btn-indigo">Go to homepage</a>
+    </div>
+</div>
+</body>
+</html>

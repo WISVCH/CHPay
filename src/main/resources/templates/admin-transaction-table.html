@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin-layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>CHpay</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.4/dist/css/datepicker.min.css"
+    />
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="transactions-container">
+        <div class="transaction-info-header">
+            <h2 class="transactions-title">Transactions</h2>
+            <select name="my-filter" aria-label="Filter by" id="fieldFilter">
+                <button>
+                            <span aria-hidden="true">
+                                <span>Filter by :</span>
+                                <selectedcontent></selectedcontent>
+                            </span>
+                    <span class="arrow">
+                                <i class="fa-solid fa-angle-down"></i>
+                            </span>
+                </button>
+                <option value="date">Date</option>
+                <option value="price">Price Amount</option>
+                <option value="userOpenId">User OpenID</option>
+                <option value="userName">User Name</option>
+                <option value="description">Description</option>
+                <option value="type">Type and Status</option>
+            </select>
+        </div>
+        <div class="filter-field">
+            <div class="search" style="display: none" id="fieldOpenID">
+                <input type="text" class="search-field" id="usersOpenIDSearch" placeholder="User OpenID">
+            </div>
+            <div class="search" style="display: none" id="fieldName">
+                <input type="text" class="search-field" id="usersNameSearch" placeholder="User Name">
+            </div>
+            <div class="date-field" style="display: flex" id="fieldDate">
+                <label for="startDate" class="label-date">Start Date:</label>
+                <input type="text" class="date-input" id="startDate">
+                <label for="endDate" class="label-date">End Date:</label>
+                <input type="text" class="date-input" id="endDate">
+            </div>
+            <div class="date-field" style="display: none" id="fieldPrice">
+                <label for="startPrice" class="label-date">Start Price:</label>
+                <div class="input-with-icon">
+                    <span class="icon">€</span>
+                    <input type="number" id="startPrice" class="number-input" min="0" max="1000">
+                </div>
+                <label for="endPrice" class="label-date">End Price:</label>
+                <div class="input-with-icon">
+                    <span class="icon">€</span>
+                    <input type="number" id="endPrice" class="number-input" min="0" max="1000">
+                </div>
+            </div>
+            <div class="search" style="display: none" id="fieldDescription">
+                <input type="text" class="search-field" id="descSearch" placeholder="Description">
+            </div>
+            <div class="search" style="display: none; gap:2rem;" id="fieldTypeAndStatus">
+                <select name="my-filter" aria-label="Type:" id="fieldType">
+                    <button>
+                            <span aria-hidden="true">
+                                <span>Type:</span>
+                                <selectedcontent></selectedcontent>
+                            </span>
+                        <span class="arrow">
+                                <i class="fa-solid fa-angle-down"></i>
+                            </span>
+                    </button>
+                    <option value="all">All</option>
+                    <option value="top_up">Top-Up</option>
+                    <option value="refund">Refund</option>
+                    <option value="payment">Payment</option>
+                    <option value="external_payment">External Payment</option>
+                </select>
+                <select name="my-filter" aria-label="Status:" id="fieldStatus">
+                    <button>
+                            <span aria-hidden="true">
+                                <span>Status:</span>
+                                <selectedcontent></selectedcontent>
+                            </span>
+                        <span class="arrow">
+                                <i class="fa-solid fa-angle-down"></i>
+                            </span>
+                    </button>
+                    <option value="all">All</option>
+                    <option value="successful">Successful</option>
+                    <option value="pending">Pending</option>
+                    <option value="failed">Failed</option>
+                    <option value="refunded">Refunded</option>
+                    <option value="partially_refunded">Partially Refunded</option>
+                </select>
+            </div>
+            <button class="transaction-nav-button" id="searchButt">Search</button>
+        </div>
+        <div class="transactions-table">
+            <div class="table-header">
+                <div th:attr="onclick=|sortButtonsOnClick('timestamp', 'transactions', '${pageFilters}')|" id="dateCell"
+                     class="table-cell">Date
+                </div>
+                <div class="table-cell">OpenID</div>
+                <div th:attr="onclick=|sortButtonsOnClick('description', 'transactions', '${pageFilters}')|"
+                     id="descCell" class="table-cell">Description
+                </div>
+                <div th:attr="onclick=|sortButtonsOnClick('amount', 'transactions', '${pageFilters}')|" id="totalCell"
+                     class="table-cell">Total
+                </div>
+                <div class="table-cell">Status</div>
+                <div class="table-cell"></div>
+            </div>
+        </div>
+        <div class="table-navigation">
+            <button th:attr="onclick=|location.href='/admin/transactions?page=${info.getPage()-1}${pageFilters+sortingParams}'|"
+                    id="prevButt" class="transaction-nav-button previous">←
+            </button>
+            <button th:attr="onclick=|location.href='/admin/transactions?page=${info.getPage()+1}${pageFilters+sortingParams}'|"
+                    id="nextButt" class="transaction-nav-button next">→
+            </button>
+        </div>
+    </div>
+    <script>
+        const ORDER = "[[${order}]]";
+        const SORT_BY = "[[${sortBy}]]";
+        const page = parseInt('[[${page}]]');
+    </script>
+    <script type='module' src='/webjars/vanillajs-datepicker/js/Datepicker.js'></script>
+    <script th:src="@{/js/transaction-table.js}"></script>
+    <script th:src="@{/js/sort-admin-table.js}"></script>
+    <script type='module' th:src="@{/js/filter-transaction.js}"></script>
+    <script>
+        let transactionString = '[[${transactions}]]';
+        let prevButtonStatus = '[[${info.isHasPrev()}]]';
+        let nextButtonStatus = '[[${info.isHasNext()}]]';
+
+        transactionString = transactionString.replaceAll("&quot;", '"');
+        console.log(transactionString);
+        const transactions = JSON.parse(transactionString);
+        const prevButton = document.getElementById('prevButt');
+        const nextButton = document.getElementById('nextButt');
+
+        if (prevButtonStatus === 'false') {
+            prevButton.setAttribute("disabled", true);
+        }
+        if (nextButtonStatus === 'false') {
+            nextButton.setAttribute("disabled", true);
+        }
+
+        populateTransactionsAdmin();
+        displaySort();
+
+    </script>
+</div>
+</body>
+</html>

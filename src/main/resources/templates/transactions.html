@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}">
+<head>
+    <title>CHPay</title>
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    </th:block>
+</head>
+<script th:src="@{/js/cookies.js}"></script>
+<body>
+<div layout:fragment="content">
+    <div class="transactions-container">
+        <div class="transaction-user-info">
+            <h2 class="transactions-title">Past Transactions</h2>
+            <div class="transactions-filter">
+                <button id="allButt" th:attr="onclick=|location.href='/transactions?onlyTopUps=false'|"
+                        class="filter-button-first active">All
+                </button>
+                <button id="topUpButt" th:attr="onclick=|location.href='/transactions?onlyTopUps=true'|"
+                        class="filter-button-second">Top-Ups
+                </button>
+            </div>
+        </div>
+        <div class="transactions-table">
+            <div class="table-header">
+                <div class="table-pairs">
+                    <div onclick="sortButtonsOnClick('timestamp')" id="dateCell" class="table-cell">Date</div>
+                    <div onclick="sortButtonsOnClick('description')" id="descCell" class="table-cell">Product/Event
+                    </div>
+                </div>
+                <div class="table-pairs">
+                    <div onclick="sortButtonsOnClick('amount')" id="totalCell" class="table-cell">Total</div>
+                    <div class="table-cell">Status</div>
+                </div>
+                <div class="table-cell">Receipt</div>
+            </div>
+        </div>
+        <div class="table-navigation">
+            <button th:attr="onclick=|location.href='/transactions?page=${page-1}&sortBy=${sortBy}&order=${order}&onlyTopUps=${onlyTopUps}'|"
+                    id="prevButt" class="transaction-nav-button previous">←Prev
+            </button>
+            <button th:attr="onclick=|location.href='/transactions?page=${page+1}&sortBy=${sortBy}&order=${order}&onlyTopUps=${onlyTopUps}'|"
+                    id="nextButt" class="transaction-nav-button next">Next→
+            </button>
+        </div>
+        <script>
+            const ORDER = "[[${order}]]";
+            const SORT_BY = "[[${sortBy}]]";
+            const page = parseInt('[[${page}]]');
+        </script>
+        <script src="/js/sort-table.js"></script>
+        <script src="/js/transaction-table.js"></script>
+        <script>
+
+            let transactionString = '[[${transactions}]]';
+            const onlyTopUps = '[[${onlyTopUps}]]';
+            let prevButtonStatus = '[[${info.isHasPrev()}]]';
+            let nextButtonStatus = '[[${info.isHasNext()}]]';
+            transactionString = transactionString.replaceAll("&quot;", '"');
+            console.log(transactionString);
+            const transactions = JSON.parse(transactionString);
+            const prevButton = document.getElementById('prevButt');
+            const nextButton = document.getElementById('nextButt');
+
+            if (prevButtonStatus === 'false') {
+                prevButton.setAttribute("disabled", true);
+            }
+            if (nextButtonStatus === 'false') {
+                nextButton.setAttribute("disabled", true);
+            }
+
+
+            populateTransactions();
+            displaySort();
+            displayTypeFilterButtons('[[${onlyTopUps}]]' === "true");
+        </script>
+    </div>
+</div>
+</body>
+</html>

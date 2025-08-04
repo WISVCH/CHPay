@@ -1,0 +1,64 @@
+<!-- fragments/sidebar.html -->
+<aside class="sidebar" th:fragment="sidebar">
+    <!-- 1. Logo + User Info -->
+    <div class="sidebar-top" onclick="window.location.href='/'">
+        <div class="sidebar-logo">
+            <img th:src="@{/images/ch-logo-transparent.png}" alt="Christiaan Huygens Logo">
+        </div>
+        <div class="user-line"></div>
+        <div class="sidebar-user" th:if="${currentUser != null}">
+            <h2 th:text="${currentUser.name}">Name</h2>
+            <p th:text="${currentUser.email}">Email</p>
+        </div>
+        <div class="sidebar-user" th:unless="${currentUser != null}">
+            <h2>Guest</h2>
+            <p>Unknown Email</p>
+        </div>
+        <div class="user-line"></div>
+    </div>
+
+    <!-- 2. Navigation buttons -->
+    <nav class="sidebar-nav">
+        <th:block th:if="${currentUser != null and !currentUser.getBanned()}">
+            <a th:if="${urlPage}=='balance'" style="opacity: 60%"
+               href="#" class="sidebar-link">
+                <div class="sidebar-icon"><i class="fa-solid fa-wallet"></i></div>
+                <span>Balance</span>
+            </a>
+            <a th:unless="${urlPage}=='balance'"
+               href="/balance" class="sidebar-link">
+                <div class="sidebar-icon"><i class="fa-solid fa-wallet"></i></div>
+                <span>Balance</span>
+            </a>
+        </th:block>
+        <a th:if="${urlPage}=='transactions'" style="opacity: 60%"
+           href="#" class="sidebar-link">
+            <div class="sidebar-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+            <span>Transactions</span>
+        </a>
+        <a th:unless="${urlPage}=='transactions'"
+           href="/transactions" class="sidebar-link">
+            <div class="sidebar-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+            <span>Transactions</span>
+        </a>
+        <a href="/admin" class="sidebar-link-red" th:if="${isAdmin}">
+            <div class="sidebar-icon"><i class="fa-solid fa-lock"></i></div>
+            <span>Admin View</span>
+        </a>
+    </nav>
+
+
+    <!-- 3. Spacer -->
+    <div class="sidebar-spacer"></div>
+
+    <!-- 4. Log out -->
+    <div class="sidebar-logout">
+        <form th:action="@{/logout}" method="post" style="margin:0; padding:0;">
+            <button type="submit" class="sidebar-link" style="background:none; border:none; width:100%; text-align:left; cursor:pointer;">
+                <div class="sidebar-icon"><i class="fa-solid fa-arrow-right-from-bracket"></i></div>
+                <span>Log Out</span>
+            </button>
+        </form>
+
+    </div>
+</aside>

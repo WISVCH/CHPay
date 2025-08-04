@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+  <meta charset="UTF-8">
+  <title layout:title-pattern="$CONTENT_TITLE - Site Name">Site Name</title>
+  <link rel="icon" type="image/png" href="/images/favicon-light.png" media="(prefers-color-scheme: light)">
+  <link rel="icon" type="image/png" href="/images/favicon-dark.png" media="(prefers-color-scheme: dark)">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <link rel="stylesheet" th:href="@{/css/notifications.css}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  />
+
+  <!-- Mobile viewport height fix -->
+  <style>
+    :root {
+      --real-vh: 100vh;
+    }
+  </style>
+  <script>
+    function setRealVh() {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--real-vh', `${vh}px`);
+    }
+    window.addEventListener('load', setRealVh);
+    window.addEventListener('resize', setRealVh);
+  </script>
+  <script th:src="@{/js/cookies.js}"></script>
+  <th:block layout:insert="~{::css}"/>
+  <th:block layout:insert="~{::script}"/>
+</head>
+<body>
+<div class="layout">
+    <div th:replace="~{fragments/ban-warning :: banWarning}"></div>
+    <div th:replace="~{fragments/cookie-consent}"></div>
+    <div th:replace="~{fragments/cookie-policy}"></div>
+    <div th:replace="~{fragments/notifications :: notifications}"></div>
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+    <div th:replace="~{fragments/system-freeze :: systemFreeze}"></div>
+
+    <main class="main-box">
+        <div th:replace="~{fragments/mobile-header :: mobileHeader}"></div>
+
+        <!-- Main content - will be replaced by content templates -->
+        <div class="main-content" layout:fragment="content">
+            <p>Default Content</p>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/mobile-nav :: mobileNav}"></div>
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+</body>
+</html>

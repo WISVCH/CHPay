@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin-layout}">
+<head>
+  <title>Admin Dashboard</title>
+  <th:block layout:fragment="css"></th:block>
+  <th:block layout:fragment="script"></th:block>
+</head>
+<body>
+
+<div layout:fragment="content">
+  <div class="admin-container" style="height: 100%; padding: 1rem;">
+    <h1>Admin Dashboard</h1>
+
+    <div class="admin-dashboard-wrapper">
+      <div class="dashboard-main-stats">
+        <div class="dashboard-stats-container">
+          <div class="dashboard-stats-text">
+            <h4>User Count:</h4>
+            <h2 th:text="${users}"></h2>
+          </div>
+          <i  class="fa-solid fa-users"></i>
+        </div>
+        <div class="dashboard-stats-container">
+          <div class="dashboard-stats-text">
+            <h4>Transaction Count:</h4>
+            <h2 th:text="${transactions}"></h2>
+          </div>
+          <i  class="fa-solid fa-receipt"></i>
+        </div>
+        <div class="dashboard-stats-container">
+          <div class="dashboard-stats-text">
+            <h4>System Status:</h4>
+            <h2 th:text="${status}"></h2>
+          </div>
+          <i  class="fa-solid fa-plug"></i>
+        </div>
+        <div class="dashboard-stats-container">
+          <div class="dashboard-stats-text">
+            <h4>Max Balance:</h4>
+            <h2 th:text="${'€'+maxBalance}"></h2>
+          </div>
+          <i class="fa-solid fa-wallet"></i>
+        </div>
+      </div>
+      <div class="dashboard-financial-overview">
+        <div class="dashboard-financial-overview-header">
+          <h2>Financial Overview</h2>
+        </div>
+        <div class="dashboard-financial-overview-container">
+          <div class="dashboard-financial-stats">
+            <h4>Available Balance:</h4>
+            <h2 th:text="${'€'+balanceAvailable}" class="dashboard-stat"></h2>
+          </div>
+          <div class="dashboard-financial-stats">
+            <h4>Last Month Outgoing Funds:</h4>
+            <h2 th:text="${'€'+outgoingFunds}" class="dashboard-stat"></h2>
+          </div>
+          <div class="dashboard-financial-stats">
+            <h4>Last Month Incoming Funds:</h4>
+            <h2 th:text="${'€'+incomingFunds}" class="dashboard-stat"></h2>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

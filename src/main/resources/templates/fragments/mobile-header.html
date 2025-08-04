@@ -1,0 +1,12 @@
+<!-- fragments/mobile-header.html -->
+<div class="main-header-mobile" th:fragment="mobileHeader">
+    <img onclick="window.location.href='/'" style="cursor: pointer" th:src="@{/images/ch-logo-transparent.png}" alt="Christiaan Huygens Logo">
+
+    <!-- Logout button -->
+    <form th:action="@{/logout}" method="post" class="mobile-logout-form">
+        <button type="submit" class="mobile-logout-button">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <span>Log Out</span>
+        </button>
+    </form>
+</div>

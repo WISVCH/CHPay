@@ -1,0 +1,55 @@
+/* mobile-header.css */
+.main-header-mobile {
+    display: none;
+}
+
+/* Show only on mobile */
+@media (max-width: 768px) {
+    .main-header-mobile {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: absolute;
+        top: 5%;
+        left: 0;
+        right: 0;
+        padding: 0 1.5rem;
+        width: 100%;
+    }
+
+    .main-header-mobile img {
+        flex-shrink: 0;
+        width: 60%;
+        aspect-ratio: 221/44;
+        object-fit: contain;
+    }
+    
+    .mobile-logout-form {
+        margin: 0;
+        padding: 0;
+    }
+
+    .mobile-logout-button {
+        color: var(--indigo);
+        background: none;
+        border: none;
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
+        font: inherit;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: clamp(0.5rem, 2vw, 1rem);
+    }
+
+    .mobile-logout-button i {
+        font-size: clamp(1rem, 4.5vw, 2rem);
+    }
+
+    .mobile-logout-button span {
+        font-weight: bold;
+        font-size: clamp(1rem, 4.5vw, 2rem);
+        color: var(--indigo);
+    }
+}

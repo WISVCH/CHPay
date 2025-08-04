@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/basic-layout}">
+<head>
+  <title>Logout Successful</title>
+  <th:block layout:fragment="css">
+    <link rel="stylesheet" th:href="@{/css/logout-success.css}">
+  </th:block>
+  <th:block layout:fragment="script"></th:block>
+</head>
+<body>
+<div layout:fragment="content">
+  <h1 class="logout-title">Logged Out</h1>
+
+  <div class="success-message">
+    <p>You have been successfully logged out of the application.</p>
+  </div>
+
+  <p class="logout-text">Thank you for using our service. You can log back in anytime.</p>
+
+  <a href="/login" class="basic-button">
+    Return to Login
+  </a>
+</div>
+</body>
+</html>

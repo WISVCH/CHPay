@@ -1,0 +1,93 @@
+spring:
+  profiles:
+    active: ${SPRING_ACTIVE_PROFILE:test}
+  application:
+    name: 06b
+    base-url: ${BASE_URL:http://localhost:8080}
+  mail:
+    host: ${SMTP_HOST:smtp.gmail.com}
+    port: ${SMTP_PORT:587}
+    username: ${MAIL_USERNAME:wisvchpay@gmail.com}
+    password: ${MAIL_PASSWORD:kjsy czls zvvn ldxg}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+  cache:
+    cache-names: systemFrozen, maxBalance, minTopUp
+    caffeine:
+      spec: recordStats,maximumSize=10,expireAfterWrite=5m
+  jpa:
+    show-sql: false
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create
+    defer-datasource-initialization: true
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+  sql:
+    init:
+      mode: always
+      continue-on-error: false
+  datasource:
+    url: ${TRANSACTION_DB_URL}
+    username: ${TRANSACTION_DB_USER}
+    password: ${TRANSACTION_DB_PASS}
+    driver-class-name: org.postgresql.Driver
+  security:
+    oauth2:
+      client:
+        registration:
+          wisvchconnect:
+            client-id: ${CHCONNECT_CLIENT_IDd}
+            client-secret: ${CHCONNECT_CLIENT_SECRET}
+            scope:
+              - openid
+              - profile
+              - email
+              - ldap
+              - student
+              - auth
+            redirect-uri: ${spring.application.base-url}/login/oauth2/code/wisvchconnect
+        provider:
+          wisvchconnect:
+            issuer-uri: https://connect.ch.tudelft.nl
+  thymeleaf:
+    prefix: classpath:/templates/
+mollie:
+  apiKey: ${MOLLIE_API_KEY}
+  redirectUrl: ${spring.application.base-url}/payment/complete/
+  webhookUrl:  ${spring.application.base-url}/balance/status #Webhook doesn't work with localhost, url must be reachable from mollie
+  transactionFee: ${TRANSACTION_FEE:0.32}
+wisvch.chpay:
+    admin-groups:
+      - beheer
+      - Bestuur
+      - bestuur-huidig
+      - vc
+    claim-name: groups
+chpay:
+  transactions:
+    expire-every-minutes: ${EXPIRE_EVERY_MINUTE:20}
+    expiration-fixed-rate: ${EXPIRATION_FIXED_RATE:1}
+  paymentrequests:
+    expire-every-months: ${REQUEST_EXPIRATION_CUTOFF:1}
+  settings:
+    minTopUp: ${MIN_TOPUP:2}
+  api-key: ${EVENTS_API_KEY:HPMJlkPES1psbLsV8sy1fYYMIRWDlDzKZyv26aWquF0=} #Api key to be used when redirecting from events, just set it to whatever
+api:
+  dienst2:
+    base-url: ${DIENST2_BASE_URL}
+    token: ${DIENST2_AUTHENTICATION_TOKEN}
+logging:
+  level:
+    org.hibernate.loader.Loader: WARN
+    org.hibernate.sql.results.jdbc.internal.DeferredResultSetAccess: WARN
+server:
+  forward-headers-strategy: native

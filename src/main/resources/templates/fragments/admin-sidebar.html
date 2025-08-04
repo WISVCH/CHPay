@@ -1,0 +1,111 @@
+<!-- fragments/sidebar.html -->
+<aside class="sidebar" th:fragment="admin-sidebar">
+    <!-- 1. Logo + User Info -->
+    <div class="sidebar-top" onclick="window.location.href='/admin'">
+        <div class="sidebar-logo">
+            <img style="cursor: pointer" th:src="@{/images/ch-logo-transparent.png}" alt="Christiaan Huygens Logo">
+        </div>
+        <div class="user-line"></div>
+        <div class="sidebar-user" th:if="${currentUser != null}">
+            <h2 th:text="${currentUser.name}">Name</h2>
+            <p th:text="${currentUser.email}">Email</p>
+        </div>
+        <div class="user-line"></div>
+    </div>
+
+    <!-- 2. Navigation buttons -->
+    <nav class="sidebar-nav">
+        <!-- Terminal button -->
+        <a th:if="${urlPage}=='createPaymentRequest'" style="opacity: 60%"
+           href="#" class="sidebar-link">
+            <div class="sidebar-icon"><i class="fa-solid fa-cash-register"></i></div>
+            <span>Terminal</span>
+        </a>
+        <a th:unless="${urlPage}=='createPaymentRequest'"
+           href="/admin/createPaymentRequest" class="sidebar-link">
+            <div class="sidebar-icon"><i class="fa-solid fa-cash-register"></i></div>
+            <span>Terminal</span>
+        </a>
+
+        <!-- Transactions button -->
+        <a th:if="${urlPage}=='adminTransactions'" style="opacity: 60%"
+           href="/admin/transactions" class="sidebar-link">
+            <div class="sidebar-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+            <span>Transactions</span>
+        </a>
+        <a th:unless="${urlPage}=='adminTransactions'"
+           href="/admin/transactions" class="sidebar-link">
+            <div class="sidebar-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+            <span>Transactions</span>
+        </a>
+
+        <!-- Users button -->
+        <a th:if="${urlPage}=='adminUsers'" style="opacity: 60%"
+           href="/admin/users" class="sidebar-link">
+            <div class="sidebar-icon"><i class="fa-solid fa-user"></i></div>
+            <span>Users</span>
+        </a>
+        <a th:unless="${urlPage}=='adminUsers'"
+           href="/admin/users" class="sidebar-link">
+            <div class="sidebar-icon"><i class="fa-solid fa-user"></i></div>
+            <span>Users</span>
+        </a>
+
+        <!-- System Setting button -->
+        <a th:if="${urlPage}=='systemSettings'" style="opacity: 60%"
+           href="#" class="sidebar-link">
+            <div class="sidebar-icon"><i class="fa-solid fa-gear"></i></div>
+            <span>System Setting</span>
+        </a>
+        <a th:unless="${urlPage}=='systemSettings'"
+           href="/admin/settings" class="sidebar-link">
+            <div class="sidebar-icon"><i class="fa-solid fa-gear"></i></div>
+            <span>System Settings</span>
+        </a>
+
+        <!-- Log button -->
+        <a th:if="${urlPage}=='adminLogs'" style="opacity: 60%"
+           href="#" class="sidebar-link">
+            <div class="sidebar-icon"><i class="fa-solid fa-file-lines"></i></div>
+            <span>Error Log</span>
+        </a>
+        <a th:unless="${urlPage}=='adminLogs'"
+           href="/admin/log" class="sidebar-link">
+            <div class="sidebar-icon"><i class="fa-solid fa-file-lines"></i></div>
+            <span>Error Log</span>
+        </a>
+
+        <!-- Statistics button -->
+        <a th:if="${urlPage}=='adminStatistics'" style="opacity: 60%"
+           href="#" class="sidebar-link">
+            <div class="sidebar-icon"><i class="fa-solid fa-chart-simple"></i></div>
+            <span>Statistics</span>
+        </a>
+        <a th:unless="${urlPage}=='adminStatistics'"
+           href="/admin/stats/balance" class="sidebar-link">
+            <div class="sidebar-icon"><i class="fa-solid fa-chart-simple"></i></div>
+            <span>Statistics</span>
+        </a>
+
+        <!-- Return to user view button -->
+        <a href="/index" class="sidebar-link" style="color: green;">
+            <div class="sidebar-icon"><i class="fa-solid fa-unlock-keyhole"></i></div>
+            <span>Return to user view</span>
+        </a>
+    </nav>
+
+
+    <!-- 3. Spacer -->
+    <div class="sidebar-spacer"></div>
+
+    <!-- 4. Log out -->
+    <div class="sidebar-logout">
+        <form th:action="@{/logout}" method="post" style="margin:0; padding:0;">
+            <button type="submit" class="sidebar-link" style="background:none; border:none; width:100%; text-align:left; cursor:pointer;">
+                <div class="sidebar-icon"><i class="fa-solid fa-arrow-right-from-bracket"></i></div>
+                <span>Log Out</span>
+            </button>
+        </form>
+
+    </div>
+</aside>

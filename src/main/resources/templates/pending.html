@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}">
+<head>
+    <title>Payment Pending</title>
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/pending.css}">
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container">
+        <h1 class="display-4">Payment pending</h1>
+
+        <div class="row">
+            <main class="col-12 col-lg-8 mx-auto py-5" role="main">
+                <div class="row">
+                    <div class="col my-4 text-center">
+                        <div class="loader mx-auto mb-4"></div>
+                        <small class="text-muted">(Do not close this tab)</small>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script th:inline="javascript">
+        setTimeout(function() {
+            location.reload();
+        }, 4000);
+    </script>
+</div>
+</body>
+</html>

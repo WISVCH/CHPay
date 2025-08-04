@@ -1,0 +1,152 @@
+.balance-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    min-height: 80vh;
+    padding: 6rem 4rem;
+    max-width: 800px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+.pay-btn.disabled {
+    background-color: var(--gray-dark);
+    color: var(--gray-darker);
+    cursor: not-allowed;
+}
+
+.topup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--indigo);
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid var(--gray);
+    padding-bottom: 1rem;
+}
+
+.topup-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 2.5rem;
+    align-items: center;
+}
+
+.topup-btn{
+    background-color: var(--indigo);
+    color: var(--wit);
+    border: none;
+    padding: 1.5rem 2rem;
+    font-size: 2rem;
+    border-radius: 10px;
+    cursor: pointer;
+    height: 6rem;
+    width: 100%;
+}
+
+.topup-btn.selected {
+    outline: 5px solid var(--blauw);
+}
+
+
+.pay-btn {
+    background-color: var(--blauw);
+    color: var(--zwart);
+    border: none;
+    padding: 1.5rem 2rem;
+    font-size: 2rem;
+    border-radius: 10px;
+    cursor: pointer;
+    height: 6rem;
+    width: 100%;
+}
+
+.custom-input {
+    background-color: var(--gray-dark);
+    border: none;
+    border-radius: 10px;
+    font-size: 2rem;
+    padding: 0 1.2rem;
+    height: 6rem;
+    width: 100%;
+    grid-column: span 2;
+}
+
+.topup-max {
+    font-size: 1.25rem;
+    color: var(--gray-dark)
+}
+
+.balance-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 2rem;
+}
+
+.balance-label {
+    font-size: 2.5rem;
+    color: var(--indigo);
+    margin-bottom: 0;
+}
+
+.transaction-fees {
+    font-size: 0.9rem;
+    color: var(--gray-dark);
+    white-space: nowrap;
+    font-style: italic;
+}
+
+@media (max-width: 768px) {
+    .balance-info-row {
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 1.5rem;
+    }
+
+    .transaction-fees {
+        font-size: 0.75rem;
+        margin-top: 0.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .balance-container {
+        padding: 2rem 1.5rem;
+        height: auto;
+        min-height: unset;
+        box-sizing: border-box;
+    }
+
+    .balance-label {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+        word-break: break-word;
+    }
+
+    .topup-header {
+        flex-direction: row;
+        justify-content: space-between;
+        font-size: 2rem;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .topup-max {
+        font-size: 0.75rem;
+        color: var(--gray-dark)
+    }
+
+    .topup-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .custom-input {
+        grid-column: span 2;
+    }
+}

@@ -1,0 +1,105 @@
+.admin-dashboard-wrapper{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+.dashboard-main-stats{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    align-items: center;
+    height: 40%
+}
+
+.dashboard-financial-overview{
+    width: 90%;
+    height: 40%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    /*border-radius: 12px;  rounded-xl */
+    padding: 24px; /* p-6 */
+    margin-bottom: 24px; /* mb-6 */
+    /*box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eeeeee;*/
+}
+
+.dashboard-financial-overview-header {
+    width: 100%;
+    font-size: 20px; /* text-xl */
+    font-weight: 600; /* font-semibold */
+    color: #333333; /* text-gray-800 */
+    padding-bottom: 5px; /* pb-3 */
+    border-bottom: 1px solid #e2e8f0; /* border-b border-gray-200 */
+}
+
+.dashboard-financial-overview-container{
+    height: 80%;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    text-align: center;
+}
+
+.dashboard-financial-stats{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: start;
+    text-align: start;
+    height: 80%;
+    width: 30%;
+    padding: 1rem;
+}
+
+
+.dashboard-stats-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    text-align: center;
+    height: 40%;
+    width: 40%;
+    border-radius: 15px;
+    background-color: var(--gray);
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.dashboard-stats-container i{
+    font-size: clamp(1rem, 2.5vw, 2.5rem);
+}
+
+
+.dashboard-stats-text{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+    text-align: left;
+    height: 100%;
+    width: 70%;
+}
+
+.dashboard-stats-text h4{
+    font-size: clamp(0.8rem, 1.25vw, 2.5rem);
+}
+
+.dashboard-stats-text h2{
+    font-size: clamp(1rem, 2vw, 3.5rem);
+}
+
+.dashboard-stat{
+    color:var(--turqoise);
+}

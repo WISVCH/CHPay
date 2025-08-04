@@ -1,0 +1,19 @@
+<link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+/>
+<link  rel="stylesheet" th:href="@{/css/notifications.css}">
+<div th:fragment="notifications">
+    <div class="notification-container"></div>
+    <script th:src="@{/js/notifications.js}"></script>
+
+    <!-- Handle flash attributes for notifications after redirects -->
+    <script th:if="${notificationType != null and notificationMessage != null}">
+        document.addEventListener('DOMContentLoaded', function() {
+            triggerNotificationFromData({
+                type: '[[${notificationType}]]',
+                message: '[[${notificationMessage}]]'
+            });
+        });
+    </script>
+</div>

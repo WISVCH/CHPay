@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin-layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>CHpay</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+</head>
+<body>
+
+<div layout:fragment="content">
+    <script th:inline="javascript">
+        const currentUserId = [[${currentUser.getId()}]];
+        const csrfToken = /*[[${_csrf.token}]]*/ '';
+    </script>
+    <div class="transactions-container">
+        <div class="transaction-info-header">
+            <h2 class="transactions-title">Users</h2>
+            <select name="my-filter" aria-label="Filter by" id="fieldFilter">
+                <button>
+                            <span aria-hidden="true">
+                                <span>Filter by :</span>
+                                <selectedcontent></selectedcontent>
+                            </span>
+                    <span class="arrow">
+                                <i class="fa-solid fa-angle-down"></i>
+                            </span>
+                </button>
+                <option value="balance">Balance</option>
+                <option value="email">User Email</option>
+                <option value="name">User Name</option>
+            </select>
+        </div>
+        <div class="filter-field">
+            <div class="search" style="display: none" id="fieldEmail">
+                <input type="text" class="search-field" id="usersEmailSearch" placeholder="User Email">
+            </div>
+            <div class="search" style="display: none" id="fieldName">
+                <input type="text" class="search-field" id="usersNameSearch" placeholder="User Name">
+            </div>
+            <div class="date-field" style="display: flex" id="fieldBalance">
+                <label for="startBalance" class="label-date">Start Balance:</label>
+                <div class="input-with-icon">
+                    <span class="icon">€</span>
+                    <input type="number" id="startBalance" class="number-input" min="0" max="1000">
+                </div>
+                <label for="endBalance" class="label-date">End Balance:</label>
+                <div class="input-with-icon">
+                    <span class="icon">€</span>
+                    <input type="number" id="endBalance" class="number-input" min="0" max="1000">
+                </div>
+            </div>
+            <button class="transaction-nav-button" id="searchButt">Search</button>
+        </div>
+        <div class="transactions-table">
+            <div class="table-header">
+                <div th:attr="onclick=|sortButtonsOnClick('openID', 'users', '${pageFilters}')|" id="openIDCell"
+                     class="table-cell">OpenID
+                </div>
+                <div class="table-cell">Email</div>
+                <div th:attr="onclick=|sortButtonsOnClick('name', 'users', '${pageFilters}')|" id="nameCell"
+                     class="table-cell">Name
+                </div>
+                <div th:attr="onclick=|sortButtonsOnClick('balance', 'users', '${pageFilters}')|" id="balanceCell"
+                     class="table-cell">Balance
+                </div>
+                <div class="table-cell"></div>
+            </div>
+        </div>
+        <div class="table-navigation">
+            <button th:attr="onclick=|location.href='/admin/users?page=${info.getPage()-1}${pageFilters+sortingParams}'|"
+                    id="prevButt" class="transaction-nav-button previous">←
+            </button>
+            <button th:attr="onclick=|location.href='/admin/users?page=${info.getPage()+1}${pageFilters+sortingParams}'|"
+                    id="nextButt" class="transaction-nav-button next">→
+            </button>
+        </div>
+    </div>
+
+    <script th:src="@{/js/user-table.js}"></script>
+    <script>
+        const ORDER = "[[${order}]]";
+        const SORT_BY = "[[${sortBy}]]";
+        const page = parseInt('[[${page}]]');
+    </script>
+    <script th:src="@{/js/sort-admin-table.js}"></script>
+    <script type='module' th:src="@{/js/filter-user.js}"></script>
+    <script>
+
+        let userString = '[[${users}]]';
+        let prevButtonStatus = '[[${info.isHasPrev()}]]';
+        let nextButtonStatus = '[[${info.isHasNext()}]]';
+        userString = userString.replaceAll("&quot;", '"');
+        console.log(userString);
+        const users = JSON.parse(userString);
+        const prevButton = document.getElementById('prevButt');
+        const nextButton = document.getElementById('nextButt');
+
+        if (prevButtonStatus === 'false') {
+            prevButton.setAttribute("disabled", true);
+        }
+        if (nextButtonStatus === 'false') {
+            nextButton.setAttribute("disabled", true);
+        }
+
+        populateUsersAdmin();
+        displaySort();
+
+    </script>
+</div>
+</body>
+</html>

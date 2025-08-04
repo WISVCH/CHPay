@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin-layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>CHpay</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <div class="stat-content" id="statContent">
+        <div class="stat-header">
+            <h2 th:if="${type.equals('incoming-funds')}" class="transactions-title">Incoming Funds</h2>
+            <h2 th:if="${type.equals('outcoming-funds')}" class="transactions-title">Outgoing Funds</h2>
+            <h2 th:unless="${type.equals('incoming-funds') || type.equals('outcoming-funds')}" class="transactions-title">Balance</h2>
+            <div class="stat-header-action">
+                <select style="width: 14rem" name="my-filter" aria-label="Statistic For" id="fieldStat">
+                    <button>
+                                <span aria-hidden="true">
+                                    <span>Statistic For</span>
+                                    <selectedcontent></selectedcontent>
+                                </span>
+                        <span class="arrow">
+                                    <i class="fa-solid fa-angle-down"></i>
+                                </span>
+                    </button>
+                    <option value="balance">Balance</option>
+                    <option value="incoming-funds">Incoming Funds</option>
+                    <option value="outcoming-funds">Outgoing Funds</option>
+                </select>
+            </div>
+        </div>
+        <div class="stat-info">
+            <div class="stat-info-text" th:if="${type.equals('incoming-funds')}">
+                <p style="color:var(--turqoise);font-size: 3rem;" th:text="${mainStat.toString()+'EUR'}"></p>
+                <p style="font-size: 0.8rem;opacity: 70%">Incoming Funds for The Specified Period</p>
+                <p style="font-size: 1.2rem;">Average <span style="color:var(--turqoise)" th:text="${secondStat.toString()+'EUR'}"></span> Income per Day</p>
+            </div>
+            <div class="stat-info-text" th:if="${type.equals('outcoming-funds')}">
+                <p style="color:var(--turqoise);font-size: 3rem;" th:text="${mainStat.toString()+'EUR'}"></p>
+                <p style="font-size: 0.8rem;opacity: 70%">Outgoing Funds for The Specified Period</p>
+                <p style="font-size: 1.2rem;">Average <span style="color:var(--turqoise)" th:text="${secondStat.toString()+'EUR'}"></span> Outcome per Day</p>
+            </div>
+            <div class="stat-info-text" th:unless="${type.equals('incoming-funds') || type.equals('outcoming-funds')}">
+                <p style="color:var(--turqoise);font-size: 3rem;" th:text="${mainStat.toString()+'EUR'}"></p>
+                <p style="font-size: 0.8rem;opacity: 70%">Combined Balance Amount</p>
+                <p style="font-size: 1.2rem;">Average <span style="color:var(--turqoise)" th:text="${secondStat.toString()+'EUR'}"></span> per User</p>
+            </div>
+            <div class="stat-download-container">
+                <select name="my-filter" class="time-select" aria-label="Time Period" id="fieldTime">
+                    <button>
+                                <span aria-hidden="true">
+                                    <span>Time Period</span>
+                                    <selectedcontent></selectedcontent>
+                                </span>
+                        <span class="arrow">
+                                    <i class="fa-solid fa-angle-down"></i>
+                                </span>
+                    </button>
+                    <option value="7">1 Week</option>
+                    <option value="30">1 Month</option>
+                    <option value="90">3 Month</option>
+                    <option value="180">6 Month</option>
+                    <option value="210">9 Month</option>
+                    <option value="365">1 Year</option>
+                    <option value="1096">3 Years</option>
+                </select>
+                <a class="stat-download-button" id="downloadLink">Download CSV</a>
+            </div>
+        </div>
+        <div id="canvasWrap" class="stat-canvas"><canvas id="balance"></canvas></div>
+    </div>
+
+
+    <script th:src="@{/js/csv-export.js}"></script>
+    <script th:inline="javascript">
+        let statString='[[${stats}]]';
+        let typeString='[[${type}]]';
+        statString=statString.replaceAll("&quot;", '"');
+        const type=typeString.replaceAll("\"", '');
+        const stats=JSON.parse(statString)
+        console.log(statString);
+        triggerNotificationFromData({
+            type: 'message',
+            message: 'All data points are randomly generated for display purposes. The actual data is not real.'
+        });
+        downloadJSONAsCSV(stats, type, null, null);
+    </script>
+    <script type='module' th:src="@{/js/admin-charts.js}"></script>
+    <script th:src="@{/js/statistics-select.js}"></script>
+</div>
+</body>
+</html>

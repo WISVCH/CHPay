@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin-layout}">
+<head>
+    <title>Transaction</title>
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    </th:block>
+</head>
+<script th:src="@{/js/cookies.js}"></script>
+<body>
+<div layout:fragment="content">
+
+    <div class="main-content-transaction">
+        <div class="card-transaction" style="height: 50%;">
+            <div class="transaction-header-card">
+                <h1>Transaction Info</h1>
+            </div>
+            <div class="transaction-info-container" style="height: 70%; width: 100%;">
+                <div class="transaction-info-column">
+                    <div class="transaction-info">
+                        <div class="transaction-info-desc">
+                            <p>ID:</p>
+                        </div>
+                        <p th:text="${transaction.getId()}"></p>
+                    </div>
+                    <div th:if="${transaction.getType().name().equals('PAYMENT')}" class="transaction-info">
+                        <div class="transaction-info-desc">
+                            <p>Description:</p>
+                        </div>
+                        <p th:text="${transaction.getDescription()}"></p>
+                    </div>
+                    <div class="transaction-info">
+                        <div class="transaction-info-desc">
+                            <p>Date:</p>
+                        </div>
+                        <p th:text="${#temporals.format(transaction.getTimestamp(), 'yyyy-MM-dd HH:mm:ss')}"></p>
+                    </div>
+                    <div class="transaction-info">
+                        <div class="transaction-info-desc">
+                            <p>User:</p>
+                        </div>
+                        <p th:text="${transaction.getUser().getOpenID()}"></p>
+                    </div>
+                </div>
+                <div class="transaction-info-column">
+                    <div class="transaction-info">
+                        <div class="transaction-info-desc">
+                            <p>Status:</p>
+                        </div>
+                        <span th:text="${transaction.getStatus().name()}" id="statusSpan" class="status" style="padding: 0.2rem 0.5rem;line-height: 1rem;"></span>
+                    </div>
+                    <div class="transaction-info">
+                        <div class="transaction-info-desc">
+                            <p>Type:</p>
+                        </div>
+                        <p th:text="${transaction.getType().name()}"></p>
+                    </div>
+                    <div th:if="${requestId!=null}" class="transaction-info">
+                        <div class="transaction-info-desc">
+                            <p>Request:</p>
+                        </div>
+                        <p th:text="${requestId}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-transaction" style="height: 50%; align-items: normal;">
+            <div class="transaction-header-card">
+                <h1>Actions:</h1>
+            </div>
+            <div class="transaction-info-balance">
+                <div class="transaction-info-balance-sub">
+                    <p>Amount:</p>
+                    <p class="transaction-info-balance-amount" th:text="${transaction.getAmount()+'EUR'}"></p>
+                </div>
+                <div th:if="${transaction.getType().name().equals('PAYMENT')}" class="transaction-info-balance-sub">
+                    <p>Non-Refunded:</p>
+                    <p class="transaction-info-balance-amount" th:text="${refundPossible+'EUR'}"></p>
+                </div>
+            </div>
+            <div class="transaction-actions">
+                <button th:attr="onclick=|location.href='/admin/users/${transaction.getUser().getId()}'|" class="transaction-action-button">View User</button>
+                <a th:if="${transaction.getType().name().equals('PAYMENT') ||transaction.getType().name().equals('EXTERNAL_PAYMENT')}" href="#open-modal" class="transaction-action-button" style="align-items: center;text-decoration: none;">Refund</a>
+                <button th:if="${transaction.getType().name().equals('REFUND')}" th:attr="onclick=|location.href='/admin/transactions/${refundId}'|"  class="transaction-action-button">Original Transaction</button>
+                <button th:unless="${transaction.getType().name().equals('PAYMENT') || transaction.getType().name().equals('REFUND') || transaction.getType().name().equals('EXTERNAL_PAYMENT')}" class="transaction-action-button" disabled>Refund</button>
+            </div>
+        </div>
+    </div>
+    <div th:if="${transaction.getType().name().equals('PAYMENT') or transaction.getType().name().equals('EXTERNAL_PAYMENT')}" id="open-modal" class="modal-window">
+        <div>
+            <a href="#" title="Close" class="modal-close">Close</a>
+            <h1>
+                Pick Refund Amount:
+            </h1>
+            <div>
+                <input type="range" min="0" max="" value="0" class="slider-transaction" step="0.10" id="refundSlider">
+            </div>
+            <br>
+            <div class="transaction-modal-info">
+                <p>Value: <input type="number" style="width: 4.5rem;border: none;" class="transaction-modal-value" id="value"><span class="transaction-modal-value">EUR</span></p>
+                <button id="submitButton" class="transaction-action-button">Refund</button>
+            </div>
+        </div>
+    </div>
+    <script th:inline="javascript">
+        //set the correct class for the status span
+        let status = '[[${transaction.getStatus().name()}]]';
+        status = status.replaceAll('"', '').toLowerCase();
+        const statusSpan = document.getElementById('statusSpan');
+        statusSpan.classList.add(status);
+    </script>
+    <script th:if="${transaction.getType().name().equals('PAYMENT') or transaction.getType().name().equals('EXTERNAL_PAYMENT')}" th:inline="javascript">
+        //get the thymeleaf properties
+        let maxValue = parseFloat('[[${refundPossible}]]');
+        let tx='[[${transaction.getId()}]]'.replaceAll('"',  '');
+        //get the modal elements
+        const refundSlider = document.getElementById('refundSlider');
+        const value = document.getElementById('value');
+        const submitButton = document.getElementById('submitButton');
+        //set the value string from slider
+        value.value=maxValue.toFixed(2);
+        refundSlider.oninput = function() {
+            value.value = parseFloat(this.value).toFixed(2);
+        }
+        //set the slider properties
+        refundSlider.max=maxValue;
+        refundSlider.value=maxValue;
+        value.onchange = function() {
+            refundSlider.value=value.value;
+        }
+        //set the button for submit
+        submitButton.onclick = function() {
+            location.href = '/admin/transactions/'+tx+'/refund?amount='+value.value;
+        }
+    </script>
+</div>
+</body>
+</html>

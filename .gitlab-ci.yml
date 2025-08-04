@@ -1,0 +1,47 @@
+image: gradle:8.13-jdk21
+
+stages:
+  - lint
+  - build
+
+variables:
+  SPRING_PROFILES_ACTIVE: ci
+
+  POSTGRES_DB: transaction_db
+  POSTGRES_USER: ci_user
+  POSTGRES_PASSWORD: ci_pass
+
+  TRANSACTION_DB_URL: jdbc:postgresql://db:5432/transaction_db
+  TRANSACTION_DB_USER: ci_user
+  TRANSACTION_DB_PASS: ci_pass
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .gradle/
+    - build/
+
+.before_script_template: &default_before_script
+  - chmod +x ./gradlew
+  - export GRADLE_USER_HOME=`pwd`/.gradle
+
+lint:
+  stage: lint
+  before_script: *default_before_script
+  script:
+    - ./gradlew spotlessCheck pmdMain
+  rules:
+    - if: '$CI_COMMIT_BRANCH'
+
+build:
+  stage: build
+  services:
+    - name: postgres:15
+      alias: db
+  before_script: *default_before_script
+  script:
+    - ./gradlew build
+    - echo "Running in pipeline source $CI_PIPELINE_SOURCE"
+    - echo "Merge request event type $CI_MERGE_REQUEST_EVENT_TYPE"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'

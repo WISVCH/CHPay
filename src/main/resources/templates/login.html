@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/basic-layout}">
+<head>
+    <title>Login</title>
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/login.css}">
+    </th:block>
+    <th:block layout:fragment="script"></th:block>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <h1 class="login-title">Welcome to CHPay</h1>
+
+    <a href="/oauth2/authorization/wisvchconnect" class="basic-button">
+        Login with CHConnect
+    </a>
+
+</div>
+</body>
+</html>
