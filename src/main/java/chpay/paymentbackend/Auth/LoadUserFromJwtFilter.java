@@ -2,15 +2,10 @@ package chpay.paymentbackend.Auth;
 
 import chpay.DatabaseHandler.transactiondb.entities.User;
 import chpay.DatabaseHandler.transactiondb.repositories.UserRepository;
-import chpay.paymentbackend.entities.Dienst2ApiResponse;
-import chpay.paymentbackend.service.Dienst2Service;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Map;
-import java.util.Optional;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.*;
@@ -22,22 +17,23 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import java.io.IOException;
+import java.util.Map;
+import java.util.Optional;
+
 @Component
 @Order(2)
 public class LoadUserFromJwtFilter extends OncePerRequestFilter {
 
   private final UserRepository userRepository;
-  private final Dienst2Service dienst2Service;
   private final CustomOIDCUserService customOIDCUserService;
   private final RestTemplate restTemplate;
 
   public LoadUserFromJwtFilter(
       UserRepository userRepository,
-      Dienst2Service dienst2Service,
       CustomOIDCUserService customOIDCUserService,
       RestTemplate restTemplate) {
     this.userRepository = userRepository;
-    this.dienst2Service = dienst2Service;
     this.customOIDCUserService = customOIDCUserService;
     this.restTemplate = restTemplate;
   }
@@ -105,26 +101,13 @@ public class LoadUserFromJwtFilter extends OncePerRequestFilter {
       response.sendError(HttpStatus.UNAUTHORIZED.value(), "Missing userinfo response");
       return Optional.empty();
     }
-    String netid = (String) userInfo.get("preferred_username");
-    String googleUsername = (String) userInfo.get("google_username");
+
     String sub = jwt.getSubject();
+    String name = userInfo.get("name").toString();
+    String email = userInfo.get("email").toString();
 
-    Dienst2ApiResponse dienst2User =
-        (netid != null)
-            ? dienst2Service.fetchUserDataNetID(netid)
-            : dienst2Service.fetchUserDataGoogleUsername(googleUsername);
+    User user = this.customOIDCUserService.saveOrUpdateUser(name, email, sub);
 
-    if (dienst2User.getCount() != 1) {
-      response.sendError(HttpStatus.UNAUTHORIZED.value(), "User not found in Dienst2");
-      return Optional.empty();
-    }
-
-    Dienst2ApiResponse.UserData data = dienst2User.getResults().getFirst();
-    User saved =
-        (netid != null)
-            ? customOIDCUserService.saveOrUpdateUserNetID(data, sub)
-            : customOIDCUserService.saveOrUpdateUserEmail(data, sub);
-
-    return Optional.of(saved);
+    return Optional.of(user);
   }
 }
