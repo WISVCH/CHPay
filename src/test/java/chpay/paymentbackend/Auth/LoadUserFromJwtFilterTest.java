@@ -4,8 +4,6 @@ import static org.mockito.Mockito.*;
 
 import chpay.DatabaseHandler.transactiondb.entities.User;
 import chpay.DatabaseHandler.transactiondb.repositories.UserRepository;
-import chpay.paymentbackend.entities.Dienst2ApiResponse;
-import chpay.paymentbackend.service.Dienst2Service;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,7 +30,6 @@ import org.springframework.web.client.RestTemplate;
 class LoadUserFromJwtFilterTest {
 
   @Mock private UserRepository userRepository;
-  @Mock private Dienst2Service dienst2Service;
   @Mock private CustomOIDCUserService customOIDCUserService;
 
   @Mock private HttpServletRequest request;
@@ -47,7 +44,7 @@ class LoadUserFromJwtFilterTest {
   void setUp() {
     filter =
         new LoadUserFromJwtFilter(
-            userRepository, dienst2Service, customOIDCUserService, restTemplate);
+            userRepository, customOIDCUserService, restTemplate);
   }
 
   @Test
@@ -64,29 +61,22 @@ class LoadUserFromJwtFilterTest {
     when(userRepository.findByOpenID(subject)).thenReturn(Optional.empty());
 
     Map<String, Object> userInfo =
-        Map.of(
-            "preferred_username", "netid123",
-            "google_username", "john.doe@gmail.com");
+            Map.of(
+                    "preferred_username", "netid123",
+                    "google_username", "john.doe@gmail.com",
+                    "name", "test",
+                    "email", "test@example.com");
     ResponseEntity<Map<String, Object>> userInfoResponse =
-        new ResponseEntity<>(userInfo, HttpStatus.OK);
+            new ResponseEntity<>(userInfo, HttpStatus.OK);
     when(restTemplate.exchange(
             eq("https://connect.ch.tudelft.nl/userinfo"),
             eq(HttpMethod.GET),
             any(HttpEntity.class),
             any(ParameterizedTypeReference.class)))
-        .thenReturn(userInfoResponse);
+            .thenReturn(userInfoResponse);
 
-    Dienst2ApiResponse.UserData userData = new Dienst2ApiResponse.UserData();
-    userData.setNetid("netid123");
-    userData.setEmail("john@example.com");
-
-    Dienst2ApiResponse apiResponse = new Dienst2ApiResponse();
-    apiResponse.setCount(1);
-    apiResponse.setResults(List.of(userData));
-    when(dienst2Service.fetchUserDataNetID("netid123")).thenReturn(apiResponse);
-
-    User persistedUser = new User();
-    when(customOIDCUserService.saveOrUpdateUserNetID(userData, subject)).thenReturn(persistedUser);
+    User persistedUser = new User("test", "test@example.com", subject);
+    when(customOIDCUserService.saveOrUpdateUser("test", "test@example.com", subject)).thenReturn(persistedUser);
 
     filter.doFilterInternal(request, response, filterChain);
 
@@ -113,66 +103,6 @@ class LoadUserFromJwtFilterTest {
 
     verify(response).sendError(HttpStatus.UNAUTHORIZED.value(), "Missing userinfo response");
     verify(filterChain, never()).doFilter(request, response);
-  }
-
-  @Test
-  void shouldUseGoogleUsernameWhenNetidIsMissing() throws Exception {
-    when(userRepository.findByOpenID(any())).thenReturn(Optional.empty());
-
-    Authentication auth = mock(Authentication.class);
-    SecurityContextHolder.getContext().setAuthentication(auth);
-    when(auth.getPrincipal()).thenReturn(jwt);
-    when(jwt.getSubject()).thenReturn("subject");
-    when(jwt.getTokenValue()).thenReturn("token");
-
-    Map<String, Object> userInfo = Map.of("google_username", "guser");
-    ResponseEntity<Map<String, Object>> responseEntity =
-        new ResponseEntity<>(userInfo, HttpStatus.OK);
-    when(restTemplate.exchange(
-            anyString(), eq(HttpMethod.GET), any(), any(ParameterizedTypeReference.class)))
-        .thenReturn(responseEntity);
-
-    Dienst2ApiResponse.UserData data = new Dienst2ApiResponse.UserData();
-    Dienst2ApiResponse responseFromDienst2 = new Dienst2ApiResponse();
-    responseFromDienst2.setCount(1);
-    responseFromDienst2.setResults(List.of(data));
-    when(dienst2Service.fetchUserDataGoogleUsername("guser")).thenReturn(responseFromDienst2);
-
-    User user = new User();
-    when(customOIDCUserService.saveOrUpdateUserEmail(data, "subject")).thenReturn(user);
-
-    filter.doFilterInternal(request, response, filterChain);
-
-    verify(request).setAttribute("user", user);
-    verify(filterChain).doFilter(request, response);
-  }
-
-  @Test
-  void shouldReturnUnauthorizedWhenDienst2ReturnsZeroUsers() throws Exception {
-    when(userRepository.findByOpenID(any())).thenReturn(Optional.empty());
-
-    Authentication auth = mock(Authentication.class);
-    SecurityContextHolder.getContext().setAuthentication(auth);
-    when(auth.getPrincipal()).thenReturn(jwt);
-    when(jwt.getSubject()).thenReturn("subject");
-    when(jwt.getTokenValue()).thenReturn("token");
-
-    Map<String, Object> userInfo = Map.of("preferred_username", "netid123");
-    ResponseEntity<Map<String, Object>> responseEntity =
-        new ResponseEntity<>(userInfo, HttpStatus.OK);
-    when(restTemplate.exchange(
-            anyString(), eq(HttpMethod.GET), any(), any(ParameterizedTypeReference.class)))
-        .thenReturn(responseEntity);
-
-    Dienst2ApiResponse emptyResponse = new Dienst2ApiResponse();
-    emptyResponse.setCount(0);
-    emptyResponse.setResults(List.of());
-    when(dienst2Service.fetchUserDataNetID("netid123")).thenReturn(emptyResponse);
-
-    filter.doFilterInternal(request, response, filterChain);
-
-    verify(response).sendError(HttpStatus.UNAUTHORIZED.value(), "User not found in Dienst2");
-    verify(filterChain, never()).doFilter(any(), any());
   }
 
   @AfterEach
