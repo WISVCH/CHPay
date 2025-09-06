@@ -5,6 +5,7 @@ import chpay.paymentbackend.service.SettingService;
 import chpay.paymentbackend.service.StatisticsService;
 import chpay.paymentbackend.service.UserService;
 import chpay.shared.service.NotificationService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,6 +38,7 @@ public class AdminPageController extends PageController {
     this.userService = userService;
   }
 
+  @PreAuthorize("hasRole('ADMIN')")
   @GetMapping(value = "/admin")
   public String adminPage(Model model, RedirectAttributes redirectAttributes) {
     model.addAttribute(MODEL_ATTR_URL_PAGE, "admin");

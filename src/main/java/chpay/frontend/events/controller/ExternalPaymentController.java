@@ -14,9 +14,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.lang.NonNull;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -44,17 +42,14 @@ public class ExternalPaymentController {
    * @param request the request dto
    * @return the created response entity
    */
+  @PreAuthorize("hasRole('API_USER')")
   @PostMapping
   public ResponseEntity<CHPaymentResponse> createExternalPayment(
       @RequestBody CHPaymentRequest request) {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    Jwt jwt = (Jwt) authentication.getPrincipal();
-
-    String sub = jwt.getClaimAsString("sub");
-    User user =
-        userRepository
-            .findByOpenID(sub)
-            .orElseThrow(() -> new NoSuchElementException("User not found"));
+    // For API users, find or create user based on consumer email
+    User user = userRepository.findByEmail(request.getConsumerEmail())
+        .orElseThrow(() -> new NoSuchElementException("User not found for email: " + request.getConsumerEmail()));
+    
     CHPaymentResponse response = externalPaymentService.createTransaction(request, user);
     return ResponseEntity.ok(response);
   }
@@ -68,6 +63,7 @@ public class ExternalPaymentController {
    * @return Response entity containing the status ( one of {@code FAILED}, {@code PENDING} {@code
    *     SUCCESSFUL}
    */
+  @PreAuthorize("hasRole('API_USER')")
   @GetMapping("/status")
   public ResponseEntity<Transaction.TransactionStatus> getExternalPaymentStatus(
       @RequestParam UUID PaymentId, @NonNull HttpServletResponse response) {

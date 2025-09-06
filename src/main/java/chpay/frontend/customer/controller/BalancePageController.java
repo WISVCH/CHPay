@@ -16,6 +16,7 @@ import java.util.UUID;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -54,6 +55,7 @@ public class BalancePageController extends PageController {
    *
    * @return String view name for balance template
    */
+  @PreAuthorize("hasAnyRole('USER', 'BANNED')")
   @GetMapping("/balance")
   public String showBalancePage(Model model) {
     // add the signature of the current page to thymeleaf context
@@ -72,6 +74,7 @@ public class BalancePageController extends PageController {
    * @param redirectAttributes redirect attributes
    * @return the url for the payment
    */
+  @PreAuthorize("hasRole('USER') and !hasRole('BANNED')")
   @SuppressWarnings("PMD.SystemPrintln") // Suppress PMD violation for System.out usage
   @PostMapping("/balance/topup")
   public String handleTopup(
@@ -120,6 +123,7 @@ public class BalancePageController extends PageController {
    * @param redirectAttributes
    * @return either a purgatory page, a success or fail page
    */
+  @PreAuthorize("hasAnyRole('USER', 'BANNED')")
   @GetMapping("/payment/complete/{key}")
   public String depositSuccess(
       @PathVariable String key, RedirectAttributes redirectAttributes, Model model)

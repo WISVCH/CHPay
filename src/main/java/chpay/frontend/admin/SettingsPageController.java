@@ -4,6 +4,7 @@ import chpay.paymentbackend.service.SettingService;
 import chpay.shared.service.NotificationService;
 import java.math.BigDecimal;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +35,7 @@ public class SettingsPageController {
    * @param model the model to add attributes to
    * @return the view name for the settings page
    */
+  @PreAuthorize("hasRole('ADMIN')")
   @GetMapping("/admin/settings")
   public String showSettingsPage(Model model) {
     // Add current settings to the model
@@ -52,6 +54,7 @@ public class SettingsPageController {
    * @param ra for flash attributes
    * @return redirect to the settings page
    */
+  @PreAuthorize("hasRole('ADMIN')")
   @PostMapping("/admin/settings")
   public String updateSettings(
       @RequestParam(required = false) String maximumBalance,

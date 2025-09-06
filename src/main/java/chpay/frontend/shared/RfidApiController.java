@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -46,6 +47,7 @@ public class RfidApiController {
    * @param requestId the UUID of the payment request
    * @return a {@code ResponseEntity} containing a message and status information
    */
+  @PreAuthorize("hasRole('API_USER')")
   @PostMapping("/{rfid}/pay/{requestId}")
   public ResponseEntity<Map<String, String>> payWithRfid(
       @PathVariable String rfid, @PathVariable UUID requestId) {
@@ -84,6 +86,7 @@ public class RfidApiController {
    * @param openId of the user to change the RFID for
    * @return error/success message JSONs
    */
+  @PreAuthorize("hasRole('API_USER')")
   @PostMapping("/{rfid}/change/{openId}")
   public ResponseEntity<Map<String, String>> changeUserRfid(
       @PathVariable String rfid, @PathVariable String openId) {
@@ -128,6 +131,7 @@ public class RfidApiController {
    * @param openId the OpenID of the user whose RFID should be removed
    * @return a JSON response indicating success or failure
    */
+  @PreAuthorize("hasRole('API_USER')")
   @DeleteMapping("/clear/{openId}")
   public ResponseEntity<Map<String, String>> clearUserRfid(@PathVariable String openId) {
     log.info("RFID clear requested for openId={}", openId);

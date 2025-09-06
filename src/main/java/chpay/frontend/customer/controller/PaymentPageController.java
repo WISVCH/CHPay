@@ -9,6 +9,7 @@ import chpay.paymentbackend.service.RequestService;
 import chpay.paymentbackend.service.TransactionService;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,6 +42,7 @@ public class PaymentPageController extends PageController {
    * @return a redirect URL to the payment transaction page associated with the specified payment
    *     request
    */
+  @PreAuthorize("hasRole('USER') and !hasRole('BANNED')")
   @GetMapping(value = "/payment/{key}")
   public String redirectToPayTransaction(
       Model model, @PathVariable String key, RedirectAttributes redirectAttributes) {
@@ -68,6 +70,7 @@ public class PaymentPageController extends PageController {
    * @param redirectAttributes the RedirectAttributes object used for passing flash attributes
    * @return the name of the view to render the payment page
    */
+  @PreAuthorize("hasRole('USER') and !hasRole('BANNED')")
   @GetMapping(value = "/payment/transaction/{tx}")
   public String showPaymentPage(
       Model model, @PathVariable String tx, RedirectAttributes redirectAttributes) {

@@ -9,6 +9,7 @@ import chpay.paymentbackend.service.TransactionService;
 import chpay.shared.service.NotificationService;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,6 +46,7 @@ public class PayRequestPageController extends PageController {
    * @param redirectAttributes attributes used to pass temporary data during a redirect
    * @return a redirect string to the main index page after processing the transaction
    */
+  @PreAuthorize("hasRole('USER') and !hasRole('BANNED')")
   @GetMapping(value = "payTransaction")
   public String getPage(
       Model model, @RequestParam(name = "tx") String tx, RedirectAttributes redirectAttributes) {
@@ -74,6 +76,7 @@ public class PayRequestPageController extends PageController {
    * @throws RestClientException If an error occurs while calling {@code
    *     externalPaymentServiceImpl.postToWebhook()}.
    */
+  @PreAuthorize("hasRole('USER') and !hasRole('BANNED')")
   @GetMapping("/external/{id}")
   public String completeExternalTransaction(@PathVariable String id) throws RestClientException {
     ExternalTransaction transaction =

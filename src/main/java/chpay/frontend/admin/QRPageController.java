@@ -8,6 +8,7 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,6 +42,7 @@ public class QRPageController {
    * @throws IOException if an error occurs while generating the QR code
    * @throws WriterException if an error occurs in encoding the QR code
    */
+  @PreAuthorize("hasRole('ADMIN')")
   @GetMapping("/qr/{paymentRequestId}")
   public String showQR(@PathVariable String paymentRequestId, Model model)
       throws IOException, WriterException {

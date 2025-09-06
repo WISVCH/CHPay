@@ -81,7 +81,8 @@ public class CustomOIDCUserService extends OidcUserService {
     authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
     if (user.getBanned()) {
       authorities.add(new SimpleGrantedAuthority("ROLE_BANNED"));
-    } else if (groups.stream().anyMatch(adminGroups::contains)) {
+    }
+    if (groups.stream().anyMatch(adminGroups::contains)) {
       authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
     }
 

@@ -4,6 +4,7 @@ import chpay.DatabaseHandler.transactiondb.entities.PaymentRequest;
 import chpay.paymentbackend.service.RequestService;
 import java.math.BigDecimal;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +24,7 @@ public class NewPaymentRequestPageController {
   /**
    * @return the create-payment-request.html template
    */
+  @PreAuthorize("hasRole('ADMIN')")
   @GetMapping("/admin/createPaymentRequest")
   public String showNewPaymentRequestPageController(Model model) {
     model.addAttribute("urlPage", "createPaymentRequest");
@@ -38,6 +40,7 @@ public class NewPaymentRequestPageController {
    *     false.
    * @return A redirect URL to the page displaying the QR code for the generated payment request.
    */
+  @PreAuthorize("hasRole('ADMIN')")
   @PostMapping("/admin/createPaymentRequest")
   public String createPaymentRequest(
       @RequestParam("description") String description,
