@@ -3,7 +3,6 @@ package chpay.frontend.customer.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import chpay.DatabaseHandler.transactiondb.entities.User;
 import chpay.DatabaseHandler.transactiondb.entities.transactions.ExternalTransaction;
 import chpay.DatabaseHandler.transactiondb.repositories.TransactionRepository;
 import chpay.frontend.events.CHPaymentRequest;
@@ -37,9 +36,6 @@ class ExternalPaymentServiceImplTest {
   @Test
   void createTransaction_shouldReturnCorrectResponse() {
     // Arrange
-    User user = mock(User.class);
-    when(user.getId()).thenReturn(UUID.randomUUID());
-
     CHPaymentRequest request = mock(CHPaymentRequest.class);
     when(request.getAmount()).thenReturn(BigDecimal.TEN);
     when(request.getDescription()).thenReturn("Test Payment");
@@ -56,7 +52,7 @@ class ExternalPaymentServiceImplTest {
               return tx;
             });
 
-    CHPaymentResponse response = service.createTransaction(request, user);
+    CHPaymentResponse response = service.createTransaction(request);
 
     verify(repository).save(transactionCaptor.capture());
     ExternalTransaction savedTx = transactionCaptor.getValue();

@@ -117,7 +117,7 @@ public class PayRequestPageControllerTest {
     when(externalPaymentServiceImpl.postToWebhook(transactionId.toString(), externalTransaction))
         .thenReturn(expectedWebhookReturn);
 
-    String result = payRequestPageController.completeExternalTransaction(transactionId.toString());
+    String result = payRequestPageController.completeExternalTransaction(transactionId.toString(), model);
 
     assertEquals(expectedWebhookReturn, result);
     verify(transactionRepository).findById(transactionId);
@@ -135,7 +135,7 @@ public class PayRequestPageControllerTest {
     when(transactionRepository.findById(transactionId))
         .thenReturn(Optional.of(externalTransaction));
 
-    String result = payRequestPageController.completeExternalTransaction(transactionId.toString());
+    String result = payRequestPageController.completeExternalTransaction(transactionId.toString(), model);
 
     assertEquals("redirect:http://events.com/fallback", result);
     verify(transactionRepository).findById(transactionId);
@@ -150,7 +150,7 @@ public class PayRequestPageControllerTest {
     assertThrows(
         NoSuchElementException.class,
         () -> {
-          payRequestPageController.completeExternalTransaction(transactionId.toString());
+          payRequestPageController.completeExternalTransaction(transactionId.toString(), model);
         },
         "Transaction not found");
 
@@ -175,7 +175,7 @@ public class PayRequestPageControllerTest {
     assertThrows(
         RestClientException.class,
         () -> {
-          payRequestPageController.completeExternalTransaction(transactionId.toString());
+          payRequestPageController.completeExternalTransaction(transactionId.toString(), model);
         });
 
     verify(transactionRepository).findById(transactionId);

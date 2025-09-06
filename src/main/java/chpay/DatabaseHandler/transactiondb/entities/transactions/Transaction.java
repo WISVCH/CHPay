@@ -41,8 +41,9 @@ public class Transaction {
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
 
-  @ManyToOne(optional = false)
+  @ManyToOne(optional = true)
   @JoinColumn(name = "user_id")
+  @Setter
   private User user;
 
   @Column(nullable = false, precision = 12, scale = 2)
@@ -78,6 +79,18 @@ public class Transaction {
       TransactionStatus status,
       TransactionType type) {
     this.user = user;
+    this.amount = amount;
+    this.description = description;
+    this.status = status;
+    this.type = type;
+  }
+
+  public Transaction(
+      BigDecimal amount,
+      String description,
+      TransactionStatus status,
+      TransactionType type) {
+    this.user = null;
     this.amount = amount;
     this.description = description;
     this.status = status;

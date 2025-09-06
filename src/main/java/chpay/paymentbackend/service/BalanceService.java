@@ -60,7 +60,9 @@ public class BalanceService {
       throw new UserNotFoundException("User not found");
     }
 
-    if (!lockedFrom.equals(pendingTransaction.getUser())) {
+    // For external transactions, the user might be null initially (anonymous transactions)
+    // In that case, we allow any user to pay for it
+    if (pendingTransaction.getUser() != null && !lockedFrom.equals(pendingTransaction.getUser())) {
       throw new IllegalStateException(
           "User is not the same as the one who created the transaction");
     }
@@ -74,6 +76,11 @@ public class BalanceService {
 
     debit(lockedFrom, amount.abs());
     pendingTransaction.setStatus(Transaction.TransactionStatus.SUCCESSFUL);
+    
+    // If this was an anonymous transaction, link the user to it now
+    if (pendingTransaction.getUser() == null) {
+      pendingTransaction.setUser(lockedFrom);
+    }
 
     return transactionRepository.save(pendingTransaction);
   }
