@@ -35,7 +35,7 @@ class CustomOIDCUserServiceTest {
   }
 
   @Test
-  void userInDienst2NetIDUpdatesDatabase() {
+  void userNetIDUpdatesDatabase() {
     Map<String, Object> claims = Map.of("groups", List.of());
     service.loadUser(buildRequest(addStandardClaims(claims)));
     Optional<User> updatedUser = userRepo.findByOpenID("user123");
@@ -45,7 +45,7 @@ class CustomOIDCUserServiceTest {
   }
 
   @Test
-  void userInDienst2EmailCreatesUserInDatabase() {
+  void userEmailCreatesUserInDatabase() {
     Map<String, Object> claims = Map.of("groups", List.of());
     service.loadUser(buildRequest(addStandardEmailClaims(claims)));
     Optional<User> updatedUser = userRepo.findByEmail("testemail@email.email");

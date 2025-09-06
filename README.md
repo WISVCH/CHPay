@@ -25,28 +25,11 @@ Before you begin, ensure you have the following installed:
 
 
 Required external services:
-- **[Dienst2 database](https://github.com/WISVCH/dienst2)**
 - **[Mollie api connection](https://docs.mollie.com/reference/overview)**
 - **[CH Connect service registration](https://connect.ch.tudelft.nl/)**
 
 ## Setting up external service connections:
 
-### **[Dienst2](https://github.com/WISVCH/dienst2):**
-
-Instructions for starting up a new dienst2 instance can be found on its [repository](https://github.com/WISVCH/dienst2)
-1. go to the admin page of dienst2 at [dienst2]/admin/, and click the add new authorisation token button to create a new token
-![Dienst2Admin.jpg](src/main/resources/static/readme/Dienst2Admin.jpg)
-2. copy the given token
-3. set the following environmental variables related to dienst2 as found in application.yml:
-```
-api:
-   dienst2:
-        base-url: ${DIENST2_BASE_URL:xxx}
-        token: ${DIENST2_AUTHENTICATION_TOKEN:xxx}
-```
-DIENST2_BASE_URL: the web address of the running dienst2 instance
-
-DIENST2_AUTHENTICATION_TOKEN: the above acquired authentication token
 
 ### **[Mollie:](https://mollie.com/)**
 1. After logging in, begin by creating a new organization
