@@ -24,15 +24,20 @@ public class GlobalModelAttributes {
 
   @ModelAttribute
   public void addCurrentUserToModel(Model model, Authentication authentication) {
-    if (authentication != null && authentication.getPrincipal() instanceof OidcUser oidcUser) {
-      String sub = oidcUser.getAttribute("sub");
-      if (sub != null) {
-        userRepository.findByOpenID(sub).ifPresent(user -> model.addAttribute("currentUser", user));
-      }
+    if (authentication != null) {
+      if (authentication.getPrincipal() instanceof OidcUser oidcUser) {
+        String sub = oidcUser.getAttribute("sub");
+        if (sub != null) {
+          userRepository.findByOpenID(sub).ifPresent(user -> model.addAttribute("currentUser", user));
+        }
 
-      if (oidcUser.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
-        model.addAttribute("isAdmin", true);
-      } else {
+        if (oidcUser.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+          model.addAttribute("isAdmin", true);
+        } else {
+          model.addAttribute("isAdmin", false);
+        }
+      } else if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_API_USER"))) {
+        // API user authentication - no currentUser or admin status
         model.addAttribute("isAdmin", false);
       }
     }

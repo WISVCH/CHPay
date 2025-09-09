@@ -35,16 +35,7 @@ class CustomOIDCUserServiceTest {
   }
 
   @Test
-  void userNotInDienst2NetID() {
-    Map<String, Object> claims = Map.of("groups", List.of());
-
-    assertThrows(
-        OAuth2AuthenticationException.class,
-        () -> service.loadUser(buildRequest(addNonDienst2NetIDClaims(claims))));
-  }
-
-  @Test
-  void userInDienst2NetIDUpdatesDatabase() {
+  void userNetIDUpdatesDatabase() {
     Map<String, Object> claims = Map.of("groups", List.of());
     service.loadUser(buildRequest(addStandardClaims(claims)));
     Optional<User> updatedUser = userRepo.findByOpenID("user123");
@@ -54,16 +45,7 @@ class CustomOIDCUserServiceTest {
   }
 
   @Test
-  void userNotInDienst2Email() {
-    Map<String, Object> claims = Map.of("groups", List.of());
-
-    assertThrows(
-        OAuth2AuthenticationException.class,
-        () -> service.loadUser(buildRequest(addNonDienst2EmailClaims(claims))));
-  }
-
-  @Test
-  void userInDienst2EmailCreatesUserInDatabase() {
+  void userEmailCreatesUserInDatabase() {
     Map<String, Object> claims = Map.of("groups", List.of());
     service.loadUser(buildRequest(addStandardEmailClaims(claims)));
     Optional<User> updatedUser = userRepo.findByEmail("testemail@email.email");
@@ -106,17 +88,7 @@ class CustomOIDCUserServiceTest {
 
     OidcUser result = service.loadUser(buildRequest(addStandardClaims(claims)));
 
-    assertAuthorities(result, "ROLE_USER", "ROLE_ADMIN", "ROLE_COMMITTEE");
-  }
-
-  @Test
-  void loadUser_shouldUseConfiguredClaimName() {
-    service.setClaimName("custom_groups");
-    Map<String, Object> claims = Map.of("custom_groups", List.of("users", "committee"));
-
-    OidcUser result = service.loadUser(buildRequest(addStandardClaims(claims)));
-
-    assertTrue(result.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_COMMITTEE")));
+    assertAuthorities(result, "ROLE_USER");
   }
 
   // -----------------------------------------------------------------------
@@ -161,6 +133,8 @@ class CustomOIDCUserServiceTest {
     full.putIfAbsent("exp", Instant.now().plusSeconds(3600).getEpochSecond());
     full.putIfAbsent("iat", Instant.now().getEpochSecond());
     full.putIfAbsent("netid", "12345");
+    full.putIfAbsent("email", "testemail@email.email");
+    full.putIfAbsent("name", "test user");
     return full;
   }
 
@@ -172,28 +146,8 @@ class CustomOIDCUserServiceTest {
     full.putIfAbsent("exp", Instant.now().plusSeconds(3600).getEpochSecond());
     full.putIfAbsent("iat", Instant.now().getEpochSecond());
     full.putIfAbsent("google_username", "testgoogleusername");
-    return full;
-  }
-
-  private Map<String, Object> addNonDienst2NetIDClaims(Map<String, Object> claims) {
-    Map<String, Object> full = new HashMap<>(claims);
-    full.putIfAbsent("sub", "user123");
-    full.putIfAbsent("iss", "https://example.com");
-    full.putIfAbsent("aud", "client-id");
-    full.putIfAbsent("exp", Instant.now().plusSeconds(3600).getEpochSecond());
-    full.putIfAbsent("iat", Instant.now().getEpochSecond());
-    full.putIfAbsent("netid", "notinDienst2");
-    return full;
-  }
-
-  private Map<String, Object> addNonDienst2EmailClaims(Map<String, Object> claims) {
-    Map<String, Object> full = new HashMap<>(claims);
-    full.putIfAbsent("sub", "user123");
-    full.putIfAbsent("iss", "https://example.com");
-    full.putIfAbsent("aud", "client-id");
-    full.putIfAbsent("exp", Instant.now().plusSeconds(3600).getEpochSecond());
-    full.putIfAbsent("iat", Instant.now().getEpochSecond());
-    full.putIfAbsent("google_username", "test123");
+    full.putIfAbsent("email", "testemail@email.email");
+    full.putIfAbsent("name", "test user");
     return full;
   }
 

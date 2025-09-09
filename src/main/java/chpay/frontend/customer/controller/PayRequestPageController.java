@@ -9,6 +9,7 @@ import chpay.paymentbackend.service.TransactionService;
 import chpay.shared.service.NotificationService;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,6 +46,7 @@ public class PayRequestPageController extends PageController {
    * @param redirectAttributes attributes used to pass temporary data during a redirect
    * @return a redirect string to the main index page after processing the transaction
    */
+  @PreAuthorize("hasRole('USER') and !hasRole('BANNED')")
   @GetMapping(value = "payTransaction")
   public String getPage(
       Model model, @RequestParam(name = "tx") String tx, RedirectAttributes redirectAttributes) {
@@ -70,12 +72,14 @@ public class PayRequestPageController extends PageController {
    * the fallback URL, currently the error page.
    *
    * @param id The id of the external transaction to process.
+   * @param model the model holding attributes for the current HTTP session
    * @return A redirect string to the events payment complete page.
    * @throws RestClientException If an error occurs while calling {@code
    *     externalPaymentServiceImpl.postToWebhook()}.
    */
+  @PreAuthorize("hasRole('USER') and !hasRole('BANNED')")
   @GetMapping("/external/{id}")
-  public String completeExternalTransaction(@PathVariable String id) throws RestClientException {
+  public String completeExternalTransaction(@PathVariable String id, Model model) throws RestClientException {
     ExternalTransaction transaction =
         (ExternalTransaction)
             transactionRepository
@@ -84,6 +88,14 @@ public class PayRequestPageController extends PageController {
 
     if (transaction.getStatus() != ExternalTransaction.TransactionStatus.PENDING) {
       return "redirect:" + transaction.getFallbackUrl(); // already paid, just redirect to events.
+    }
+
+    User currentUser = (User) model.getAttribute("currentUser");
+    
+    // If transaction doesn't have a user (anonymous), link the current user to it
+    if (transaction.getUser() == null) {
+      transaction.linkUser(currentUser);
+      transactionRepository.save(transaction);
     }
 
     transactionService.fullfillExternalTransaction(transaction.getId(), transaction.getUser());

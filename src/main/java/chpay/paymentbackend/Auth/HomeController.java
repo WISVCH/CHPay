@@ -2,6 +2,7 @@ package chpay.paymentbackend.Auth;
 
 import chpay.shared.service.NotificationService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,8 +28,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 public class HomeController {
 
-  private static final String NOTIFICATION_TYPE = "notificationType";
-  private static final String NOTIFICATION_MESSAGE = "notificationMessage";
   private final NotificationService notificationService;
 
   public HomeController(NotificationService notificationService) {
@@ -54,11 +53,13 @@ public class HomeController {
     return "redirect:/login";
   }
 
+  @PreAuthorize("hasAnyRole('USER', 'BANNED')")
   @GetMapping("/index")
   public String index() {
     return "index"; // Renders templates/index.html
   }
 
+  @PreAuthorize("hasAnyRole('USER', 'BANNED')")
   @GetMapping("/dashboard")
   public String home() {
     return "dashboard"; // refers to templates/dashboard.html

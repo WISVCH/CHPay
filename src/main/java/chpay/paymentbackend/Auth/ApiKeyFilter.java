@@ -5,10 +5,14 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -17,15 +21,13 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class ApiKeyFilter extends OncePerRequestFilter {
 
   @Value("${chpay.api-key}")
-  @NonNull
   private String expectedApiKey;
 
   /**
-   * API key filter that checks the API key in the request header. Only applies to requests on the
-   * /api/events/** mappings. If the API key is invalid, an HTTP 401 Unauthorized response is
-   * returned. If the API key is valid, the request is passed to the next filter in the chain. If
-   * the request is not a /api/events/** mapping, or is a /api/events/status mapping, the request is
-   * passed to the next filter in the chain.
+   * API key filter that checks the API key in the request header for API requests.
+   * If the API key is valid, sets the ROLE_API_USER role and continues.
+   * If invalid, returns 401 Unauthorized.
+   * For non-API requests, passes through without modification.
    *
    * @param request the {@code HttpServletRequest} object that contains the client request
    * @param response the {@code HttpServletResponse} object that contains the response to the client
@@ -36,31 +38,31 @@ public class ApiKeyFilter extends OncePerRequestFilter {
    */
   @Override
   protected void doFilterInternal(
-      HttpServletRequest request,
+      @NonNull HttpServletRequest request,
       @NonNull HttpServletResponse response,
       @NonNull FilterChain filterChain)
       throws ServletException, IOException {
 
     String path = request.getRequestURI();
 
-    if (path.equals("/api/events/status")) {
+    // Only apply this filter to API requests
+    if (!path.startsWith("/api/")) {
       filterChain.doFilter(request, response);
-      return;
-    }
-
-    // Only apply this filter to /api/events/**
-    if (!path.startsWith("/api/events")) {
-      filterChain.doFilter(request, response); // do nothing for other routes
       return;
     }
 
     String apiKey = request.getHeader("X-API-KEY");
 
-    if (!expectedApiKey.equals(apiKey)) {
-      response.sendError(HttpStatus.UNAUTHORIZED.value(), "Invalid API key");
+    if (apiKey == null || !expectedApiKey.equals(apiKey)) {
+      response.sendError(HttpStatus.UNAUTHORIZED.value(), "Invalid or missing API key");
       return;
     }
 
-    filterChain.doFilter(request, response); // valid API key: continue
+    // Set API_USER role for valid API key
+    List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_API_USER"));
+    UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken("api-user", null, authorities);
+    SecurityContextHolder.getContext().setAuthentication(auth);
+
+    filterChain.doFilter(request, response);
   }
 }

@@ -80,10 +80,6 @@ chpay:
   settings:
     minTopUp: ${MIN_TOPUP:2}
   api-key: ${EVENTS_API_KEY:HPMJlkPES1psbLsV8sy1fYYMIRWDlDzKZyv26aWquF0=} #Api key to be used when redirecting from events, just set it to whatever
-api:
-  dienst2:
-    base-url: ${DIENST2_BASE_URL}
-    token: ${DIENST2_AUTHENTICATION_TOKEN}
 logging:
   level:
     org.hibernate.loader.Loader: WARN

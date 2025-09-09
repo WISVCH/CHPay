@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +29,7 @@ public class RequestApiController {
    * <p>Returns JSON array of all successful payments for that request: [ { "transactionId": "...",
    * "payerName": "Alice Doe", "amount": "17.50", "timestamp": "2025-06-04T12:07:15" }, ... ]
    */
+  @PreAuthorize("hasRole('API_USER')")
   @GetMapping("/{requestId}/successful-payments")
   public List<Map<String, String>> getSuccessfulPayments(
       @PathVariable("requestId") UUID requestId) {

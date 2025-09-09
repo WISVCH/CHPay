@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -49,6 +50,7 @@ public class TransactionHistoryPageController extends PageController {
    * @param page page number for the list of transactions
    * @return String
    */
+  @PreAuthorize("hasAnyRole('USER', 'BANNED')")
   @GetMapping(value = "/transactions")
   public String getPage(
       Model model,
@@ -108,6 +110,7 @@ public class TransactionHistoryPageController extends PageController {
    * @param id the transaction's id
    * @return
    */
+  @PreAuthorize("hasAnyRole('USER', 'BANNED')")
   @PostMapping("/transactions/email-receipt/{id}")
   public ResponseEntity<HttpStatus> emailReceipt(@PathVariable String id) {
     try {

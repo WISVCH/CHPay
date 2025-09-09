@@ -4,6 +4,7 @@ import chpay.DatabaseHandler.Exceptions.InsufficientBalanceException;
 import chpay.shared.service.NotificationService;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -19,6 +20,7 @@ public class NotificationTestPageController extends PageController {
    * @param redirectAttributes
    * @return
    */
+  @PreAuthorize("hasRole('ADMIN')")
   @GetMapping("/notification-test")
   public String notificationTest(RedirectAttributes redirectAttributes) {
     return "notification-test";
@@ -29,8 +31,10 @@ public class NotificationTestPageController extends PageController {
    *
    * @return success notification payload
    */
+  @PreAuthorize("hasRole('ADMIN')")
   @GetMapping("/api/show-green-notification")
   @ResponseBody
+  @SuppressWarnings("unchecked")
   public Map<String, String> showGreenNotification() {
     return (Map<String, String>)
         NotificationService.createSuccessNotification("Positive notification");
@@ -41,8 +45,10 @@ public class NotificationTestPageController extends PageController {
    *
    * @return info notification payload
    */
+  @PreAuthorize("hasRole('ADMIN')")
   @GetMapping("/api/show-gray-notification")
   @ResponseBody
+  @SuppressWarnings("unchecked")
   public Map<String, String> showGrayNotification() {
     return (Map<String, String>) NotificationService.createInfoNotification("Gray notification");
   }
@@ -52,12 +58,14 @@ public class NotificationTestPageController extends PageController {
    *
    * @return error notification payload
    */
+  @PreAuthorize("hasRole('ADMIN')")
   @GetMapping("/api/show-red-notification")
   @ResponseBody
   public Map<String, String> showRedNotification() {
     throw new RuntimeException("This is a test exception from red notification");
   }
 
+  @PreAuthorize("hasRole('ADMIN')")
   @GetMapping("/api/throw-balance-error")
   @ResponseBody
   public Map<String, String> throwBalanceError() {
@@ -70,6 +78,7 @@ public class NotificationTestPageController extends PageController {
    * @param redirectAttributes to add flash attributes for notification
    * @return redirect to notification test page
    */
+  @PreAuthorize("hasRole('ADMIN')")
   @GetMapping("/redirect-success-notification")
   public String redirectWithSuccessNotification(RedirectAttributes redirectAttributes) {
     notificationService.addSuccessMessage(
@@ -83,6 +92,7 @@ public class NotificationTestPageController extends PageController {
    * @param redirectAttributes to add flash attributes for notification
    * @return redirect to notification test page
    */
+  @PreAuthorize("hasRole('ADMIN')")
   @GetMapping("/redirect-info-notification")
   public String redirectWithInfoNotification(RedirectAttributes redirectAttributes) {
     notificationService.addInfoMessage(redirectAttributes, "Info notification after redirect");
@@ -95,6 +105,7 @@ public class NotificationTestPageController extends PageController {
    * @param redirectAttributes to add flash attributes for notification
    * @return redirect to notification test page
    */
+  @PreAuthorize("hasRole('ADMIN')")
   @GetMapping("/redirect-error-notification")
   public String redirectWithErrorNotification(RedirectAttributes redirectAttributes) {
     notificationService.addErrorMessage(redirectAttributes, "Error notification after redirect");

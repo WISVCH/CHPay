@@ -1,23 +1,16 @@
 package chpay.paymentbackend.Auth;
 
 import chpay.shared.service.NotificationService;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.JwtDecoders;
-import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -45,8 +38,6 @@ public class AuthSecConfig {
 
   @Autowired private ApiKeyFilter apiKeyAuthFilter;
 
-  @Autowired private LoadUserFromJwtFilter loadUserFromJwtFilter;
-
   @Bean
   public SessionRegistry sessionRegistry() {
     return new SessionRegistryImpl();
@@ -55,53 +46,6 @@ public class AuthSecConfig {
   @Value("${spring.profiles.active:}")
   private String activeProfiles;
 
-  /**
-   * Configures the security filter chain for API requests. This method customizes the HTTP security
-   * settings for endpoint authorization and authentication behaviors specific to API routes. It
-   * applies various filters, such as JWT authentication and API key validation, to secure the API
-   * endpoints.
-   *
-   * <p>Authorization is granted to specific endpoints (e.g., allowing all requests to
-   * "/api/events/status"), while all other API requests are authenticated using OAuth2 resource
-   * server with JWT.
-   *
-   * @param http an instance of {@link HttpSecurity} used to configure HTTP security for the
-   *     application
-   * @return the configured {@link SecurityFilterChain} for API endpoints
-   * @throws Exception if an error occurs while configuring the security filter chain
-   */
-  @Bean
-  @Order(1) // Higher priority
-  public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
-    http.securityMatcher("/api/**")
-        .authorizeHttpRequests(
-            authz ->
-                authz
-                    .requestMatchers("/api/events/status")
-                    .permitAll()
-                    .anyRequest()
-                    .authenticated())
-        .oauth2ResourceServer(
-            oauth2 ->
-                oauth2
-                    .authenticationEntryPoint(
-                        (request, response, authException) -> {
-                          response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                          response
-                              .getWriter()
-                              .write("JWT auth failed: " + authException.getMessage());
-                        })
-                    .jwt(Customizer.withDefaults()))
-        .addFilterAfter(loadUserFromJwtFilter, BearerTokenAuthenticationFilter.class)
-        .addFilterBefore(apiKeyAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
-    return http.build();
-  }
-
-  @Bean
-  public JwtDecoder jwtDecoder() {
-    return JwtDecoders.fromIssuerLocation("https://connect.ch.tudelft.nl");
-  }
 
   /**
    * Configures and builds the security filter chain used to secure HTTP requests. This method sets
@@ -114,6 +58,9 @@ public class AuthSecConfig {
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     configureRequestAuthorization(http);
+
+    // Add API key filter before OAuth2 login
+    http.addFilterBefore(apiKeyAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
     // Create and configure the success handler
     SavedRequestAwareAuthenticationSuccessHandler successHandler =
@@ -143,8 +90,8 @@ public class AuthSecConfig {
   /**
    * Configures authorization rules for incoming HTTP requests.
    *
-   * <p>This method specifies which requests should be permitted or require authentication. while
-   * all other requests must be authenticated.
+   * <p>This method specifies which requests should be permitted or require authentication.
+   * Most authorization is now handled at the controller level using @PreAuthorize annotations.
    *
    * @param http an instance of {@link HttpSecurity} used to customize authorization rules
    * @throws Exception if an error occurs while configuring authorization
@@ -170,20 +117,13 @@ public class AuthSecConfig {
               if (activeProfiles.contains("test")) {
                 authz.requestMatchers("/test/**").permitAll();
               }
-              authz
-                  .requestMatchers("/transactions/**", "/index")
-                  .hasAnyRole("ADMIN", "USER", "BANNED", "COMMITTEE");
-              authz.requestMatchers("/admin/**").hasRole("ADMIN");
-              authz
-                  .requestMatchers("/**")
-                  .access(
-                      new WebExpressionAuthorizationManager(
-                          "hasAnyRole('USER', 'ADMIN', 'COMMITTEE') and !hasRole('BANNED')"));
+              
+              // All other requests require authentication - authorization is handled at controller level
               authz.anyRequest().authenticated();
             })
         .csrf(
             csrf ->
-                csrf.ignoringRequestMatchers("/balance/status", "/transactions/email-receipt/**"))
+                csrf.ignoringRequestMatchers("/balance/status", "/transactions/email-receipt/**", "/api/**"))
         .exceptionHandling(
             exceptions -> exceptions.accessDeniedHandler(customAccessDeniedHandler)
             /*
