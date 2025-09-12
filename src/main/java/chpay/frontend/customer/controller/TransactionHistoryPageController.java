@@ -54,7 +54,6 @@ public class TransactionHistoryPageController extends PageController {
    * @return String
    */
   @PreAuthorize("hasAnyRole('USER', 'BANNED')")
-  @GetMapping(value = "/transactionsold")
   public String getPage(
       Model model,
       @RequestParam(defaultValue = "1") String page,
