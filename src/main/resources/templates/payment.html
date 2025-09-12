@@ -15,7 +15,7 @@
             <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow">
                 <div class="card-body text-center p-8">
                     <!-- Price at the top -->
-                    <div class="stat-value text-primary text-6xl mb-8">
+                    <div class="stat-value text-primary text-6xl mb-8 mt-4">
                         €<span th:text="${#numbers.formatDecimal(transaction.amount.abs(), 1, 2)}">0.00</span>
                     </div>
                     
@@ -43,7 +43,6 @@
                         <button th:if="${transaction.amount.abs()}<=${currentUser.balance}" 
                                 th:attr="onclick=|location.href='/payTransaction?tx=${transaction.id}'|" 
                                 class="btn btn-primary btn-xl sm:btn-lg">
-                            <span class="icon-[tabler--check] size-5"></span>
                             Pay
                         </button>
                         <button th:unless="${transaction.amount.abs()}<=${currentUser.balance}" 
