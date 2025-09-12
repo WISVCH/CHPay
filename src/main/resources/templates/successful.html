@@ -30,12 +30,12 @@
                     
                     <!-- Balance Update -->
                     <div class="mb-8">
-                        <div class="stat-value text-success text-4xl mb-2">
-                            €<span th:text="${#numbers.formatDecimal(currentUser.balance, 1, 2)}">0.00</span>
-                        </div>
-                        <p class="text-base-content/70 text-lg">
+                        <p class="text-base-content/70 text-lg mb-2">
                             Your new balance
                         </p>
+                        <div class="stat-value text-success text-4xl">
+                            €<span th:text="${#numbers.formatDecimal(currentUser.balance, 1, 2)}">0.00</span>
+                        </div>
                     </div>
 
                     <!-- Action Button -->
