@@ -73,11 +73,11 @@
           <!-- Amount Selection -->
           <div class="mb-6">
             <label class="label-text text-base font-medium mb-2">Select Amount</label>
-            <div class="grid grid-cols-1 sm:grid-cols-5 gap-3 w-full">
-              <input class="btn btn-soft" type="radio" name="amountSelection" value="5" aria-label="€5" title="Add €5 to your balance" onchange="handleRadioChange(5)"/>
-              <input class="btn btn-soft" type="radio" name="amountSelection" value="10" aria-label="€10" title="Add €10 to your balance" onchange="handleRadioChange(10)"/>
-              <input class="btn btn-soft" type="radio" name="amountSelection" value="20" aria-label="€20" title="Add €20 to your balance" onchange="handleRadioChange(20)"/>
-              <div class="sm:col-span-2">
+            <div class="grid grid-cols-1 sm:grid-cols-5 gap-3 w-full max-sm:grid-cols-1">
+              <input class="btn btn-soft w-full" type="radio" name="amountSelection" value="5" aria-label="€5" title="Add €5 to your balance" onchange="handleRadioChange(5)"/>
+              <input class="btn btn-soft w-full" type="radio" name="amountSelection" value="10" aria-label="€10" title="Add €10 to your balance" onchange="handleRadioChange(10)"/>
+              <input class="btn btn-soft w-full" type="radio" name="amountSelection" value="20" aria-label="€20" title="Add €20 to your balance" onchange="handleRadioChange(20)"/>
+              <div class="col-span-1 sm:col-span-2">
                 <div class="input" id="customAmountContainer">
                   <label class="label-text my-auto me-3 p-0" for="customAmount">€</label>
                   <input
