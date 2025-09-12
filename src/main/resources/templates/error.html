@@ -6,7 +6,6 @@
 <head>
     <title>Error</title>
     <th:block layout:fragment="css">
-        <!-- Using FlyonUI components, no additional CSS needed -->
     </th:block>
     <th:block layout:fragment="script"></th:block>
 </head>
@@ -25,7 +24,6 @@
                 <!-- Status Code -->
                 <div class="text-3xl font-bold text-error"
                      th:text="${statuscode} ?: ${status}">
-                    <!-- fallback text -->
                 </div>
 
                 <!-- Title -->
@@ -34,7 +32,6 @@
                 <!-- Error Details -->
                 <div class="text-base-content/70 text-sm space-y-2">
                     <p th:text="${errorname} ?: ${error}">
-                        <!-- fallback text -->
                     </p>
                     <p th:if="${message}"
                        th:text="${currentUser != null and currentUser.getBanned()} ? 'You are banned from accessing this feature.' : ${message}">
@@ -58,7 +55,6 @@
                         Return to Home
                     </a>
                     
-                    <!-- Logout for authenticated users -->
                     <div sec:authorize="isAuthenticated()">
                         <p class="text-xs text-base-content/60 mb-2">Logged in as: <span sec:authentication="name"></span></p>
                         <form th:action="@{/logout}" method="post">
