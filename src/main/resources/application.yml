@@ -68,10 +68,9 @@ mollie:
 wisvch.chpay:
     admin-groups:
       - beheer
-      - Bestuur
-      - bestuur-huidig
+      - bestuur
       - vc
-    claim-name: groups
+    claim-name: google_groups
 chpay:
   transactions:
     expire-every-minutes: ${EXPIRE_EVERY_MINUTE:20}
