@@ -3,59 +3,135 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout}">
 <head>
-  <title>Balance</title>
+  <title>Add Funds</title>
   <th:block layout:fragment="css">
-    <link rel="stylesheet" th:href="@{/css/balance.css}"/>
   </th:block>
   <th:block layout:fragment="script">
     <script th:inline="javascript">
-      const MAX_BALANCE = [[${maxBalance}]];
-      const MIN_TOPUP = [[${minTopUp}]]
+      // Wrap in IIFE to prevent redeclaration errors
+      (function() {
+        window.BALANCE_CONFIG = {
+          MAX_BALANCE: parseFloat([[${maxBalance}]]),
+          MIN_TOPUP: parseFloat([[${minTopUp}]]),
+          TRANSACTION_FEE: parseFloat([[${transactionFee}]]),
+          CURRENT_BALANCE: parseFloat([[${currentUser.balance}]])
+        };
+      })();
     </script>
     <script th:src="@{/js/balance.js}"></script>
   </th:block>
 </head>
 <body>
-<div layout:fragment="content">
-  <div class="balance-container"
-       th:attr="data-current-balance=${currentUser.balance}">
+<div layout:fragment="main-content">
+  <div class="container max-w-4xl mx-auto">
 
-    <div class="balance-info-row">
-      <p class="balance-label">
-        <strong>Balance:</strong> <span th:text="${#numbers.formatDecimal(currentUser.balance, 1, 2)} + '€'">Some money</span>
+    <!-- Header Section -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-base-content mb-2">Top-up Balance</h1>
+      <p class="text-base-content/70 text-lg">
+        Add funds to your CHPay account using iDEAL. Your balance will be updated instantly after payment.
       </p>
-      <span class="transaction-fees">Transaction fees of
-        <span th:text="${transactionFee} + '€ '">0.00€</span>
-        <br>applied to checkout
-      </span>
-
     </div>
 
-    <div class="topup-header">
-      <p class="topup-label"><strong>Top-up Balance</strong></p>
-      <span class="topup-max" th:text="'Max Balance: ' + ${#numbers.formatDecimal(maxBalance, 1, 2)} + '€'">PLACEHOLDER</span>
-    </div>
-
-    <form th:action="@{/balance/topup}" method="post" id="topup-form">
-      <div class="topup-grid">
-        <input type="hidden" id="topupAmount" name="topupAmount"/>
-
-        <button type="button" class="btn btn-large btn-indigo" onclick="updateTopupAmount(5)">€5</button>
-        <button type="button" class="btn btn-large btn-indigo" onclick="updateTopupAmount(10)">€10</button>
-        <button type="button" class="btn btn-large btn-indigo" onclick="updateTopupAmount(20)">€20</button>
-
-        <input
-                type="text"
-                id="customAmount"
-                class="custom-input"
-                placeholder="€"
-                inputmode="decimal"
-                pattern="^[0-9]+([.,][0-9]{0,2})?$"
-                oninput="clearSelection()"
-        />
-        <button type="submit" class="btn btn-large btn-blauw" id="payButton">Pay</button>
+    <!-- Current Balance Card -->
+    <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow mb-8">
+      <div class="card-body">
+        <div class="flex items-center gap-4">
+          <div class="avatar avatar-placeholder">
+            <div class="bg-primary/20 text-primary size-16 rounded-full">
+              <span class="icon-[tabler--wallet] size-8"></span>
+            </div>
+          </div>
+          <div class="flex-1">
+            <h2 class="card-title text-2xl">Current Balance</h2>
+            <div class="stat-value text-primary text-4xl">
+              €<span th:text="${#numbers.formatDecimal(currentUser.balance, 1, 2)}">0.00</span>
+            </div>
+          </div>
+        </div>
       </div>
-    </form>
+    </div>
+
+    <!-- Top-up Form Card -->
+    <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow">
+      <div class="card-body">
+        <div class="flex items-center gap-4 mb-6">
+          <div class="avatar avatar-placeholder">
+            <div class="bg-secondary/20 text-secondary size-12 rounded-full">
+              <span class="icon-[tabler--plus] size-6"></span>
+            </div>
+          </div>
+          <div>
+            <h3 class="card-title text-xl">Add Funds</h3>
+            <p class="text-base-content/70">Choose an amount to add to your balance</p>
+          </div>
+        </div>
+
+        <form th:action="@{/balance/topup}" method="post" id="topup-form">
+          <input type="hidden" id="topupAmount" name="topupAmount"/>
+          
+          <!-- Amount Selection -->
+          <div class="mb-6">
+            <label class="label-text text-base font-medium mb-2">Select Amount</label>
+            <div class="grid grid-cols-1 sm:grid-cols-5 gap-3 w-full">
+              <input class="btn btn-soft" type="radio" name="amountSelection" value="5" aria-label="€5" title="Add €5 to your balance" onchange="handleRadioChange(5)"/>
+              <input class="btn btn-soft" type="radio" name="amountSelection" value="10" aria-label="€10" title="Add €10 to your balance" onchange="handleRadioChange(10)"/>
+              <input class="btn btn-soft" type="radio" name="amountSelection" value="20" aria-label="€20" title="Add €20 to your balance" onchange="handleRadioChange(20)"/>
+              <div class="sm:col-span-2">
+                <div class="input" id="customAmountContainer">
+                  <label class="label-text my-auto me-3 p-0" for="customAmount">€</label>
+                  <input
+                    type="text"
+                    id="customAmount"
+                    class="grow"
+                    placeholder="Enter amount"
+                    inputmode="decimal"
+                    pattern="^[0-9]+([.,][0-9]{0,2})?$"
+                    autocomplete="off"
+                    data-form-type="other"
+                    data-lpignore="true"
+                    oninput="handleCustomInput()"
+                    onfocus="handleCustomInputFocus()"
+                  />
+                </div>
+                <span class="helper-text" id="customAmountError" style="display: none;"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Transaction Fee Overview -->
+          <div class="bg-base-200/50 rounded-lg p-4 mb-6">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="icon-[tabler--info-circle] text-accent size-5"></span>
+              <h4 class="font-semibold text-base-content">Payment Summary</h4>
+            </div>
+            <div class="space-y-1 text-sm">
+              <div class="flex justify-between">
+                <span class="text-base-content/70">Amount to add:</span>
+                <span id="amountToAdd" class="font-medium">€0.00</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-base-content/70">Transaction fee:</span>
+                <span class="font-medium">€<span th:text="${transactionFee}">0.00</span></span>
+              </div>
+              <div class="divider my-2"></div>
+              <div class="flex justify-between text-base font-semibold">
+                <span>Total to pay:</span>
+                <span id="totalToPay" class="text-primary">€0.00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment Button -->
+          <div class="card-actions justify-end">
+            <button type="submit" class="btn btn-primary btn-xl w-full sm:w-auto" id="payButton" disabled>
+              <span class="icon-[tabler--credit-card] size-5"></span>
+              Pay with iDEAL
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </div>
 </body>

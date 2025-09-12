@@ -6,55 +6,71 @@
 <head>
     <title>Error</title>
     <th:block layout:fragment="css">
-        <link rel="stylesheet" th:href="@{/css/error.css}">
+        <!-- Using FlyonUI components, no additional CSS needed -->
     </th:block>
     <th:block layout:fragment="script"></th:block>
 </head>
 <body>
-<div layout:fragment="content">
-    <div class="error-icon">
-        <i class="fa-solid fa-triangle-exclamation"></i>
-    </div>
+<div layout:fragment="main-content">
+    <div class="flex items-center justify-center px-4 py-10">
+        <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow w-full max-w-sm">
+            <div class="card-body items-center text-center space-y-4">
+                <!-- Error Icon -->
+                <div class="avatar avatar-placeholder">
+                    <div class="bg-error/20 text-error size-16 rounded-full">
+                        <span class="icon-[tabler--alert-triangle] size-8"></span>
+                    </div>
+                </div>
+                
+                <!-- Status Code -->
+                <div class="text-3xl font-bold text-error"
+                     th:text="${statuscode} ?: ${status}">
+                    <!-- fallback text -->
+                </div>
 
-    <div class="status-code"
-         th:text="${statuscode} ?: ${status}">
-        <!-- fallback text -->
-    </div>
+                <!-- Title -->
+                <h1 class="text-2xl font-bold text-base-content">Error Occurred</h1>
+                
+                <!-- Error Details -->
+                <div class="text-base-content/70 text-sm space-y-2">
+                    <p th:text="${errorname} ?: ${error}">
+                        <!-- fallback text -->
+                    </p>
+                    <p th:if="${message}"
+                       th:text="${currentUser != null and currentUser.getBanned()} ? 'You are banned from accessing this feature.' : ${message}">
+                        Message details
+                    </p>
+                    <p th:if="${timestamp}"
+                       th:text="${#dates.format(timestamp, 'dd-MM-yyyy HH:mm:ss')}">
+                        Timestamp
+                    </p>
+                </div>
 
-    <h1 class="error-title">Error Occurred</h1>
+                <!-- Stack Trace (if available) -->
+                <div th:if="${trace}" class="bg-base-200 rounded-lg p-3 text-xs text-base-content/60 text-left w-full">
+                    <pre th:text="${trace}">Stack trace</pre>
+                </div>
 
-    <div class="error-details">
-        <p class="error-message"
-           th:text="${errorname} ?: ${error}">
-            <!-- fallback text -->
-        </p>
-        <p class="error-message-detail"
-           th:if="${message}"
-           th:text="${currentUser != null and currentUser.getBanned()} ? 'You are banned from accessing this feature.' : ${message}">
-            Message details
-        </p>
-        <p class="error-timestamp"
-           th:if="${timestamp}"
-           th:text="${#dates.format(timestamp, 'dd-MM-yyyy HH:mm:ss')}">
-            Timestamp
-        </p>
-        <p class="error-trace"
-           th:if="${trace}"
-           th:text="${trace}">
-            Stack trace
-        </p>
-    </div>
-
-    <a href="/" class="basic-button">
-        Return to Home
-    </a>
-
-
-    <div sec:authorize="isAuthenticated()" class="user-info">
-        <p>Logged in as: <span sec:authentication="name"></span></p>
-        <form th:action="@{/logout}" method="post" class="logout-form">
-            <button type="submit" class="basic-button">Logout</button>
-        </form>
+                <!-- Action Buttons -->
+                <div class="w-full space-y-3">
+                    <a href="/" class="btn btn-primary btn-lg btn-block">
+                        <span class="icon-[tabler--home] size-5"></span>
+                        Return to Home
+                    </a>
+                    
+                    <!-- Logout for authenticated users -->
+                    <div sec:authorize="isAuthenticated()">
+                        <p class="text-xs text-base-content/60 mb-2">Logged in as: <span sec:authentication="name"></span></p>
+                        <form th:action="@{/logout}" method="post">
+                            <button type="submit" class="btn btn-outline btn-block">
+                                <span class="icon-[tabler--logout] size-4"></span>
+                                Logout
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 </body>

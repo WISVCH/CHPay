@@ -1,0 +1,24 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "main": "tailwind.config.js",
+  "scripts": {
+    "copy-js": "cp node_modules/flyonui/flyonui.js ../resources/static/js/flyonui.js && cp node_modules/jquery/dist/jquery.min.js ../resources/static/js/jquery.min.js && cp node_modules/datatables.net/js/dataTables.min.js ../resources/static/js/dataTables.min.js",
+    "build": "npm run copy-js && tailwindcss -i ./styles.css -o ../resources/static/css/main.css",
+    "watch": "npm run copy-js && tailwindcss --watch -i ./styles.css -o ../resources/static/css/main.css"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.13",
+    "datatables.net": "^2.3.4",
+    "flyonui": "^2.4.0",
+    "jquery": "^3.7.1",
+    "tailwindcss": "^4.1.13"
+  },
+  "devDependencies": {
+    "@iconify-json/tabler": "^1.2.22",
+    "@iconify/tailwind4": "^1.0.6"
+  }
+}

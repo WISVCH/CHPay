@@ -1,32 +1,73 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      class="h-full">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link th:href="@{/css/main.css}" rel="stylesheet" />
     <title layout:title-pattern="$CONTENT_TITLE - CHPay">CHPay</title>
-    <link rel="icon" type="image/png" href="/images/favicon-light.png" media="(prefers-color-scheme: light)">
-    <link rel="icon" type="image/png" href="/images/favicon-dark.png" media="(prefers-color-scheme: dark)">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" th:href="@{/css/layout-basic.css}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-    <script th:src="@{/js/cookies.js}"></script>
-    <script th:src="@{/js/notifications.js}"></script>
-    <th:block layout:insert="~{::css}"/>
-    <th:block layout:insert="~{::script}"/>
+    <th:block layout:fragment="script"></th:block>
+    <th:block layout:fragment="css"></th:block>
 </head>
-<body>
-<div th:replace="~{fragments/cookie-consent :: cookieConsent}"></div>
-<div th:replace="~{fragments/cookie-policy :: cookiePolicy}"></div>
-<div th:replace="~{fragments/notifications :: notifications}"></div>
 
-<div class="content-wrapper">
-    <div class="box">
-        <div class="page-container">
-            <div layout:fragment="content"></div>
+<body class="bg-base-200 min-h-screen">
+    <nav class="navbar bg-base-100 max-sm:rounded-box max-sm:shadow-sm sm:border-b border-base-content/25 sm:z-1 relative">
+        <div class="flex flex-1 items-center">
+          <a class="link text-base-content link-neutral text-xl font-semibold no-underline" href="/">
+            CHPay
+          </a>
         </div>
-    </div>
-</div>
+                   <div class="navbar-end flex items-center gap-4">
+                     <!-- System Freeze Status Indicator -->
+                     <div th:if="${systemFrozen}" class="flex items-center gap-2">
+                       <div class="status status-warning animate-pulse"></div>
+                       <span class="text-warning text-sm font-medium">System Frozen</span>
+                     </div>
+                     
+                     
+                     <div class="dropdown relative inline-flex [--auto-close:inside] [--offset:8] [--placement:bottom-end]">
+          
+           </div>
+         </div>
+      </nav>
 
-<div th:replace="~{fragments/footer :: footer}"></div>
+       <div class="sm:overlay-layout-open:ps-64 min-h-[calc(100vh-4rem)] bg-base-200 transition-all duration-300 flex flex-col">
+            <!-- Main Content -->
+            <main class="flex-1 p-6">
+                <div class="max-w-4xl mx-auto">
+                    <div layout:fragment="main-content">
+                        <!-- Page content goes here -->
+                    </div>
+                </div>
+            </main>
+            
+            <!-- Spacer to push footer to bottom -->
+            <div class="flex-grow"></div>
+
+             <!-- Footer -->
+             <footer class="bg-base-100 border-t border-base-content/10 mt-auto">
+                 <div class="px-6 py-4">
+                     <div class="flex flex-col sm:flex-row justify-between items-center gap-2">
+                         <p class="text-sm text-base-content/60">
+                             Copyright © W.I.S.V. 'Christiaan Huygens' 2025
+                         </p>
+                         <div class="flex items-center gap-4 text-sm text-base-content/60">
+                             <a href="https://ch.tudelft.nl/privacy-statement/" class="hover:text-primary" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+                         </div>
+                     </div>
+                 </div>
+             </footer>
+       </div>
+
+      <script th:src="@{/js/jquery.min.js}"></script>
+      <script th:src="@{/js/dataTables.min.js}"></script>
+      <script th:src="@{/js/flyonui.js}"></script>
+    
+    <!-- Notifications -->
+    <div th:replace="fragments/notifications :: notifications"></div>
+    
+    <!-- Additional scripts from pages -->
+    <th:block layout:fragment="script"></th:block>
 </body>
 </html>

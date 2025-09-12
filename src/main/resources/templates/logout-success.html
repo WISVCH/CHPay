@@ -5,23 +5,37 @@
 <head>
   <title>Logout Successful</title>
   <th:block layout:fragment="css">
-    <link rel="stylesheet" th:href="@{/css/logout-success.css}">
+    <!-- Using FlyonUI components, no additional CSS needed -->
   </th:block>
   <th:block layout:fragment="script"></th:block>
 </head>
 <body>
-<div layout:fragment="content">
-  <h1 class="logout-title">Logged Out</h1>
-
-  <div class="success-message">
-    <p>You have been successfully logged out of the application.</p>
+<div layout:fragment="main-content">
+  <div class="flex items-center justify-center px-4 py-10">
+    <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow w-full max-w-sm">
+      <div class="card-body items-center text-center space-y-4">
+        <!-- Success Icon -->
+        <div class="avatar avatar-placeholder">
+          <div class="bg-success/20 text-success size-16 rounded-full">
+            <span class="icon-[tabler--check] size-8"></span>
+          </div>
+        </div>
+        
+        <!-- Title -->
+        <h1 class="text-2xl font-bold text-base-content">Logged Out Successfully</h1>
+        
+        <!-- Message -->
+        <p class="text-base-content/70">You have been successfully logged out of CHPay.</p>
+        <p class="text-base-content/70 text-sm">Thank you for using our service. You can log back in anytime.</p>
+        
+        <!-- Return to Login Button -->
+        <a href="/login" class="btn btn-primary btn-lg btn-block">
+          <span class="icon-[tabler--login] size-5"></span>
+          Return to Login
+        </a>
+      </div>
+    </div>
   </div>
-
-  <p class="logout-text">Thank you for using our service. You can log back in anytime.</p>
-
-  <a href="/login" class="basic-button">
-    Return to Login
-  </a>
 </div>
 </body>
 </html>

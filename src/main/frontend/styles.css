@@ -1,0 +1,28 @@
+@import "tailwindcss";
+@source "../resources/templates/**/*.{html,js}";
+@source "../resources/static/**/*.{html,js}";
+
+@plugin "flyonui" {
+    themes: light --default, black --prefersdark;
+ }
+
+
+@import "./node_modules/flyonui/src/vendor/datatables.css";
+@import "./node_modules/flyonui/variants.css"; /* Require only if you want to use FlyonUI JS component */
+@source "./node_modules/flyonui/dist/index.js"; /* Require only if you want to use FlyonUI JS component */
+
+@plugin "@iconify/tailwind4";
+@plugin "flyonui/theme" {
+    name: "light";
+    default: true;
+    --color-primary: #1E274A;
+    --color-accent: #2AA1A9;
+}
+
+@plugin "flyonui/theme" {
+    name: "black";
+    prefersdark: true;
+    --color-primary: #90B6CB;
+    --color-secondary: #2AA1A9;
+    --color-accent: #2AA1A9;
+}

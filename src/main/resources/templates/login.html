@@ -5,19 +5,27 @@
 <head>
     <title>Login</title>
     <th:block layout:fragment="css">
-        <link rel="stylesheet" th:href="@{/css/login.css}">
+        <!-- Using FlyonUI components, no additional CSS needed -->
     </th:block>
     <th:block layout:fragment="script"></th:block>
 </head>
 <body>
-<div layout:fragment="content">
-
-    <h1 class="login-title">Welcome to CHPay</h1>
-
-    <a href="/oauth2/authorization/wisvchconnect" class="basic-button">
-        Login with CHConnect
-    </a>
-
+<div layout:fragment="main-content">
+    <div class="flex items-center justify-center px-4 py-10">
+        <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow w-full max-w-sm">
+            <div class="card-body items-center text-center space-y-4">
+                <!-- Welcome Message -->
+                <h1 class="text-2xl font-bold text-base-content">Welcome to CHPay</h1>
+                
+                <!-- Sign In Button -->
+                <a href="/oauth2/authorization/wisvchconnect" 
+                   class="btn btn-primary btn-lg btn-block">
+                    <span class="icon-[tabler--login] size-5"></span>
+                    Sign In
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
 </body>
 </html>
