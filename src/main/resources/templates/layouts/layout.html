@@ -12,8 +12,8 @@
 </head>
 
 <body class="bg-base-200 min-h-screen">
-    <nav class="navbar bg-base-100 max-sm:rounded-box max-sm:shadow-sm sm:border-b border-base-content/25 sm:z-1 relative">
-        <button type="button" class="btn btn-text max-sm:btn-square me-2" aria-haspopup="dialog" aria-expanded="false" aria-controls="with-navbar-sidebar" data-overlay="#with-navbar-sidebar" >
+    <nav class="navbar bg-base-100 max-lg:rounded-box max-lg:shadow-sm lg:border-b border-base-content/25 lg:z-1 relative">
+        <button type="button" class="btn btn-text max-lg:btn-square me-2 lg:hidden" aria-haspopup="dialog" aria-expanded="false" aria-controls="with-navbar-sidebar" data-overlay="#with-navbar-sidebar" >
           <span class="icon-[tabler--menu-2] size-5"></span>
         </button>
         <div class="flex flex-1 items-center">
@@ -65,90 +65,94 @@
          </div>
       </nav>
       
-       <aside id="with-navbar-sidebar" class="overlay [--body-scroll:true] border-base-content/20 overlay-open:translate-x-0 drawer drawer-start sm:overlay-layout-open:translate-x-0 hidden w-64 border-e [--auto-close:sm] [--is-layout-affect:true] [--opened:lg] sm:absolute sm:z-0 sm:flex sm:shadow-none lg:[--overlay-backdrop:false] pt-16" role="dialog" tabindex="-1">
-         <div class="drawer-body px-2 pt-4">
-           <ul class="menu p-0">
-             <!-- Home -->
-             <li>
-                 <a href="/index" th:class="${urlPage == null} ? 'menu-active' : ''">
-                     <span class="icon-[tabler--home] size-5"></span>
-                     Home
+      <!-- Main Layout Container -->
+      <div class="flex">
+        <!-- Sidebar -->
+        <aside id="with-navbar-sidebar" class="overlay [--body-scroll:true] border-base-content/20 overlay-open:translate-x-0 drawer drawer-start lg:overlay-layout-open:translate-x-0 hidden w-64 border-e [--auto-close:lg] [--is-layout-affect:true] lg:static lg:block lg:translate-x-0 lg:h-screen" role="dialog" tabindex="-1">
+          <div class="drawer-body px-2 pt-4 lg:pt-6">
+            <ul class="menu p-0">
+              <!-- Home -->
+              <li>
+                  <a href="/index" th:class="${urlPage == null} ? 'menu-active' : ''">
+                      <span class="icon-[tabler--home] size-5"></span>
+                      Home
+                  </a>
+              </li>
+              
+             <!-- Add Funds -->
+             <li th:class="${currentUser!=null and currentUser.getBanned()} ? 'menu-disabled' : ''">
+                 <a href="/balance" th:class="${urlPage == 'balance'} ? 'menu-active' : ''">
+                     <span class="icon-[tabler--plus] size-5"></span>
+                     Add Funds
                  </a>
              </li>
-             
-            <!-- Add Funds -->
-            <li th:class="${currentUser!=null and currentUser.getBanned()} ? 'menu-disabled' : ''">
-                <a href="/balance" th:class="${urlPage == 'balance'} ? 'menu-active' : ''">
-                    <span class="icon-[tabler--plus] size-5"></span>
-                    Add Funds
-                </a>
-            </li>
-             
-             <!-- Transactions -->
-             <li>
-                 <a href="/transactions" th:class="${urlPage == 'transactions'} ? 'menu-active' : ''">
-                     <span class="icon-[tabler--receipt] size-5"></span>
-                     Transactions
-                 </a>
-             </li>
-             
-             <!-- Admin Section (if user is admin) -->
-             <li th:if="${isAdmin}" class="space-y-0.5">
-                 <a class="collapse-toggle collapse-open:bg-warning/10 text-warning hover:bg-warning/10" id="menu-admin" data-collapse="#menu-admin-collapse">
-                     <span class="icon-[tabler--shield] size-5"></span>
-                     Admin
-                     <span class="icon-[tabler--chevron-down] collapse-open:rotate-180 size-4 transition-all duration-300"></span>
-                 </a>
-                 <ul id="menu-admin-collapse" class="collapse w-auto space-y-0.5 overflow-hidden transition-[height] duration-300 hidden" aria-labelledby="menu-admin">
-                     <li>
-                         <a href="/admin" th:class="${urlPage == 'admin'} ? 'menu-active' : ''">
-                             <span class="icon-[tabler--dashboard] size-5"></span>
-                             Dashboard
-                         </a>
-                     </li>
-                     <li>
-                         <a href="/admin/createPaymentRequest" th:class="${urlPage == 'createPaymentRequest'} ? 'menu-active' : ''">
-                             <span class="icon-[tabler--cash-register] size-5"></span>
-                             Terminal
-                         </a>
-                     </li>
-                     <li>
-                         <a href="/admin/transactions" th:class="${urlPage == 'adminTransactions'} ? 'menu-active' : ''">
-                             <span class="icon-[tabler--receipt] size-5"></span>
-                             Transactions
-                         </a>
-                     </li>
-                     <li>
-                         <a href="/admin/users" th:class="${urlPage == 'adminUsers'} ? 'menu-active' : ''">
-                             <span class="icon-[tabler--users] size-5"></span>
-                             Users
-                         </a>
-                     </li>
-                     <li>
-                         <a href="/admin/settings" th:class="${urlPage == 'systemSettings'} ? 'menu-active' : ''">
-                             <span class="icon-[tabler--settings] size-5"></span>
-                             System Settings
-                         </a>
-                     </li>
-                     <li>
-                         <a href="/admin/log" th:class="${urlPage == 'adminLogs'} ? 'menu-active' : ''">
-                             <span class="icon-[tabler--file-text] size-5"></span>
-                             Error Log
-                         </a>
-                     </li>
-                     <li>
-                         <a href="/admin/stats/balance" th:class="${urlPage == 'adminStatistics'} ? 'menu-active' : ''">
-                             <span class="icon-[tabler--chart-bar] size-5"></span>
-                             Statistics
-                         </a>
-                     </li>
-                 </ul>
-             </li>
-           </ul>
-         </div>
-       </aside>
+              
+              <!-- Transactions -->
+              <li>
+                  <a href="/transactions" th:class="${urlPage == 'transactions'} ? 'menu-active' : ''">
+                      <span class="icon-[tabler--receipt] size-5"></span>
+                      Transactions
+                  </a>
+              </li>
+              
+              <!-- Admin Section (if user is admin) -->
+              <li th:if="${isAdmin}" class="space-y-0.5">
+                  <a class="collapse-toggle collapse-open:bg-warning/10 text-warning hover:bg-warning/10" id="menu-admin" data-collapse="#menu-admin-collapse">
+                      <span class="icon-[tabler--shield] size-5"></span>
+                      Admin
+                      <span class="icon-[tabler--chevron-down] collapse-open:rotate-180 size-4 transition-all duration-300"></span>
+                  </a>
+                  <ul id="menu-admin-collapse" class="collapse w-auto space-y-0.5 overflow-hidden transition-[height] duration-300 hidden" aria-labelledby="menu-admin">
+                      <li>
+                          <a href="/admin" th:class="${urlPage == 'admin'} ? 'menu-active' : ''">
+                              <span class="icon-[tabler--dashboard] size-5"></span>
+                              Dashboard
+                          </a>
+                      </li>
+                      <li>
+                          <a href="/admin/createPaymentRequest" th:class="${urlPage == 'createPaymentRequest'} ? 'menu-active' : ''">
+                              <span class="icon-[tabler--cash-register] size-5"></span>
+                              Terminal
+                          </a>
+                      </li>
+                      <li>
+                          <a href="/admin/transactions" th:class="${urlPage == 'adminTransactions'} ? 'menu-active' : ''">
+                              <span class="icon-[tabler--receipt] size-5"></span>
+                              Transactions
+                          </a>
+                      </li>
+                      <li>
+                          <a href="/admin/users" th:class="${urlPage == 'adminUsers'} ? 'menu-active' : ''">
+                              <span class="icon-[tabler--users] size-5"></span>
+                              Users
+                          </a>
+                      </li>
+                      <li>
+                          <a href="/admin/settings" th:class="${urlPage == 'systemSettings'} ? 'menu-active' : ''">
+                              <span class="icon-[tabler--settings] size-5"></span>
+                              System Settings
+                          </a>
+                      </li>
+                      <li>
+                          <a href="/admin/log" th:class="${urlPage == 'adminLogs'} ? 'menu-active' : ''">
+                              <span class="icon-[tabler--file-text] size-5"></span>
+                              Error Log
+                          </a>
+                      </li>
+                      <li>
+                          <a href="/admin/stats/balance" th:class="${urlPage == 'adminStatistics'} ? 'menu-active' : ''">
+                              <span class="icon-[tabler--chart-bar] size-5"></span>
+                              Statistics
+                          </a>
+                      </li>
+                  </ul>
+              </li>
+            </ul>
+          </div>
+        </aside>
 
-       <div class="sm:overlay-layout-open:ps-64 min-h-[calc(100vh-4rem)] bg-base-200 transition-all duration-300 flex flex-col">
+        <!-- Main Content -->
+        <div class="flex-1 lg:overlay-layout-open:ps-64 min-h-[calc(100vh-4rem)] bg-base-200 transition-all duration-300 flex flex-col">
             <!-- Main Content -->
             <main class="flex-1 p-6">
                 <div class="max-w-4xl mx-auto">
@@ -174,7 +178,8 @@
                      </div>
                  </div>
              </footer>
-       </div>
+        </div>
+      </div>
 
       <script th:src="@{/js/jquery.min.js}"></script>
       <script th:src="@{/js/dataTables.min.js}"></script>
