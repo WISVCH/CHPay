@@ -6,13 +6,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link th:href="@{/css/main.css}" rel="stylesheet" />
+    <link th:href="@{/css/apexcharts.css}" rel="stylesheet" />
     <title layout:title-pattern="$CONTENT_TITLE - CHPay">CHPay</title>
     <th:block layout:fragment="script"></th:block>
     <th:block layout:fragment="css"></th:block>
 </head>
 
 <body class="bg-base-200 min-h-screen">
-    <nav class="navbar bg-base-100 max-lg:rounded-box max-lg:shadow-sm lg:border-b border-base-content/25 lg:z-1 relative">
+    <nav class="navbar bg-base-100 max-lg:rounded-box max-lg:shadow-sm lg:border-b border-base-content/25 lg:z-1 relative sticky top-0 z-50">
         <button type="button" class="btn btn-text max-lg:btn-square me-2 lg:hidden" aria-haspopup="dialog" aria-expanded="false" aria-controls="with-navbar-sidebar" data-overlay="#with-navbar-sidebar" >
           <span class="icon-[tabler--menu-2] size-5"></span>
         </button>
@@ -68,7 +69,7 @@
       <!-- Main Layout Container -->
       <div class="flex">
         <!-- Sidebar -->
-        <aside id="with-navbar-sidebar" class="overlay [--body-scroll:true] border-base-content/20 overlay-open:translate-x-0 drawer drawer-start lg:overlay-layout-open:translate-x-0 hidden w-64 border-e [--auto-close:lg] [--is-layout-affect:true] lg:static lg:block lg:translate-x-0 lg:h-screen" role="dialog" tabindex="-1">
+        <aside id="with-navbar-sidebar" class="overlay [--body-scroll:true] border-base-content/20 overlay-open:translate-x-0 drawer drawer-start lg:overlay-layout-open:translate-x-0 hidden w-64 border-e [--auto-close:lg] [--is-layout-affect:true] lg:static lg:block lg:translate-x-0 lg:h-[calc(100vh-4rem)] lg:sticky lg:top-16 lg:z-40" role="dialog" tabindex="-1">
           <div class="drawer-body px-2 pt-4 lg:pt-6">
             <ul class="menu p-0">
               <!-- Home -->
@@ -97,12 +98,16 @@
               
               <!-- Admin Section (if user is admin) -->
               <li th:if="${isAdmin}" class="space-y-0.5">
-                  <a class="collapse-toggle collapse-open:bg-warning/10 text-warning hover:bg-warning/10" id="menu-admin" data-collapse="#menu-admin-collapse">
+                  <a class="collapse-toggle collapse-open:bg-warning/10 text-warning hover:bg-warning/10" 
+                     th:class="${urlPage == 'admin' or urlPage == 'createPaymentRequest' or urlPage == 'adminTransactions' or urlPage == 'adminUsers' or urlPage == 'systemSettings' or urlPage == 'adminLogs' or urlPage == 'adminStatistics'} ? 'collapse-toggle collapse-open collapse-open:bg-warning/10 text-warning hover:bg-warning/10' : 'collapse-toggle collapse-open:bg-warning/10 text-warning hover:bg-warning/10'"
+                     id="menu-admin" data-collapse="#menu-admin-collapse">
                       <span class="icon-[tabler--shield] size-5"></span>
                       Admin
                       <span class="icon-[tabler--chevron-down] collapse-open:rotate-180 size-4 transition-all duration-300"></span>
                   </a>
-                  <ul id="menu-admin-collapse" class="collapse w-auto space-y-0.5 overflow-hidden transition-[height] duration-300 hidden" aria-labelledby="menu-admin">
+                  <ul id="menu-admin-collapse" 
+                      th:class="${urlPage == 'admin' or urlPage == 'createPaymentRequest' or urlPage == 'adminTransactions' or urlPage == 'adminUsers' or urlPage == 'systemSettings' or urlPage == 'adminLogs' or urlPage == 'adminStatistics'} ? 'collapse collapse-open w-auto space-y-0.5 overflow-hidden transition-[height] duration-300' : 'collapse w-auto space-y-0.5 overflow-hidden transition-[height] duration-300 hidden'"
+                      aria-labelledby="menu-admin">
                       <li>
                           <a href="/admin" th:class="${urlPage == 'admin'} ? 'menu-active' : ''">
                               <span class="icon-[tabler--dashboard] size-5"></span>
@@ -111,8 +116,8 @@
                       </li>
                       <li>
                           <a href="/admin/createPaymentRequest" th:class="${urlPage == 'createPaymentRequest'} ? 'menu-active' : ''">
-                              <span class="icon-[tabler--cash-register] size-5"></span>
-                              Terminal
+                              <span class="icon-[tabler--qrcode] size-5"></span>
+                              Payment Request
                           </a>
                       </li>
                       <li>
@@ -184,6 +189,8 @@
       <script th:src="@{/js/jquery.min.js}"></script>
       <script th:src="@{/js/dataTables.min.js}"></script>
       <script th:src="@{/js/flyonui.js}"></script>
+      <script th:src="@{/js/lodash.js}"></script>
+      <script th:src="@{/js/apexcharts.js}"></script>
     
     <!-- Notifications -->
     <div th:replace="fragments/notifications :: notifications"></div>

@@ -1,70 +1,119 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/admin-layout}">
+      layout:decorate="~{layouts/layout}">
 <head>
-  <title>Admin Dashboard</title>
-  <th:block layout:fragment="css"></th:block>
-  <th:block layout:fragment="script"></th:block>
+    <title>Admin Dashboard</title>
+    <th:block layout:fragment="script"></th:block>
+    <th:block layout:fragment="css"></th:block>
 </head>
+
 <body>
+    <div layout:fragment="main-content">
+        <div class="container max-w-6xl mx-auto">
+            <!-- Header Section -->
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-base-content mb-2">Admin Dashboard</h1>
+            </div>
 
-<div layout:fragment="content">
-  <div class="admin-container" style="height: 100%; padding: 1rem;">
-    <h1>Admin Dashboard</h1>
+            <!-- Main Stats Section -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-semibold text-base-content mb-6">System Overview</h2>
+                <div class="stats stats-vertical sm:stats-horizontal stats-border shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow w-full bg-base-100 rounded-lg">
+                    <div class="stat">
+                        <div class="stat-figure">
+                            <div class="avatar avatar-placeholder">
+                                <div class="bg-primary/20 text-primary size-12 rounded-full">
+                                    <span class="icon-[tabler--users] size-6"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-title">Total Users</div>
+                        <div class="stat-value text-primary" th:text="${users}">0</div>
+                    </div>
 
-    <div class="admin-dashboard-wrapper">
-      <div class="dashboard-main-stats">
-        <div class="dashboard-stats-container">
-          <div class="dashboard-stats-text">
-            <h4>User Count:</h4>
-            <h2 th:text="${users}"></h2>
-          </div>
-          <i  class="fa-solid fa-users"></i>
+                    <div class="stat">
+                        <div class="stat-figure">
+                            <div class="avatar avatar-placeholder">
+                                <div class="bg-primary/20 text-primary size-12 rounded-full">
+                                    <span class="icon-[tabler--receipt] size-6"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-title">Transactions</div>
+                        <div class="stat-value text-primary" th:text="${transactions}">0</div>
+                    </div>
+
+                    <div class="stat">
+                        <div class="stat-figure">
+                            <div class="avatar avatar-placeholder">
+                                <div class="bg-success/20 text-success size-12 rounded-full" th:classappend="${status == 'Frozen'} ? 'bg-warning/20 text-warning' : 'bg-success/20 text-success'">
+                                    <span class="icon-[tabler--plug] size-6"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-title">System Status</div>
+                        <div class="stat-value" th:classappend="${status == 'Frozen'} ? 'text-warning' : 'text-success'" th:text="${status}">Active</div>
+                    </div>
+
+                    <div class="stat">
+                        <div class="stat-figure">
+                            <div class="avatar avatar-placeholder">
+                                <div class="bg-warning/20 text-warning size-12 rounded-full">
+                                    <span class="icon-[tabler--wallet] size-6"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-title">Max Balance</div>
+                        <div class="stat-value text-warning" th:text="'€' + ${maxBalance}">€0.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Financial Overview Section -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-semibold text-base-content mb-6">Financial Overview</h2>
+                <div class="stats stats-vertical sm:stats-horizontal stats-border shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow w-full bg-base-100 rounded-lg">
+                    <div class="stat">
+                        <div class="stat-figure">
+                            <div class="avatar avatar-placeholder">
+                                <div class="bg-success/20 text-success size-12 rounded-full">
+                                    <span class="icon-[tabler--wallet] size-6"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-title">Available Balance</div>
+                        <div class="stat-value text-success" th:text="'€' + ${balanceAvailable}">€0.00</div>
+                    </div>
+
+                    <div class="stat">
+                        <div class="stat-figure">
+                            <div class="avatar avatar-placeholder">
+                                <div class="bg-error/20 text-error size-12 rounded-full">
+                                    <span class="icon-[tabler--arrow-down] size-6"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-title">Outgoing Funds</div>
+                        <div class="stat-value text-error" th:text="'€' + ${outgoingFunds}">€0.00</div>
+                        <div class="stat-desc">Last month</div>
+                    </div>
+
+                    <div class="stat">
+                        <div class="stat-figure">
+                            <div class="avatar avatar-placeholder">
+                                <div class="bg-info/20 text-info size-12 rounded-full">
+                                    <span class="icon-[tabler--arrow-up] size-6"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-title">Incoming Funds</div>
+                        <div class="stat-value text-info" th:text="'€' + ${incomingFunds}">€0.00</div>
+                        <div class="stat-desc">Last month</div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="dashboard-stats-container">
-          <div class="dashboard-stats-text">
-            <h4>Transaction Count:</h4>
-            <h2 th:text="${transactions}"></h2>
-          </div>
-          <i  class="fa-solid fa-receipt"></i>
-        </div>
-        <div class="dashboard-stats-container">
-          <div class="dashboard-stats-text">
-            <h4>System Status:</h4>
-            <h2 th:text="${status}"></h2>
-          </div>
-          <i  class="fa-solid fa-plug"></i>
-        </div>
-        <div class="dashboard-stats-container">
-          <div class="dashboard-stats-text">
-            <h4>Max Balance:</h4>
-            <h2 th:text="${'€'+maxBalance}"></h2>
-          </div>
-          <i class="fa-solid fa-wallet"></i>
-        </div>
-      </div>
-      <div class="dashboard-financial-overview">
-        <div class="dashboard-financial-overview-header">
-          <h2>Financial Overview</h2>
-        </div>
-        <div class="dashboard-financial-overview-container">
-          <div class="dashboard-financial-stats">
-            <h4>Available Balance:</h4>
-            <h2 th:text="${'€'+balanceAvailable}" class="dashboard-stat"></h2>
-          </div>
-          <div class="dashboard-financial-stats">
-            <h4>Last Month Outgoing Funds:</h4>
-            <h2 th:text="${'€'+outgoingFunds}" class="dashboard-stat"></h2>
-          </div>
-          <div class="dashboard-financial-stats">
-            <h4>Last Month Incoming Funds:</h4>
-            <h2 th:text="${'€'+incomingFunds}" class="dashboard-stat"></h2>
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
-</div>
 </body>
 </html>

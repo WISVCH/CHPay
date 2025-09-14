@@ -81,12 +81,12 @@
                 <div class="input" id="customAmountContainer">
                   <label class="label-text my-auto me-3 p-0" for="customAmount">€</label>
                   <input
-                    type="text"
+                    type="number"
                     id="customAmount"
                     class="grow"
                     placeholder="Enter amount"
-                    inputmode="decimal"
-                    pattern="^[0-9]+([.,][0-9]{0,2})?$"
+                    step="0.01"
+                    min="0.01"
                     autocomplete="off"
                     data-form-type="other"
                     data-lpignore="true"
