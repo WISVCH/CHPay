@@ -38,6 +38,9 @@ out/
 src/main/resources/logs/application.log
 *.log
 
+## Nix
+.direnv/
+
 ### Frontend ###
 node_modules/
 src/main/resources/static/js/flyonui.js
