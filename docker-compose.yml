@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: 'docker.io/postgres:17'
+    environment:
+      - 'POSTGRES_DB=chpay'
+      - 'POSTGRES_PASSWORD=secret'
+      - 'POSTGRES_USER=chpay'
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-storage:/home/postgres/pgdata/data
+
+volumes:
+  postgres-storage:
