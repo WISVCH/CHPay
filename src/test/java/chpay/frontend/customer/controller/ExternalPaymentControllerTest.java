@@ -64,7 +64,6 @@ public class ExternalPaymentControllerTest {
     verify(externalPaymentService, times(1)).createTransaction(testRequest);
   }
 
-
   @Test
   void getExternalPaymentStatusSuccessTest() {
     UUID paymentId = UUID.randomUUID();

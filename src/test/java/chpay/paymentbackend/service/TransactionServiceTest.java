@@ -886,7 +886,11 @@ class TransactionServiceTest {
   void fulfillExternalTransaction_callsFulfillSuccessfully() {
     ExternalTransaction transaction =
         ExternalTransaction.createExternalTransaction(
-            new BigDecimal("-30.00"), "external", "http://redirect.url", "http://webhook.url", "http://fallback.url");
+            new BigDecimal("-30.00"),
+            "external",
+            "http://redirect.url",
+            "http://webhook.url",
+            "http://fallback.url");
     transaction.setStatus(Transaction.TransactionStatus.PENDING);
     UUID id = UUID.randomUUID();
     setId(transaction, id);

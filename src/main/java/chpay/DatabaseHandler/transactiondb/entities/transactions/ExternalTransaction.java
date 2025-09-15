@@ -75,8 +75,8 @@ public class ExternalTransaction extends Transaction {
   }
 
   /**
-   * Links a user to this external transaction. This should only be called when the transaction
-   * is being paid by a user who didn't exist when the transaction was created.
+   * Links a user to this external transaction. This should only be called when the transaction is
+   * being paid by a user who didn't exist when the transaction was created.
    *
    * @param user the user to link to this transaction
    * @throws IllegalStateException if the transaction already has a user or is not in PENDING status

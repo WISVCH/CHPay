@@ -117,7 +117,8 @@ public class PayRequestPageControllerTest {
     when(externalPaymentServiceImpl.postToWebhook(transactionId.toString(), externalTransaction))
         .thenReturn(expectedWebhookReturn);
 
-    String result = payRequestPageController.completeExternalTransaction(transactionId.toString(), model);
+    String result =
+        payRequestPageController.completeExternalTransaction(transactionId.toString(), model);
 
     assertEquals(expectedWebhookReturn, result);
     verify(transactionRepository).findById(transactionId);
@@ -135,7 +136,8 @@ public class PayRequestPageControllerTest {
     when(transactionRepository.findById(transactionId))
         .thenReturn(Optional.of(externalTransaction));
 
-    String result = payRequestPageController.completeExternalTransaction(transactionId.toString(), model);
+    String result =
+        payRequestPageController.completeExternalTransaction(transactionId.toString(), model);
 
     assertEquals("redirect:http://events.com/fallback", result);
     verify(transactionRepository).findById(transactionId);
