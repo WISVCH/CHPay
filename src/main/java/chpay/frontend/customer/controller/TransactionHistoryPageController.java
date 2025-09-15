@@ -21,106 +21,106 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class TransactionHistoryPageController extends PageController {
-    private static final String MODEL_ATTR_TRANSACTIONS = "transactions";
-    private static final String MODEL_ATTR_INFO = "info";
-    private static final String MODEL_ATTR_PAGE = "page";
-    private static final String MODEL_ATTR_SORTBY = "sortBy";
-    private static final String MODEL_ATTR_ORDER = "order";
-    private static final String MODEL_ATTR_TOPUPS_TAG = "onlyTopUps";
+  private static final String MODEL_ATTR_TRANSACTIONS = "transactions";
+  private static final String MODEL_ATTR_INFO = "info";
+  private static final String MODEL_ATTR_PAGE = "page";
+  private static final String MODEL_ATTR_SORTBY = "sortBy";
+  private static final String MODEL_ATTR_ORDER = "order";
+  private static final String MODEL_ATTR_TOPUPS_TAG = "onlyTopUps";
 
-    private final BalanceHistoryService balanceHistoryService;
-    private final TransactionService transactionService;
-    private final NotificationService notificationService;
-    private final MailService mailService;
+  private final BalanceHistoryService balanceHistoryService;
+  private final TransactionService transactionService;
+  private final NotificationService notificationService;
+  private final MailService mailService;
 
-    @Autowired
-    protected TransactionHistoryPageController(
-            BalanceHistoryService balanceHistoryService,
-            TransactionService transactionService,
-            NotificationService notificationService,
-            MailService mailService) {
-        super();
-        this.balanceHistoryService = balanceHistoryService;
-        this.transactionService = transactionService;
-        this.notificationService = notificationService;
-        this.mailService = mailService;
+  @Autowired
+  protected TransactionHistoryPageController(
+      BalanceHistoryService balanceHistoryService,
+      TransactionService transactionService,
+      NotificationService notificationService,
+      MailService mailService) {
+    super();
+    this.balanceHistoryService = balanceHistoryService;
+    this.transactionService = transactionService;
+    this.notificationService = notificationService;
+    this.mailService = mailService;
+  }
+
+  /**
+   * Gets the page showing the users history of transactions.
+   *
+   * @param model of type Model
+   * @param page page number for the list of transactions
+   * @return String
+   */
+  @PreAuthorize("hasAnyRole('USER', 'BANNED')")
+  @GetMapping(value = "/transactions")
+  public String getPage(
+      Model model,
+      @RequestParam(defaultValue = "1") String page,
+      @RequestParam(defaultValue = "timestamp") String sortBy,
+      @RequestParam(defaultValue = "desc") String order,
+      @RequestParam(defaultValue = "false") String onlyTopUps,
+      RedirectAttributes redirectAttributes)
+      throws JsonProcessingException {
+    int pageNum;
+    try {
+      pageNum = Integer.parseInt(page);
+    } catch (Exception ex) {
+      pageNum = 1;
     }
 
-    /**
-     * Gets the page showing the users history of transactions.
-     *
-     * @param model of type Model
-     * @param page  page number for the list of transactions
-     * @return String
-     */
-    @PreAuthorize("hasAnyRole('USER', 'BANNED')")
-    @GetMapping(value = "/transactions")
-    public String getPage(
-            Model model,
-            @RequestParam(defaultValue = "1") String page,
-            @RequestParam(defaultValue = "timestamp") String sortBy,
-            @RequestParam(defaultValue = "desc") String order,
-            @RequestParam(defaultValue = "false") String onlyTopUps,
-            RedirectAttributes redirectAttributes)
-            throws JsonProcessingException {
-        int pageNum;
-        try {
-            pageNum = Integer.parseInt(page);
-        } catch (Exception ex) {
-            pageNum = 1;
-        }
-
-        // make sure the sort params are correct
-        if (!sortBy.equals("timestamp") && !sortBy.equals("amount") && !sortBy.equals("description")) {
-            sortBy = "timestamp";
-        }
-
-        if (!order.equals("desc") && !order.equals("asc")) {
-            order = "desc";
-        }
-
-        PaginationInfo paginationInfo =
-                balanceHistoryService.getTransactionPageInfo(
-                        ((User) model.getAttribute("currentUser")),
-                        transactionService,
-                        pageNum,
-                        4,
-                        ((boolean) onlyTopUps.equals("true")));
-
-        model.addAttribute(MODEL_ATTR_LINKS, null);
-        model.addAttribute(MODEL_ATTR_PAGE, pageNum);
-        model.addAttribute(MODEL_ATTR_SORTBY, sortBy);
-        model.addAttribute(MODEL_ATTR_ORDER, order);
-        model.addAttribute(MODEL_ATTR_TOPUPS_TAG, onlyTopUps);
-
-        model.addAttribute(
-                MODEL_ATTR_TRANSACTIONS,
-                balanceHistoryService.getTransactionsByUserAsJSON(
-                        ((User) model.getAttribute("currentUser")),
-                        transactionService,
-                        paginationInfo,
-                        sortBy,
-                        order,
-                        ((boolean) onlyTopUps.equals("true"))));
-
-        model.addAttribute(MODEL_ATTR_INFO, paginationInfo);
-        return "transactions";
+    // make sure the sort params are correct
+    if (!sortBy.equals("timestamp") && !sortBy.equals("amount") && !sortBy.equals("description")) {
+      sortBy = "timestamp";
     }
 
-    /**
-     * Sends a user their receipt
-     *
-     * @param id the transaction's id
-     * @return
-     */
-    @PreAuthorize("hasAnyRole('USER', 'BANNED')")
-    @PostMapping("/transactions/email-receipt/{id}")
-    public ResponseEntity<HttpStatus> emailReceipt(@PathVariable String id) {
-        try {
-            mailService.sendReceiptByEmail(id);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    if (!order.equals("desc") && !order.equals("asc")) {
+      order = "desc";
     }
+
+    PaginationInfo paginationInfo =
+        balanceHistoryService.getTransactionPageInfo(
+            ((User) model.getAttribute("currentUser")),
+            transactionService,
+            pageNum,
+            4,
+            ((boolean) onlyTopUps.equals("true")));
+
+    model.addAttribute(MODEL_ATTR_LINKS, null);
+    model.addAttribute(MODEL_ATTR_PAGE, pageNum);
+    model.addAttribute(MODEL_ATTR_SORTBY, sortBy);
+    model.addAttribute(MODEL_ATTR_ORDER, order);
+    model.addAttribute(MODEL_ATTR_TOPUPS_TAG, onlyTopUps);
+
+    model.addAttribute(
+        MODEL_ATTR_TRANSACTIONS,
+        balanceHistoryService.getTransactionsByUserAsJSON(
+            ((User) model.getAttribute("currentUser")),
+            transactionService,
+            paginationInfo,
+            sortBy,
+            order,
+            ((boolean) onlyTopUps.equals("true"))));
+
+    model.addAttribute(MODEL_ATTR_INFO, paginationInfo);
+    return "transactions";
+  }
+
+  /**
+   * Sends a user their receipt
+   *
+   * @param id the transaction's id
+   * @return
+   */
+  @PreAuthorize("hasAnyRole('USER', 'BANNED')")
+  @PostMapping("/transactions/email-receipt/{id}")
+  public ResponseEntity<HttpStatus> emailReceipt(@PathVariable String id) {
+    try {
+      mailService.sendReceiptByEmail(id);
+      return new ResponseEntity<>(HttpStatus.OK);
+    } catch (Exception e) {
+      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 }
