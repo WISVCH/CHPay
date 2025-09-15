@@ -35,7 +35,7 @@
 
             socket.addEventListener('open', () => {
                 console.log('🔌 Connected to NFC WebSocket server');
-                nfcIcon.style.color = 'var(--green)';
+                nfcIcon.className = nfcIcon.className.replace(/bg-\w+\/20|text-\w+/g, '') + ' bg-success/20 text-success';
                 // Inform server which transaction this client is for
                 socket.send(JSON.stringify({
                     type: 'transaction',
@@ -104,12 +104,12 @@
 
             socket.addEventListener('error', err => {
                 console.error('WebSocket error:', err);
-                nfcIcon.style.color = 'var(--red)';
+                nfcIcon.className = nfcIcon.className.replace(/bg-\w+\/20|text-\w+/g, '') + ' bg-error/20 text-error';
             });
 
             socket.addEventListener('close', () => {
                 console.warn('WebSocket connection closed');
-                nfcIcon.style.color = 'var(--red)';
+                nfcIcon.className = nfcIcon.className.replace(/bg-\w+\/20|text-\w+/g, '') + ' bg-error/20 text-error';
             });
         }
 

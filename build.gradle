@@ -5,6 +5,7 @@ plugins {
 	id 'jacoco'
 	id 'pmd'
 	id 'com.diffplug.spotless' version '7.0.3'
+	id 'com.github.node-gradle.node' version '7.1.0'
 }
 
 group = 'CHPay'
@@ -15,6 +16,13 @@ java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(21)
 	}
+}
+
+// Node.js configuration
+node {
+	version = '20.11.0'
+	download = true
+	nodeProjectDir = file("${project.projectDir}/src/main/frontend")
 }
 
 repositories {
@@ -121,6 +129,16 @@ pmd {
 	]
 }
 
+// Frontend build task using npm run build
+task frontendBuild(type: NpmTask) {
+	description = 'Build frontend assets using npm'
+	group = 'build'
+	args = ['run', 'build']
+	dependsOn npmInstall
+}
+
+// Make the processResources task depend on frontendBuild
+processResources.dependsOn frontendBuild
 
 spotless {
 	java {

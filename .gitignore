@@ -40,3 +40,10 @@ src/main/resources/logs/application.log
 
 ## Nix
 .direnv/
+
+### Frontend ###
+node_modules/
+src/main/resources/static/js/flyonui.js
+src/main/resources/static/js/jquery.min.js
+src/main/resources/static/css/main.css
+src/main/resources/static/js/dataTables.min.js

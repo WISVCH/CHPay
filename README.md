@@ -20,6 +20,7 @@ This project uses Gradle for dependency management and building.
 Before you begin, ensure you have the following installed:
 
 - **[Java Development Kit (JDK) 21](https://www.oracle.com/java/technologies/downloads/) or higher**
+- **[Node.js](https://nodejs.org/) (for frontend development)**
 - **[Git (optional, but recommended for cloning)](https://git-scm.com/downloads)**
 - **[PostgresSQL](https://www.postgresql.org/)**
 
@@ -170,6 +171,48 @@ Once you have cloned the repository and navigated into the project directory:
 ./gradlew build
 ```
 
+## Frontend Development
+
+The frontend development happens in the `src/main/resources/templates/` directory where the HTML files are located. The styling is done using **FlyonUI**, **Tailwind CSS**, and other frontend libraries.
+
+### Setting up the frontend build tools:
+
+1. Navigate to the frontend build directory:
+```bash
+cd src/main/frontend/
+```
+
+2. Install Node.js dependencies:
+```bash
+npm install
+```
+
+### Frontend Commands:
+
+- **Build CSS and copy JavaScript files:**
+```bash
+npm run build
+```
+
+- **Watch for changes and rebuild automatically:**
+```bash
+npm run watch
+```
+
+The build process will:
+- Copy JavaScript libraries (jQuery, DataTables, FlyonUI) to the static resources
+- Compile Tailwind CSS from `styles.css` to `../resources/static/css/main.css`
+
+### Frontend Development Workflow:
+
+1. **Edit HTML templates** in `src/main/resources/templates/`
+2. **Edit CSS styles** in `src/main/frontend/styles.css` (Tailwind CSS)
+3. **Run the watch command** to automatically rebuild styles when you make changes:
+```bash
+cd src/main/frontend/
+npm run watch
+```
+4. **Use FlyonUI components** and other frontend libraries in your HTML templates
 
 ## Usage
 

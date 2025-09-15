@@ -1,21 +1,39 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/admin-layout}">
+      layout:decorate="~{layouts/layout}">
 <head>
-    <link rel="stylesheet" th:href="@{/css/log.css}">
-    <title >Admin Error Log</title>
+    <title>Admin Error Log</title>
+    <th:block layout:fragment="script"></th:block>
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/log.css}">
+    </th:block>
 </head>
+
 <body>
-
-<div layout:fragment="content">
-    <div class="page-container">
-        <h1>Spring Error Log</h1>
-        <p style="margin-bottom: 1.5rem;">Below is the most recent log output related to application errors:</p>
-
-        <div class="log-scroll-container">
-            <div class="log-container" id="logContainer" th:text="${errorLog}">Loading error log...</div>
+    <div layout:fragment="main-content">
+    <div class="container max-w-4xl mx-auto">
+        <!-- Header Section -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-base-content mb-2">Spring Error Log</h1>
+            <p class="text-base-content/70 text-lg">
+                Below is the most recent log output related to application errors.
+            </p>
         </div>
+
+        <!-- Error Log Card -->
+        <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow">
+            <div class="card-body">
+                <!-- Log Container -->
+                <div class="bg-base-200/50 rounded-lg p-4 max-h-96 overflow-y-auto">
+                    <div class="log-container font-mono text-sm" id="logContainer" th:text="${errorLog}">Loading error log...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <th:block layout:fragment="script">
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 const logContainer = document.getElementById("logContainer");
@@ -24,7 +42,6 @@
                 }
             });
         </script>
-    </div>
-</div>
+    </th:block>
 </body>
 </html>

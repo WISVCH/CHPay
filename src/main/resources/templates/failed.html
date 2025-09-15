@@ -1,34 +1,68 @@
 <!DOCTYPE html>
-<html lang="en"
-      xmlns:th="http://www.thymeleaf.org"
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout}">
 <head>
-    <title>Payment Successful</title>
-    <th:block layout:fragment="css">
-        <link rel="stylesheet" th:href="@{/css/failed.css}"/>
-    </th:block>
-    <th:block layout:fragment="script">
-        <script type="module" th:src="@{/js/boom.js}"></script>
-        <script type="module">
-            import { triggerExplosion } from '/js/boom.js';
-
-            window.addEventListener('DOMContentLoaded', () => {
-                const target = document.querySelector('.failure-icon');
-                triggerExplosion(target);
-            });
-        </script>
-    </th:block>
+    <title>Payment Failed</title>
+    <th:block layout:fragment="css"></th:block>
+    <th:block layout:fragment="script"></th:block>
 </head>
 <body>
-<div layout:fragment="content">
-    <div class="container text-center py-5">
-        <h1 class="display-4 mb-4">Payment failed :(</h1>
-        <h2  th:text="${'Your balance is still ' + currentUser.balance} + ' EUR.'"></h2>
-        <i class="fa-solid fa-circle-xmark failure-icon mb-4"></i>
-        <p class="details" th:text="${'Transaction ID: ' + transactionID}"> </p>
-        <a href="/" class="btn btn-large btn-indigo">Go to homepage</a>
+    <div layout:fragment="main-content">
+        <div class="container max-w-2xl mx-auto py-8">
+            <!-- Failed Payment Card -->
+            <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow">
+                <div class="card-body text-center p-8">
+                    <!-- Failure Icon -->
+                    <div class="flex justify-center mb-8">
+                        <div class="avatar avatar-placeholder">
+                            <div class="bg-error/20 text-error size-20 rounded-full">
+                                <span class="icon-[tabler--x] size-10"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Title -->
+                    <h1 class="text-3xl font-bold text-base-content mb-4">Payment Failed</h1>
+                    
+                    <!-- Balance Status -->
+                    <div class="mb-8">
+                        <div class="stat-value text-base-content text-4xl mb-2">
+                            €<span th:text="${#numbers.formatDecimal(currentUser.balance, 1, 2)}">0.00</span>
+                        </div>
+                        <p class="text-base-content/70 text-lg">
+                            Your balance remains unchanged
+                        </p>
+                    </div>
+
+                    <!-- Error Details -->
+                    <div class="alert alert-soft alert-error flex items-start gap-4 mb-8">
+                        <span class="icon-[tabler--alert-triangle] shrink-0 size-6"></span>
+                        <div class="flex flex-col gap-1">
+                            <h5 class="text-lg font-semibold">Transaction could not be completed</h5>
+                            <p class="text-sm">Please try again or contact support if the problem persists</p>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="grid grid-rows-2 sm:grid-cols-2 sm:grid-rows-1 gap-4 w-full mb-6">
+                        <a href="/" class="btn btn-primary btn-xl sm:btn-lg">
+                            <span class="icon-[tabler--home] size-5"></span>
+                            Go to Homepage
+                        </a>
+                        <a href="/balance" class="btn btn-outline btn-m sm:btn-lg">
+                            <span class="icon-[tabler--plus] size-5"></span>
+                            Top-Up Balance
+                        </a>
+                    </div>
+
+                    <!-- Transaction ID -->
+                    <div class="text-xs text-base-content/50">
+                        <span th:text="${'Transaction ID: ' + transactionID}">Transaction ID: TX-123456</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
 </body>
 </html>

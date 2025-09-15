@@ -1,28 +1,58 @@
 <!DOCTYPE html>
-<html lang="en"
-      xmlns:th="http://www.thymeleaf.org"
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout}">
 <head>
     <title>Payment Successful</title>
-    <th:block layout:fragment="css">
-        <link rel="stylesheet" th:href="@{/css/successful.css}"/>
-    </th:block>
+    <th:block layout:fragment="css"></th:block>
     <th:block layout:fragment="script">
         <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
         <script th:src="@{/js/confetti.js}"></script>
     </th:block>
 </head>
-
 <body>
-<div layout:fragment="content">
-    <div class="container text-center py-5">
-        <h1 class="display-4 mb-4">Payment successful!</h1>
-        <h2  th:text="${'Your balance is now ' + currentUser.balance} + ' EUR!'"></h2>
-        <i class="fa-solid fa-circle-check success-icon mb-4"></i>
-        <p class="details" th:text="${'Transaction ID: ' + transactionID}"> </p>
-        <a href="/" class="btn btn-large btn-indigo">Go to homepage</a>
+    <div layout:fragment="main-content">
+        <div class="container max-w-2xl mx-auto py-8">
+            <!-- Success Card -->
+            <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow">
+                <div class="card-body text-center p-8">
+                    <!-- Success Icon -->
+                    <div class="flex justify-center mb-8">
+                        <div class="avatar avatar-placeholder">
+                            <div class="bg-success/20 text-success size-20 rounded-full">
+                                <span class="icon-[tabler--check] size-10"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Title -->
+                    <h1 class="text-3xl font-bold text-base-content mb-4">Payment Successful!</h1>
+                    
+                    <!-- Balance Update -->
+                    <div class="mb-8">
+                        <p class="text-base-content/70 text-lg mb-2">
+                            Your new balance
+                        </p>
+                        <div class="stat-value text-success text-4xl">
+                            €<span th:text="${#numbers.formatDecimal(currentUser.balance, 1, 2)}">0.00</span>
+                        </div>
+                    </div>
+
+                    <!-- Action Button -->
+                    <div class="card-actions justify-center mb-6">
+                        <a href="/" class="btn btn-primary btn-xl">
+                            <span class="icon-[tabler--home] size-5"></span>
+                            Go to Homepage
+                        </a>
+                    </div>
+
+                    <!-- Transaction ID -->
+                    <div class="text-xs text-base-content/50">
+                        <span th:text="${'Transaction ID: ' + transactionID}">Transaction ID: TX-123456</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
 </body>
 </html>
