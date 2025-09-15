@@ -1,49 +1,167 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/admin-layout}">
+      layout:decorate="~{layouts/layout}">
 <head>
     <title>System Settings</title>
-    <th:block layout:fragment="css">
-        <link rel="stylesheet" th:href="@{/css/settings.css}"/>
-    </th:block>
-    <th:block layout:fragment="script">
-        <script th:src="@{/js/settings.js}"></script>
-    </th:block>
+    <th:block layout:fragment="script"></th:block>
+    <th:block layout:fragment="css"></th:block>
 </head>
+
 <body>
-<div layout:fragment="content">
-
-    <div class="page-container">
-
-        <p class="title"><strong>System Settings</strong></p>
-
-        <form th:action="@{/admin/settings}" method="post">
-
-            <div class="form-group">
-                <label for="maximumBalance">Maximum Balance (EUR)</label>
-                <input type="number" id="maximumBalance" name="maximumBalance" class="form-control"
-                       step="0.01" min="0.01" th:placeholder="${maxBalance}">
+    <div layout:fragment="main-content">
+        <div class="container max-w-4xl mx-auto">
+            <!-- Header Section -->
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-base-content mb-2">System Settings</h1>
+                <p class="text-base-content/70 text-lg">
+                    Configure system-wide settings and limits
+                </p>
             </div>
 
-            <div class="form-group toggle-container">
-                <label class="toggle-switch">
-                    <input type="checkbox"
-                           id="isFrozen"
-                           name="isFrozen"
-                           value="true"
-                           th:checked="${systemFrozen}">
-                    <span class="slider"></span>
-                </label>
+            <!-- Settings Form Card -->
+            <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow">
+                <div class="card-body">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="avatar avatar-placeholder">
+                            <div class="bg-warning/20 text-warning size-12 rounded-full">
+                                <span class="icon-[tabler--settings] size-6"></span>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="card-title text-xl">System Configuration</h3>
+                            <p class="text-base-content/70">Manage system limits and operational status</p>
+                        </div>
+                    </div>
 
-                <span class="toggle-caption">System Freeze</span>
-            </div>
+                    <form th:action="@{/admin/settings}" method="post" class="needs-validation peer grid gap-y-6" novalidate>
+                        <!-- Maximum Balance Setting -->
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-base-200/50 rounded-lg gap-4">
+                            <div class="flex-1">
+                                <div class="font-semibold text-lg">Maximum Balance</div>
+                                <div class="text-sm text-base-content/70">Set the maximum balance limit for users</div>
+                                <span class="error-message">Please enter a valid amount (max 2 decimal places)</span>
+                            </div>
+                            <div class="sm:ml-6">
+                                <div class="input w-full sm:w-48">
+                                    <label class="label-text my-auto me-3 p-0">€</label>
+                                    <input 
+                                        type="number" 
+                                        id="maximumBalance" 
+                                        name="maximumBalance" 
+                                        class="grow"
+                                        placeholder="Enter amount"
+                                        step="0.01" 
+                                        min="0.01"
+                                        th:placeholder="${maxBalance}"
+                                    />
+                                </div>
+                            </div>
+                        </div>
 
-            <div class="form-actions">
-                <button type="submit" class="submit-btn">Save Settings &gt;</button>
+                        <!-- System Freeze Setting -->
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-base-200/50 rounded-lg gap-4">
+                            <div class="flex-1">
+                                <div class="font-semibold text-lg">System Freeze</div>
+                                <div class="text-sm text-base-content/70">Temporarily disable all transactions system-wide</div>
+                            </div>
+                            <div class="sm:ml-6">
+                                <input 
+                                    type="checkbox" 
+                                    id="isFrozen" 
+                                    name="isFrozen" 
+                                    value="true" 
+                                    class="switch switch-warning"
+                                    th:checked="${systemFrozen}"
+                                />
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="card-actions justify-end mt-6">
+                            <button type="submit" id="submitBtn" class="btn btn-warning btn-xl w-full sm:w-auto" disabled>
+                                <span class="icon-[tabler--device-floppy] size-5"></span>
+                                Save Settings
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </form>
+        </div>
     </div>
-</div>
+
+    <th:block layout:fragment="script">
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const form = document.querySelector('form');
+                const balanceInput = document.getElementById('maximumBalance');
+                const toggleInput = document.getElementById('isFrozen');
+                const submitBtn = document.getElementById('submitBtn');
+                
+                let balanceValid = false;
+                let balanceChanged = false;
+                let toggleChanged = false;
+                
+                const initialToggleState = toggleInput?.checked ?? false;
+                const initialBalanceValue = balanceInput?.value ?? '';
+
+                // Validate balance field
+                const validateBalance = () => {
+                    const raw = balanceInput.value.trim();
+                    const amount = parseFloat(raw);
+                    const decPart = raw.includes('.') ? raw.split('.')[1] : '';
+                    const isValid = raw !== '' && !isNaN(amount) && amount > 0 && decPart.length <= 2;
+                    
+                    balanceInput.setCustomValidity(isValid ? '' : 'Please enter a valid amount (max 2 decimal places)');
+                    balanceValid = isValid;
+                    updateSubmitState();
+                    return isValid;
+                };
+
+                // Handle balance change
+                const handleBalanceChange = () => {
+                    balanceChanged = (balanceInput.value !== initialBalanceValue);
+                    updateSubmitState();
+                };
+
+                // Handle toggle change
+                const handleToggleChange = () => {
+                    toggleChanged = (toggleInput.checked !== initialToggleState);
+                    updateSubmitState();
+                };
+
+                // Update submit button state
+                const updateSubmitState = () => {
+                    const canSubmit = (balanceValid && balanceChanged) || toggleChanged;
+                    submitBtn.disabled = !canSubmit;
+                    submitBtn.classList.toggle('btn-disabled', !canSubmit);
+                };
+
+                // Add event listeners
+                balanceInput?.addEventListener('input', () => {
+                    validateBalance();
+                    handleBalanceChange();
+                });
+                toggleInput?.addEventListener('change', handleToggleChange);
+
+                // Form validation
+                form?.addEventListener('submit', event => {
+                    const balanceOK = validateBalance();
+                    
+                    if (!(balanceOK || toggleChanged)) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        (balanceOK ? toggleInput : balanceInput).focus();
+                    }
+                    form.classList.add('validate');
+                });
+
+                // Initial state
+                validateBalance();
+                handleBalanceChange();
+                handleToggleChange();
+            });
+        </script>
+    </th:block>
 </body>
 </html>

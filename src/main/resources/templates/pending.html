@@ -1,35 +1,55 @@
 <!DOCTYPE html>
-<html lang="en"
-      xmlns:th="http://www.thymeleaf.org"
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout}">
 <head>
     <title>Payment Pending</title>
-    <th:block layout:fragment="css">
-        <link rel="stylesheet" th:href="@{/css/pending.css}">
+    <th:block layout:fragment="css"></th:block>
+    <th:block layout:fragment="script">
+        <script th:inline="javascript">
+            setTimeout(function() {
+                location.reload();
+            }, 2000);
+        </script>
     </th:block>
 </head>
 <body>
-<div layout:fragment="content">
-    <div class="container">
-        <h1 class="display-4">Payment pending</h1>
+    <div layout:fragment="main-content">
+        <div class="container max-w-2xl mx-auto py-8">
+            <!-- Pending Payment Card -->
+            <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow">
+                <div class="card-body text-center p-8">
+                    <!-- Loading Icon -->
+                    <div class="flex justify-center mb-8">
+                        <div class="bg-warning/20 text-warning size-20 rounded-full flex items-center justify-center">
+                            <span class="loading loading-spinner loading-lg"></span>
+                        </div>
+                    </div>
+                    
+                    <!-- Title -->
+                    <h1 class="text-3xl font-bold text-base-content mb-4">Payment Pending</h1>
+                    
+                    <!-- Description -->
+                    <p class="text-base-content/70 text-lg mb-8">
+                        Your payment is being processed. Please wait while we confirm your transaction.
+                    </p>
 
-        <div class="row">
-            <main class="col-12 col-lg-8 mx-auto py-5" role="main">
-                <div class="row">
-                    <div class="col my-4 text-center">
-                        <div class="loader mx-auto mb-4"></div>
-                        <small class="text-muted">(Do not close this tab)</small>
+                    <!-- Warning Message -->
+                    <div class="alert alert-soft alert-warning flex items-start gap-4 mb-8">
+                        <span class="icon-[tabler--alert-triangle] shrink-0 size-6"></span>
+                        <div class="flex flex-col gap-1">
+                            <h5 class="text-lg font-semibold">Please do not close this tab</h5>
+                            <p class="text-sm">The page will automatically refresh to check for updates</p>
+                        </div>
+                    </div>
+
+                    <!-- Transaction ID -->
+                    <div class="text-xs text-base-content/50">
+                        <span th:text="${'Transaction ID: ' + transactionID}">Transaction ID: TX-123456</span>
                     </div>
                 </div>
-            </main>
+            </div>
         </div>
     </div>
-    <script th:inline="javascript">
-        setTimeout(function() {
-            location.reload();
-        }, 4000);
-    </script>
-</div>
 </body>
 </html>

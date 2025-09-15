@@ -3,32 +3,65 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout}">
 <head>
-  <title>Pay</title>
-  <th:block layout:fragment="css">
-    <link rel="stylesheet" th:href="@{/css/payment.css}"/>
-  </th:block>
-  <th:block layout:fragment="script"></th:block>
+    <title>Payment</title>
+    <th:block layout:fragment="css"></th:block>
+    <th:block layout:fragment="script"></th:block>
 </head>
 <script th:src="@{/js/cookies.js}"></script>
 <body>
-<div layout:fragment="content">
+    <div layout:fragment="main-content">
+        <div class="container max-w-2xl mx-auto py-8">
+            <!-- Payment Card -->
+            <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow">
+                <div class="card-body text-center p-8">
+                    <!-- Price at the top -->
+                    <div class="stat-value text-primary text-6xl mb-8 mt-4">
+                        €<span th:text="${#numbers.formatDecimal(transaction.amount.abs(), 1, 2)}">0.00</span>
+                    </div>
+                    
+                    <!-- Purchase description -->
+                    <h2 class="card-title text-2xl justify-center mb-8" th:text="${transaction.description}">Product Name</h2>
+                    
+                    <!-- Current balance -->
+                    <div class="text-base-content/70 mb-8 flex items-center justify-center gap-2">
+                        <span class="icon-[tabler--wallet] size-4"></span>
+                        <span>Available Balance: €<span th:text="${#numbers.formatDecimal(currentUser.balance, 1, 2)}">0.00</span></span>
+                    </div>
 
-  <div class="container-payment">
-    <div class="purchase-info-container">
-      <p class="purchase-info">Purchasing:</p>
-      <p th:text="${transaction.description}" class="product-name"></p>
-      <p th:text="${transaction.amount.abs()}+' EUR'" class="price">€3.00</p>
+                    <!-- Insufficient Funds Warning -->
+                    <div th:if="${transaction.amount.abs()}>${currentUser.balance}" 
+                         class="alert alert-soft alert-warning flex items-center gap-4 mb-8" role="alert">
+                        <span class="icon-[tabler--alert-triangle] shrink-0 size-6"></span>
+                        <p><span class="font-bold">Insufficient funds.</span> Need additional 
+                            €<span th:text="${#numbers.formatDecimal(transaction.amount.abs() - currentUser.balance, 1, 2)}">0.00</span>
+                        </p>
+                    </div>
+
+                    <!-- Action buttons -->
+                    <div class="grid grid-rows-2 sm:grid-cols-2 sm:grid-rows-1 gap-4 w-full">
+                        <!-- Pay Button -->
+                        <button th:if="${transaction.amount.abs()}<=${currentUser.balance}" 
+                                th:attr="onclick=|location.href='/payTransaction?tx=${transaction.id}'|" 
+                                class="btn btn-primary btn-xl sm:btn-lg">
+                            Pay
+                        </button>
+                        <button th:unless="${transaction.amount.abs()}<=${currentUser.balance}" 
+                                class="btn btn-primary btn-xl sm:btn-lg btn-disabled" 
+                                disabled>
+                            <span class="icon-[tabler--check] size-5"></span>
+                            Pay
+                        </button>
+
+                        <!-- Top-Up Button -->
+                        <button onclick="window.open('/balance', '_blank').focus();" 
+                                class="btn btn-outline btn-m sm:btn-lg">
+                            <span class="icon-[tabler--plus] size-5"></span>
+                            Top-Up Balance
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <button th:if="${transaction.amount.abs()}<=${currentUser.balance}" th:attr="onclick=|location.href='/payTransaction?tx=${transaction.id}'|" class="pay-button">Pay</button>
-    <button th:unless="${transaction.amount.abs()}<=${currentUser.balance}" class="pay-button" disabled>Pay</button>
-    <div class="top-up-info">
-      <div class="top-up-text">
-        <p class="top-up-balance-text">Available Balance:</p>
-        <p class="top-up-balance-text" th:text="${currentUser.balance}+' EUR'"> EUR</p>
-      </div>
-      <button onclick="window.open('/balance', '_blank').focus();" class="top-up-button">Top-Up</button>
-    </div>
-  </div>
-</div>
 </body>
 </html>

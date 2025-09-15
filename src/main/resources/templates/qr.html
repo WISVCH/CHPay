@@ -3,13 +3,11 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/basic-layout}">
 <head>
-    <th:block layout:fragment="css">
-        <title>QR Payment</title>
+    <title>QR Payment</title>
+    <th:block layout:fragment="css"></th:block>
+    <th:block layout:fragment="script">
         <meta name="_csrf" th:content="${_csrf.token}"/>
         <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
-        <link rel="stylesheet" th:href="@{/css/qr.css}">
-    </th:block>
-    <th:block layout:fragment="script">
         <script th:inline="javascript">
             window.paymentRequestId = [[${paymentRequestId}]];
             window.isMultiUse = [[${paymentRequest.multiUse}]];
@@ -19,25 +17,69 @@
     </th:block>
 </head>
 <body>
-<div layout:fragment="content">
-    <a href="/admin/createPaymentRequest" class="back-button">< Terminal</a>
+    <div layout:fragment="main-content">
+        <div class="container max-w-4xl mx-auto py-8">
+            <!-- Back Link -->
+            <div class="mb-6">
+                <a href="/admin/createPaymentRequest" class="text-base-content/70 hover:text-base-content text-sm flex items-center gap-2">
+                    <span class="icon-[tabler--arrow-left] size-4"></span>
+                    Back to Terminal
+                </a>
+            </div>
 
-    <div class="qr-content">
-        <div class="qr-image">
-            <a th:href="@{'/payment/' + ${paymentRequestId}}">
-                <img th:src="'data:image/png;base64,' + ${qrCodeBase64}" alt="QR Code"/>
-            </a>
-        </div>
+            <!-- QR Payment Card -->
+            <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow relative">
+                <div class="card-body p-8">
+                    <div class="flex flex-col lg:flex-row gap-8 items-center">
+                        <!-- QR Code on Left -->
+                        <div class="flex-shrink-0">
+                            <a th:href="@{'/payment/' + ${paymentRequestId}}">
+                                <img th:src="'data:image/png;base64,' + ${qrCodeBase64}" 
+                                     alt="QR Code" 
+                                     class="w-64 h-64 sm:w-72 sm:h-72 lg:w-80 lg:h-80"/>
+                            </a>
+                        </div>
 
-        <div class="payment-info">
-            <div class="payment-amount" th:text="${'EUR ' + paymentRequest.amount}">EUR 100.00</div>
-            <div class="payment-description" th:text="${paymentRequest.description}">Payment Description</div>
-            <div class="payment-date" th:text="${#temporals.format(paymentRequest.createdAt, 'dd.MM.yyyy HH:mm')}">01.01.2023 12:00</div>
-            <div class="payment-id" th:text="${'ID: ' + paymentRequestId}">ID: abc123</div>
+                        <!-- Payment Details on Right -->
+                        <div class="flex-1 text-center lg:text-left">
+                            <!-- Payment Amount -->
+                            <div class="stat-value text-primary text-6xl mb-8">
+                                €<span th:text="${#numbers.formatDecimal(paymentRequest.amount, 1, 2)}">0.00</span>
+                            </div>
+
+                            <!-- Payment Description -->
+                            <h2 class="card-title text-2xl justify-center mb-8" th:text="${paymentRequest.description}">Payment Description</h2>
+
+                            <!-- Payment Details -->
+                            <div class="text-base-content/70 mb-8 space-y-2">
+                                <p class="flex items-center gap-2 justify-center lg:justify-start">
+                                    <span class="icon-[tabler--calendar] size-4"></span>
+                                    <span th:text="${#temporals.format(paymentRequest.createdAt, 'dd.MM.yyyy HH:mm')}">01.01.2023 12:00</span>
+                                </p>
+                                <p class="flex items-center gap-2 justify-center lg:justify-start">
+                                    <span class="icon-[tabler--hash] size-4"></span>
+                                    <span th:text="${'ID: ' + paymentRequestId}">ID: abc123</span>
+                                </p>
+                            </div>
+
+                            <!-- Instructions -->
+                            <div class="text-sm text-base-content/60">
+                                Scan the QR code with your phone or use NFC to complete the payment
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NFC Icon in Bottom Right of Card -->
+                <div class="absolute bottom-4 right-4">
+                    <div class="avatar avatar-placeholder">
+                        <div class="bg-error/20 text-error size-12 rounded-full nfc-icon">
+                            <span class="icon-[tabler--nfc] size-6"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-
-    <i class="fa-brands fa-nfc-symbol nfc-icon"></i>
-</div>
 </body>
 </html>

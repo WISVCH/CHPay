@@ -1,47 +1,139 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/admin-layout}">
+      layout:decorate="~{layouts/layout}">
 <head>
     <title>Create Payment Request</title>
-    <th:block layout:fragment="css">
-        <link rel="stylesheet" th:href="@{/css/create-payment-request.css}"/>
-    </th:block>
-    <th:block layout:fragment="script">
-        <script th:src="@{/js/create-payment-request.js}"></script>
-    </th:block>
+    <th:block layout:fragment="script"></th:block>
+    <th:block layout:fragment="css"></th:block>
 </head>
+
 <body>
-<div layout:fragment="content">
-
-    <div class="page-container">
-
-        <p class="title"><strong>Create Payment Request</strong></p>
-
-        <form id="descForm" th:action="@{/admin/createPaymentRequest}" method="post">
-            <div class="form-group">
-                <label for="description">Description</label>
-                <input type="text" id="description" name="description" class="custom-input" required>
+    <div layout:fragment="main-content">
+        <div class="container max-w-4xl mx-auto">
+            <!-- Header Section -->
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-base-content mb-2">Create Payment Request</h1>
+                <p class="text-base-content/70 text-lg">
+                    Generate a QR code for payment collection
+                </p>
             </div>
 
-            <div class="form-group">
-                <label for="amount">Amount (EUR)</label>
-                <input type="number" id="amount" name="amount" class="custom-input" step="0.01" min="0.01" required>
-            </div>
+            <!-- Payment Request Form Card -->
+            <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow">
+                <div class="card-body">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="avatar avatar-placeholder">
+                            <div class="bg-primary/20 text-primary size-12 rounded-full">
+                                <span class="icon-[tabler--qrcode] size-6"></span>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="card-title text-xl">Payment Request Details</h3>
+                            <p class="text-base-content/70">Enter the payment information to generate a QR code</p>
+                        </div>
+                    </div>
 
-            <div class="form-group toggle-container">
-                <label class="toggle-switch">
-                    <input type="checkbox" id="multiUse" name="multiUse">
-                    <span class="slider"></span>
-                </label>
-                <span class="toggle-caption">Multi-use</span>
-            </div>
+                    <form id="descForm" th:action="@{/admin/createPaymentRequest}" method="post" class="needs-validation peer grid gap-y-4" novalidate>
+                        <!-- Description Field -->
+                        <div>
+                            <label class="label-text" for="description">Description</label>
+                            <input 
+                                type="text" 
+                                id="description" 
+                                name="description" 
+                                class="input" 
+                                placeholder="Enter payment description"
+                                pattern="^[a-zA-Z0-9, ]+$"
+                                required
+                            />
+                            <span class="error-message">Description can only contain letters, numbers, spaces, and commas</span>
+                        </div>
 
-            <div class="form-actions">
-                <button type="submit" class="btn btn-large btn-geel">Go to QR </button>
+                        <!-- Amount Field -->
+                        <div>
+                            <label class="label-text" for="amount">Amount (EUR)</label>
+                            <div class="input">
+                                <label class="label-text my-auto me-3 p-0" for="amount">€</label>
+                                <input 
+                                    type="number" 
+                                    id="amount" 
+                                    name="amount" 
+                                    class="grow"
+                                    placeholder="0.00"
+                                    step="0.01" 
+                                    min="0.01" 
+                                    required
+                                />
+                            </div>
+                            <span class="error-message">Please enter a valid amount (max 2 decimal places)</span>
+                        </div>
+
+                        <!-- Multi-use Toggle -->
+                        <div>
+                            <div class="flex items-center gap-3">
+                                <input type="checkbox" id="multiUse" name="multiUse" class="switch switch-primary" />
+                                <label class="label-text text-base" for="multiUse">Multi-use payment request</label>
+                            </div>
+                            <span class="text-sm text-base-content/70 mt-1">Allow this payment request to be used multiple times</span>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="card-actions justify-end">
+                            <button type="submit" class="btn btn-primary btn-xl w-full sm:w-auto">
+                                <span class="icon-[tabler--qrcode] size-5"></span>
+                                Generate QR Code
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </form>
+        </div>
     </div>
-</div>
+
+    <th:block layout:fragment="script">
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const descriptionInput = document.getElementById('description');
+                const amountInput = document.getElementById('amount');
+                const form = document.getElementById('descForm');
+                
+                // Description validation
+                const validateDescription = () => {
+                    const value = descriptionInput.value.trim();
+                    const isValid = value !== '' && /^[a-zA-Z0-9, ]+$/.test(value);
+                    descriptionInput.setCustomValidity(isValid ? '' : 'Description can only contain letters, numbers, spaces, and commas');
+                    return isValid;
+                };
+
+                // Amount validation
+                const validateAmount = () => {
+                    const raw = amountInput.value;
+                    const amount = parseFloat(raw);
+                    const dec = raw.includes('.') ? raw.split('.')[1] : '';
+                    const isValid = !isNaN(amount) && amount > 0 && dec.length <= 2;
+                    amountInput.setCustomValidity(isValid ? '' : 'Please enter a valid amount (max 2 decimal places)');
+                    return isValid;
+                };
+
+                // Add event listeners
+                descriptionInput?.addEventListener('input', validateDescription);
+                amountInput?.addEventListener('input', validateAmount);
+
+                // Form validation
+                form?.addEventListener('submit', event => {
+                    const descValid = validateDescription();
+                    const amountValid = validateAmount();
+                    
+                    if (!descValid || !amountValid) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        (descValid ? amountInput : descriptionInput).focus();
+                    }
+                    form.classList.add('validate');
+                });
+            });
+        </script>
+    </th:block>
 </body>
 </html>

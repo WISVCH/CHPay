@@ -1,10 +1,6 @@
-<link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-/>
-<link  rel="stylesheet" th:href="@{/css/notifications.css}">
 <div th:fragment="notifications">
-    <div class="notification-container"></div>
+    <!-- Notification Container -->
+    <div class="notification-container fixed top-20 right-4 z-50 space-y-2"></div>
     <script th:src="@{/js/notifications.js}"></script>
 
     <!-- Handle flash attributes for notifications after redirects -->

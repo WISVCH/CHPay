@@ -3,31 +3,89 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout}">
 <head>
-    <title>Index</title>
+    <title>Home</title>
     <th:block layout:fragment="script"></th:block>
     <th:block layout:fragment="css"></th:block>
 </head>
+
 <body>
-<div layout:fragment="content">
-    <div class="index-wrapper">
-        <div class="index-main-info">
-            <div class="index-title">
-                <h1>Welcome to CHPay!</h1>
-                <p>CHPay is a digital wallet for the 'Christiaan Huygens' association. Top up your balance via iDEAL and make purchases within the association to avoid transaction fees.</p>
-            </div>
-            <div class="index-balance-container">
-                <h2>Balance:</h2>
-                <h1>€<span th:text="${currentUser.balance}"></span></h1>
-            </div>
+    <div layout:fragment="main-content">
+        <div class="container max-w-4xl mx-auto">
+        <!-- Welcome Section -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-base-content mb-2">Welcome to CHPay!</h1>
+            <p class="text-base-content/70 text-lg">
+                CHPay is a digital wallet for <a href="https://ch.tudelft.nl" target="_blank" class="link text-base-content/70 text-lg">W.I.S.V. 'Christiaan Huygens'</a>. Top up your balance via iDEAL and make purchases within the association to avoid transaction fees.
+            </p>
         </div>
-        <div class="index-actions-container">
-            <div class="index-action" onclick="location.href='/balance';">
-                <h1>Top-Up</h1>
-                <p>Instantly add funds to your CHPay account using iDEAL.</p>
+
+        <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow mb-8">
+            <div class="card-body">
+              <div class="flex items-center gap-4">
+                <div class="avatar avatar-placeholder">
+                  <div class="bg-primary/20 text-primary size-16 rounded-full">
+                    <span class="icon-[tabler--wallet] size-8"></span>
+                  </div>
+                </div>
+                <div class="flex-1">
+                  <h2 class="card-title text-2xl">Current Balance</h2>
+                  <div class="stat-value text-primary text-4xl">
+                    €<span th:text="${#numbers.formatDecimal(currentUser.balance, 1, 2)}">0.00</span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="index-action" onclick="location.href='/transactions';">
-                <h1>Transaction History</h1>
-                <p>Access a overview of all your past payments and deposits.</p>
+          </div>
+
+        <!-- Action Buttons -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Top-Up Card -->
+            <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow">
+                <div class="card-body">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="avatar avatar-placeholder">
+                            <div class="bg-primary/20 text-primary size-12 rounded-full">
+                                <span class="icon-[tabler--plus] size-6"></span>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="card-title text-xl">Top-Up Balance</h3>
+                            <p class="text-base-content/70">Instantly add funds to your CHPay account using iDEAL.</p>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-primary btn-block" 
+                                th:class="${currentUser!=null and currentUser.getBanned()} ? 'btn btn-primary btn-block btn-disabled' : 'btn btn-primary btn-block'"
+                                th:disabled="${currentUser!=null and currentUser.getBanned()}"
+                                onclick="location.href='/balance';">
+                            <span class="icon-[tabler--plus] size-4"></span>
+                            Add Funds
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transaction History Card -->
+            <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow">
+                <div class="card-body">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="avatar avatar-placeholder">
+                            <div class="bg-secondary/20 text-secondary size-12 rounded-full">
+                                <span class="icon-[tabler--receipt] size-6"></span>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="card-title text-xl">Transaction History</h3>
+                            <p class="text-base-content/70">Access an overview of all your past payments and deposits.</p>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-secondary btn-block" onclick="location.href='/transactions';">
+                            <span class="icon-[tabler--receipt] size-4"></span>
+                            View History
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
