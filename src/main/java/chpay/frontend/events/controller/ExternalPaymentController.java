@@ -30,9 +30,9 @@ public class ExternalPaymentController {
   /**
    * Creates an External Transaction from a CHPaymentRequest dto, saves it to the repository as
    * pending and returns a CHPaymentResponse wrapped in ResponseEntity.
-   * 
-   * External transactions are always created anonymously and will be linked to a user
-   * when payment is completed.
+   *
+   * <p>External transactions are always created anonymously and will be linked to a user when
+   * payment is completed.
    *
    * @param request the request dto
    * @return the created response entity
@@ -40,7 +40,7 @@ public class ExternalPaymentController {
   @PreAuthorize("hasRole('API_USER')")
   @PostMapping
   public ResponseEntity<CHPaymentResponse> createExternalPayment(
-    @RequestBody CHPaymentRequest request) {
+      @RequestBody CHPaymentRequest request) {
     CHPaymentResponse response = externalPaymentService.createTransaction(request);
     return ResponseEntity.ok(response);
   }

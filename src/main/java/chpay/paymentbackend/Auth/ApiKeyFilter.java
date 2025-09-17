@@ -24,10 +24,9 @@ public class ApiKeyFilter extends OncePerRequestFilter {
   private String expectedApiKey;
 
   /**
-   * API key filter that checks the API key in the request header for API requests.
-   * If the API key is valid, sets the ROLE_API_USER role and continues.
-   * If invalid, returns 401 Unauthorized.
-   * For non-API requests, passes through without modification.
+   * API key filter that checks the API key in the request header for API requests. If the API key
+   * is valid, sets the ROLE_API_USER role and continues. If invalid, returns 401 Unauthorized. For
+   * non-API requests, passes through without modification.
    *
    * @param request the {@code HttpServletRequest} object that contains the client request
    * @param response the {@code HttpServletResponse} object that contains the response to the client
@@ -60,7 +59,8 @@ public class ApiKeyFilter extends OncePerRequestFilter {
 
     // Set API_USER role for valid API key
     List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_API_USER"));
-    UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken("api-user", null, authorities);
+    UsernamePasswordAuthenticationToken auth =
+        new UsernamePasswordAuthenticationToken("api-user", null, authorities);
     SecurityContextHolder.getContext().setAuthentication(auth);
 
     filterChain.doFilter(request, response);

@@ -51,8 +51,8 @@ public class CustomOIDCUserService extends OidcUserService {
 
   /**
    * Loads a user based on the provided OpenID Connect (OIDC) user request. It customizes the
-   * default behavior of the {@code OidcUserService} update data from connect it in the
-   * local database and process user roles and authentication attributes.
+   * default behavior of the {@code OidcUserService} update data from connect it in the local
+   * database and process user roles and authentication attributes.
    *
    * @param userRequest the OIDC user request containing information about the client and the
    *     incoming authentication request
@@ -73,9 +73,9 @@ public class CustomOIDCUserService extends OidcUserService {
 
     Object rawGroups = idToken.getClaims().get(claimName);
     Collection<String> groups =
-            (rawGroups instanceof Collection<?> collection)
-                    ? collection.stream().filter(Objects::nonNull).map(Object::toString).toList()
-                    : List.of();
+        (rawGroups instanceof Collection<?> collection)
+            ? collection.stream().filter(Objects::nonNull).map(Object::toString).toList()
+            : List.of();
 
     List<SimpleGrantedAuthority> authorities = new ArrayList<>();
     authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
@@ -89,16 +89,16 @@ public class CustomOIDCUserService extends OidcUserService {
     return new DefaultOidcUser(authorities, idToken, oidcUser.getUserInfo());
   }
 
-/**
- * Saves or updates a user in the local database based on the provided name, email, and OpenID subject.
- * If a user with the specified OpenID subject already exists, their name and email will be updated.
- * Otherwise, a new user entry will be created with the given details.
- *
- * @param name the user's full name
- * @param email the user's email address
- * @param sub the user's OpenID subject (unique identifier)
- * @return the saved or updated User entity
- */
+  /**
+   * Saves or updates a user in the local database based on the provided name, email, and OpenID
+   * subject. If a user with the specified OpenID subject already exists, their name and email will
+   * be updated. Otherwise, a new user entry will be created with the given details.
+   *
+   * @param name the user's full name
+   * @param email the user's email address
+   * @param sub the user's OpenID subject (unique identifier)
+   * @return the saved or updated User entity
+   */
   @Transactional
   public User saveOrUpdateUser(String name, String email, String sub) {
     Optional<User> existingUser = userRepository.findAndLockByOpenID(sub);
@@ -108,10 +108,7 @@ public class CustomOIDCUserService extends OidcUserService {
       user.setName(name);
       user.setEmail(email);
     } else {
-      user =
-              new User(name,
-                      email,
-                      sub);
+      user = new User(name, email, sub);
     }
 
     return userRepository.save(user);

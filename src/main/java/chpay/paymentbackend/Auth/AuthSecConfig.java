@@ -46,7 +46,6 @@ public class AuthSecConfig {
   @Value("${spring.profiles.active:}")
   private String activeProfiles;
 
-
   /**
    * Configures and builds the security filter chain used to secure HTTP requests. This method sets
    * up request authorization, authentication, and logout behavior.
@@ -90,8 +89,8 @@ public class AuthSecConfig {
   /**
    * Configures authorization rules for incoming HTTP requests.
    *
-   * <p>This method specifies which requests should be permitted or require authentication.
-   * Most authorization is now handled at the controller level using @PreAuthorize annotations.
+   * <p>This method specifies which requests should be permitted or require authentication. Most
+   * authorization is now handled at the controller level using @PreAuthorize annotations.
    *
    * @param http an instance of {@link HttpSecurity} used to customize authorization rules
    * @throws Exception if an error occurs while configuring authorization
@@ -117,13 +116,15 @@ public class AuthSecConfig {
               if (activeProfiles.contains("test")) {
                 authz.requestMatchers("/test/**").permitAll();
               }
-              
-              // All other requests require authentication - authorization is handled at controller level
+
+              // All other requests require authentication - authorization is handled at controller
+              // level
               authz.anyRequest().authenticated();
             })
         .csrf(
             csrf ->
-                csrf.ignoringRequestMatchers("/balance/status", "/transactions/email-receipt/**", "/api/**"))
+                csrf.ignoringRequestMatchers(
+                    "/balance/status", "/transactions/email-receipt/**", "/api/**"))
         .exceptionHandling(
             exceptions -> exceptions.accessDeniedHandler(customAccessDeniedHandler)
             /*

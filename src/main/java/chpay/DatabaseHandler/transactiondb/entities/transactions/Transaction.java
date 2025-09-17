@@ -86,10 +86,7 @@ public class Transaction {
   }
 
   public Transaction(
-      BigDecimal amount,
-      String description,
-      TransactionStatus status,
-      TransactionType type) {
+      BigDecimal amount, String description, TransactionStatus status, TransactionType type) {
     this.user = null;
     this.amount = amount;
     this.description = description;

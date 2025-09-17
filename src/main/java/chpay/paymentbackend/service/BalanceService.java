@@ -76,7 +76,7 @@ public class BalanceService {
 
     debit(lockedFrom, amount.abs());
     pendingTransaction.setStatus(Transaction.TransactionStatus.SUCCESSFUL);
-    
+
     // If this was an anonymous transaction, link the user to it now
     if (pendingTransaction.getUser() == null) {
       pendingTransaction.setUser(lockedFrom);

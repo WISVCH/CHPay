@@ -79,7 +79,8 @@ public class PayRequestPageController extends PageController {
    */
   @PreAuthorize("hasRole('USER') and !hasRole('BANNED')")
   @GetMapping("/external/{id}")
-  public String completeExternalTransaction(@PathVariable String id, Model model) throws RestClientException {
+  public String completeExternalTransaction(@PathVariable String id, Model model)
+      throws RestClientException {
     ExternalTransaction transaction =
         (ExternalTransaction)
             transactionRepository
@@ -91,7 +92,7 @@ public class PayRequestPageController extends PageController {
     }
 
     User currentUser = (User) model.getAttribute("currentUser");
-    
+
     // If transaction doesn't have a user (anonymous), link the current user to it
     if (transaction.getUser() == null) {
       transaction.linkUser(currentUser);

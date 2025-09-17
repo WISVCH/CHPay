@@ -44,9 +44,9 @@ public class ExternalPaymentServiceImpl implements ExternalPaymentService {
   }
 
   /**
-   * Creates a new external transaction based on the provided payment request. The transaction
-   * is saved in the repository without a linked user, and a response containing the transaction ID
-   * and checkout URL is returned. The user will be linked to the transaction when payment is completed.
+   * Creates a new external transaction based on the provided payment request. The transaction is
+   * saved in the repository without a linked user, and a response containing the transaction ID and
+   * checkout URL is returned. The user will be linked to the transaction when payment is completed.
    *
    * @param request the payment request containing details such as amount, description, redirect
    *     URL, webhook URL, and fallback URL
@@ -55,9 +55,11 @@ public class ExternalPaymentServiceImpl implements ExternalPaymentService {
   @Override
   @Transactional
   public CHPaymentResponse createTransaction(CHPaymentRequest request) {
-    logger.info("Creating external transaction for amount: {}, consumer: {}", 
-                request.getAmount(), request.getConsumerEmail());
-    
+    logger.info(
+        "Creating external transaction for amount: {}, consumer: {}",
+        request.getAmount(),
+        request.getConsumerEmail());
+
     ExternalTransaction tx =
         ExternalTransaction.createExternalTransaction(
             request.getAmount().negate(),
@@ -68,9 +70,9 @@ public class ExternalPaymentServiceImpl implements ExternalPaymentService {
     repository.save(tx);
 
     String checkoutUrl = CHPayUri + "/payment/transaction/" + tx.getId();
-    
-    logger.info("Created external transaction with ID: {}, checkout URL: {}", 
-                tx.getId(), checkoutUrl);
+
+    logger.info(
+        "Created external transaction with ID: {}, checkout URL: {}", tx.getId(), checkoutUrl);
 
     return new CHPaymentResponse(tx.getId().toString(), checkoutUrl);
   }
