@@ -119,15 +119,6 @@ jacocoTestCoverageVerification {
 	}
 }
 
-pmd {
-	toolVersion = "6.55.0"
-	ignoreFailures = true
-	ruleSets = [
-			"category/java/bestpractices.xml",
-			"category/java/errorprone.xml",
-			"category/java/codestyle.xml"
-	]
-}
 
 // Frontend build task using npm run build
 task frontendBuild(type: NpmTask) {

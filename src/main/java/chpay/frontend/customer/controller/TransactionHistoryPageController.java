@@ -7,8 +7,6 @@ import chpay.paymentbackend.service.MailService;
 import chpay.paymentbackend.service.TransactionService;
 import chpay.shared.service.NotificationService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -119,14 +117,14 @@ public class TransactionHistoryPageController extends PageController {
   @GetMapping(value = "/transactions")
   public String getSimplifiedTransactionsPage(Model model) {
     User currentUser = (User) model.getAttribute("currentUser");
-    
+
     // Get all transactions for the user (no pagination for simplicity)
-    List<chpay.DatabaseHandler.transactiondb.entities.transactions.Transaction> transactions = 
+    List<chpay.DatabaseHandler.transactiondb.entities.transactions.Transaction> transactions =
         transactionService.getTransactionsForUserPageable(currentUser, 0, Integer.MAX_VALUE);
-    
+
     // Sort transactions by date in descending order (most recent first)
     transactions.sort((t1, t2) -> t2.getTimestamp().compareTo(t1.getTimestamp()));
-    
+
     model.addAttribute(MODEL_ATTR_TRANSACTIONS, transactions);
     model.addAttribute(MODEL_ATTR_URL_PAGE, "transactions");
     return "transactions";
