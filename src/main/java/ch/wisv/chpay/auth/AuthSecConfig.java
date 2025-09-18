@@ -109,7 +109,7 @@ public class AuthSecConfig {
                       "/css/**",
                       "/js/**",
                       "/images/**",
-                      "/balance/status")
+                      "/topup/status")
                   .permitAll();
 
               // Only permit test endpoints when test profile is active
@@ -124,7 +124,7 @@ public class AuthSecConfig {
         .csrf(
             csrf ->
                 csrf.ignoringRequestMatchers(
-                    "/balance/status", "/transactions/email-receipt/**", "/api/**"))
+                    "/topup/status", "/transactions/email-receipt/**", "/api/**"))
         .exceptionHandling(
             exceptions -> exceptions.accessDeniedHandler(customAccessDeniedHandler)
             /*

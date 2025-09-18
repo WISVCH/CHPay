@@ -3,7 +3,7 @@ package ch.wisv.chpay.api.rfid.contoller;
 import ch.wisv.chpay.core.exception.InsufficientBalanceException;
 import ch.wisv.chpay.core.model.User;
 import ch.wisv.chpay.core.repository.UserRepository;
-import ch.wisv.chpay.core.service.RfidPaymentService;
+import ch.wisv.chpay.api.rfid.service.RfidPaymentService;
 import ch.wisv.chpay.core.service.UserService;
 import java.util.Map;
 import java.util.NoSuchElementException;

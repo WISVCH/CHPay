@@ -1,6 +1,5 @@
 package ch.wisv.chpay.core.service;
 
-import ch.wisv.chpay.core.dto.NotificationPayload;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -26,20 +25,5 @@ public class NotificationService {
   public void addErrorMessage(RedirectAttributes redirectAttributes, String message) {
     redirectAttributes.addFlashAttribute(NOTIFICATION_TYPE, "error");
     redirectAttributes.addFlashAttribute(NOTIFICATION_MESSAGE, message);
-  }
-
-  /** Create a success notification payload for AJAX responses */
-  public static Object createSuccessNotification(String message) {
-    return NotificationPayload.success(message);
-  }
-
-  /** Create an info notification payload for AJAX responses */
-  public static Object createInfoNotification(String message) {
-    return NotificationPayload.info(message);
-  }
-
-  /** Create an error notification payload for AJAX responses */
-  public static Object createErrorNotification(String message) {
-    return NotificationPayload.error(message);
   }
 }

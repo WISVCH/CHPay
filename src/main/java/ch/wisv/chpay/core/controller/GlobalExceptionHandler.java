@@ -43,14 +43,14 @@ public class GlobalExceptionHandler {
     String requestURI = request.getRequestURI();
     String referer = request.getHeader("Referer");
 
-    // If the request is related to balance operations, redirect to balance page
-    if (requestURI != null && requestURI.contains("/balance")) {
-      return new RedirectView("/balance");
+    // If the request is related to topup operations, redirect to topup page
+    if (requestURI != null && requestURI.contains("/topup")) {
+      return new RedirectView("/topup");
     }
 
-    // If referer is from balance page, redirect to balance
-    if (referer != null && referer.contains("/balance")) {
-      return new RedirectView("/balance");
+    // If referer is from topup page, redirect to topup
+    if (referer != null && referer.contains("/topup")) {
+      return new RedirectView("/topup");
     }
 
     // If no referer is available, redirect to index

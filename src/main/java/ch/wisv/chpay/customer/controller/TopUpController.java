@@ -16,6 +16,8 @@ import java.util.UUID;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,7 +25,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-public class BalancePageController extends CustomerController {
+@RequestMapping("/topup")
+public class TopUpController extends CustomerController {
   private final DepositService depositService;
   private final TransactionService transactionsService;
   private final NotificationService notificationService;
@@ -35,7 +38,7 @@ public class BalancePageController extends CustomerController {
   private String transactionFee;
 
   @Autowired
-  public BalancePageController(
+  public TopUpController(
       DepositService depositService,
       TransactionService transactionsService,
       NotificationService notificationService,
@@ -51,19 +54,19 @@ public class BalancePageController extends CustomerController {
   }
 
   /**
-   * Serves the balance page at /balance.html URL.
+   * Serves the topup page at /topup.html URL.
    *
-   * @return String view name for balance template
+   * @return String view name for topup template
    */
   @PreAuthorize("hasAnyRole('USER', 'BANNED')")
-  @GetMapping("/balance")
+  @GetMapping
   public String showBalancePage(Model model) {
     // add the signature of the current page to thymeleaf context
-    model.addAttribute(MODEL_ATTR_URL_PAGE, "balance");
+    model.addAttribute(MODEL_ATTR_URL_PAGE, "topup");
     model.addAttribute(MODEL_ATTR_MAX_BALANCE, settingService.getMaxBalance());
     model.addAttribute(MODEL_ATTR_MIN_TOP_UP, settingService.getMinTopUp());
     model.addAttribute(MODEL_ATTR_TRANSACTION_FEE, transactionFee);
-    return "balance";
+    return "topup";
   }
 
   /**
@@ -75,8 +78,7 @@ public class BalancePageController extends CustomerController {
    * @return the url for the payment
    */
   @PreAuthorize("hasRole('USER') and !hasRole('BANNED')")
-  @SuppressWarnings("PMD.SystemPrintln") // Suppress PMD violation for System.out usage
-  @PostMapping("/balance/topup")
+  @PostMapping
   public String handleTopup(
       @RequestParam("topupAmount") String topupAmount,
       @ModelAttribute("currentUser") User currentUser,
@@ -87,7 +89,7 @@ public class BalancePageController extends CustomerController {
         amount = new BigDecimal(topupAmount);
       } catch (NumberFormatException e) {
         notificationService.addErrorMessage(redirectAttributes, "Invalid top-up amount.");
-        return "redirect:/balance";
+        return "redirect:/topup";
       }
       BigDecimal maxBalance = settingService.getMaxBalance();
 
@@ -113,7 +115,7 @@ public class BalancePageController extends CustomerController {
       notificationService.addErrorMessage(
           redirectAttributes, "An unexpected error occurred: " + e.getMessage());
     }
-    return "redirect:/balance";
+    return "redirect:/topup";
   }
 
   /**
@@ -124,7 +126,7 @@ public class BalancePageController extends CustomerController {
    * @return either a purgatory page, a success or fail page
    */
   @PreAuthorize("hasAnyRole('USER', 'BANNED')")
-  @GetMapping("/payment/complete/{key}")
+  @GetMapping("/complete/{key}")
   public String depositSuccess(
       @PathVariable String key, RedirectAttributes redirectAttributes, Model model)
       throws NotFoundException {
@@ -139,5 +141,20 @@ public class BalancePageController extends CustomerController {
       case Transaction.TransactionStatus.FAILED -> "failed";
       default -> "error";
     };
+  }
+
+  /**
+   * This is where the mollie webhook goes
+   *
+   * @param mollieId the id of the transaction
+   * @return a http status, this isn't relevant for the user, mollie gets it
+   */
+  @PostMapping("/status")
+  public ResponseEntity<HttpStatus> depositStatus(@RequestParam(name = "id") String mollieId) {
+    if (transactionsService.getTransaction(mollieId).isEmpty())
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    TopupTransaction t = transactionsService.getTransaction(mollieId).get();
+    depositService.validateTransaction(t.getId());
+    return new ResponseEntity<>(HttpStatus.OK);
   }
 }

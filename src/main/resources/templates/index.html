@@ -57,7 +57,7 @@
                         <button class="btn btn-primary btn-block" 
                                 th:class="${currentUser!=null and currentUser.getBanned()} ? 'btn btn-primary btn-block btn-disabled' : 'btn btn-primary btn-block'"
                                 th:disabled="${currentUser!=null and currentUser.getBanned()}"
-                                onclick="location.href='/balance';">
+                                onclick="location.href='/topup';">
                             <span class="icon-[tabler--plus] size-4"></span>
                             Add Funds
                         </button>

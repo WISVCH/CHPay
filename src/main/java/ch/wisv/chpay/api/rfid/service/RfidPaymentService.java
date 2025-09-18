@@ -1,4 +1,4 @@
-package ch.wisv.chpay.core.service;
+package ch.wisv.chpay.api.rfid.service;
 
 import ch.wisv.chpay.core.exception.InsufficientBalanceException;
 import ch.wisv.chpay.core.model.PaymentRequest;
@@ -6,6 +6,9 @@ import ch.wisv.chpay.core.model.User;
 import ch.wisv.chpay.core.model.transaction.PaymentTransaction;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+
+import ch.wisv.chpay.core.service.RequestService;
+import ch.wisv.chpay.core.service.TransactionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
