@@ -1,5 +1,6 @@
 package ch.wisv.chpay.customer.controller;
 
+import ch.wisv.chpay.core.controller.PageController;
 import ch.wisv.chpay.core.exception.TransactionAlreadyFulfilled;
 import ch.wisv.chpay.core.model.PaymentRequest;
 import ch.wisv.chpay.core.model.User;
@@ -19,7 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 public class PaymentPageController extends PageController {
   /** Model attr of the Transaction. */
-  private static final String MODEL_ATTR_TX = "transaction";
+  private static final String MODEL_ATTR_TX = MODEL_ATTR_TRANSACTION;
 
   private final RequestService requestService;
   private final TransactionService transactionService;
@@ -85,7 +86,7 @@ public class PaymentPageController extends PageController {
       throw new TransactionAlreadyFulfilled("This payment has already been fulfilled, or failed.");
     }
 
-    model.addAttribute("transaction", transaction);
+    model.addAttribute(MODEL_ATTR_TRANSACTION, transaction);
     model.addAttribute(MODEL_ATTR_URL_PAGE, "payment");
     return "payment";
   }

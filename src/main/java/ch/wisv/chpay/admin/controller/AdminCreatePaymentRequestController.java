@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/admin/createPaymentRequest")
-public class AdminCreatePaymentRequestController {
+public class AdminCreatePaymentRequestController extends AdminController{
 
   private final RequestService requestService;
 
@@ -29,7 +29,7 @@ public class AdminCreatePaymentRequestController {
    */
   @GetMapping
   public String showNewPaymentRequestPageController(Model model) {
-    model.addAttribute("urlPage", "createPaymentRequest");
+    model.addAttribute(MODEL_ATTR_URL_PAGE, "createPaymentRequest");
     return "create-payment-request";
   }
 

@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-public class BalancePageController extends PageController {
+public class BalancePageController extends CustomerController {
   private final DepositService depositService;
   private final TransactionService transactionsService;
   private final NotificationService notificationService;
@@ -60,9 +60,9 @@ public class BalancePageController extends PageController {
   public String showBalancePage(Model model) {
     // add the signature of the current page to thymeleaf context
     model.addAttribute(MODEL_ATTR_URL_PAGE, "balance");
-    model.addAttribute("maxBalance", settingService.getMaxBalance());
-    model.addAttribute("minTopUp", settingService.getMinTopUp());
-    model.addAttribute("transactionFee", transactionFee);
+    model.addAttribute(MODEL_ATTR_MAX_BALANCE, settingService.getMaxBalance());
+    model.addAttribute(MODEL_ATTR_MIN_TOP_UP, settingService.getMinTopUp());
+    model.addAttribute(MODEL_ATTR_TRANSACTION_FEE, transactionFee);
     return "balance";
   }
 
@@ -132,7 +132,7 @@ public class BalancePageController extends PageController {
         transactionRepository
             .findById(UUID.fromString(key))
             .orElseThrow(() -> new NotFoundException(key));
-    model.addAttribute("transactionID", key);
+    model.addAttribute(MODEL_ATTR_TRANSACTION_ID, key);
     return switch (t.getStatus()) {
       case Transaction.TransactionStatus.PENDING -> "pending";
       case Transaction.TransactionStatus.SUCCESSFUL -> "successful";

@@ -16,13 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
-public class TransactionHistoryPageController extends PageController {
-  private static final String MODEL_ATTR_TRANSACTIONS = "transactions";
-  private static final String MODEL_ATTR_INFO = "info";
-  private static final String MODEL_ATTR_PAGE = "page";
-  private static final String MODEL_ATTR_SORTBY = "sortBy";
-  private static final String MODEL_ATTR_ORDER = "order";
-  private static final String MODEL_ATTR_TOPUPS_TAG = "onlyTopUps";
+public class TransactionHistoryPageController extends CustomerController {
 
   private final TransactionService transactionService;
   private final NotificationService notificationService;

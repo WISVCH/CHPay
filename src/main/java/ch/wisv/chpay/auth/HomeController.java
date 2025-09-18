@@ -1,5 +1,6 @@
 package ch.wisv.chpay.auth;
 
+import ch.wisv.chpay.core.controller.PageController;
 import ch.wisv.chpay.core.service.NotificationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,7 +27,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
  * confirming that logout has been completed successfully.
  */
 @Controller
-public class HomeController {
+public class HomeController extends PageController {
 
   private final NotificationService notificationService;
 
@@ -81,7 +82,7 @@ public class HomeController {
     }
 
     if (logout != null) {
-      model.addAttribute("logoutMessage", "You have been successfully logged out.");
+      model.addAttribute(MODEL_ATTR_LOGOUT_MESSAGE, "You have been successfully logged out.");
     }
 
     if (error != null) {

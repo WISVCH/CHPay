@@ -35,7 +35,7 @@ public class GlobalModelAttributes {
       if (sub != null) {
         userRepository
             .findByOpenID(sub)
-            .ifPresent(user -> model.addAttribute("currentUser", user));
+            .ifPresent(user -> model.addAttribute(PageController.MODEL_ATTR_CURRENT_USER, user));
       }
     }
   }
@@ -44,14 +44,14 @@ public class GlobalModelAttributes {
     if (authentication != null) {
       if (authentication.getPrincipal() instanceof OidcUser oidcUser) {
         boolean isAdmin = oidcUser.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
-        model.addAttribute("isAdmin", isAdmin);
+        model.addAttribute(PageController.MODEL_ATTR_IS_ADMIN, isAdmin);
       } else if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_API_USER"))) {
-        model.addAttribute("isAdmin", false);
+        model.addAttribute(PageController.MODEL_ATTR_IS_ADMIN, false);
       }
     }
   }
 
   private void addSystemStatus(Model model) {
-    model.addAttribute("systemFrozen", settingService.isFrozen());
+    model.addAttribute(PageController.MODEL_ATTR_SYSTEM_FROZEN, settingService.isFrozen());
   }
 }

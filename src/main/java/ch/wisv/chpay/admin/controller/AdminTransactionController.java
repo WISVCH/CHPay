@@ -88,7 +88,7 @@ public class AdminTransactionController extends AdminController {
       requestId = ((PaymentTransaction) transaction).getRequest().getRequest_id().toString();
     }
 
-    model.addAttribute(MODEL_ATTR_TX, transaction);
+    model.addAttribute(MODEL_ATTR_TRANSACTION, transaction);
     model.addAttribute(MODEL_ATTR_REFUND_ID, refundId);
     model.addAttribute(MODEL_ATTR_REQUEST_ID, requestId);
     model.addAttribute(

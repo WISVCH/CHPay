@@ -19,11 +19,11 @@ public class AdminLogController extends AdminController {
     try {
       Path path = Paths.get("src/main/resources/logs/application.log");
       String logContent = Files.readString(path);
-      model.addAttribute("errorLog", logContent);
+      model.addAttribute(MODEL_ATTR_ERROR_LOG, logContent);
     } catch (IOException e) {
-      model.addAttribute("errorLog", "Unable to read error log: " + e.getMessage());
+      model.addAttribute(MODEL_ATTR_ERROR_LOG, "Unable to read error log: " + e.getMessage());
     }
-    model.addAttribute("urlPage", "adminLogs");
+    model.addAttribute(MODEL_ATTR_URL_PAGE, "adminLogs");
     return "admin-log";
   }
 }

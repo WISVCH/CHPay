@@ -42,7 +42,7 @@ public class AdminSettingsController extends AdminController {
   public String showSettingsPage(Model model) {
     // Add current settings to the model
     model.addAttribute(MODEL_ATTR_MAX_BALANCE, settingService.getMaxBalance());
-    model.addAttribute("systemFrozen", settingService.isFrozen());
+    model.addAttribute(MODEL_ATTR_SYSTEM_FROZEN, settingService.isFrozen());
     model.addAttribute(MODEL_ATTR_URL_PAGE, "systemSettings");
     return "settings";
   }

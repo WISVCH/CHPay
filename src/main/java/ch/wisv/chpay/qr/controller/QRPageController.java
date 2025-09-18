@@ -1,5 +1,6 @@
 package ch.wisv.chpay.qr.controller;
 
+import ch.wisv.chpay.core.controller.PageController;
 import ch.wisv.chpay.core.model.PaymentRequest;
 import ch.wisv.chpay.core.repository.RequestRepository;
 import ch.wisv.chpay.qr.util.QRCodeUtil;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/qr")
-public class QRPageController {
+public class QRPageController extends PageController {
 
   @Autowired RequestRepository requestRepository;
 
@@ -58,9 +59,9 @@ public class QRPageController {
             .orElseThrow(
                 () -> new NoSuchElementException("No such payment request: " + paymentRequestId));
 
-    model.addAttribute("qrCodeBase64", qrCodeBase64);
-    model.addAttribute("paymentRequest", pr);
-    model.addAttribute("paymentRequestId", paymentRequestId);
+    model.addAttribute(MODEL_ATTR_QR_CODE_BASE64, qrCodeBase64);
+    model.addAttribute(MODEL_ATTR_PAYMENT_REQUEST, pr);
+    model.addAttribute(MODEL_ATTR_PAYMENT_REQUEST_ID, paymentRequestId);
     return "qr";
   }
 }

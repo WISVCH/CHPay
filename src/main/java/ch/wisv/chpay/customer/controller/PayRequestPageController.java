@@ -1,6 +1,7 @@
 package ch.wisv.chpay.customer.controller;
 
 import ch.wisv.chpay.api.external_payment.service.ExternalPaymentServiceImpl;
+import ch.wisv.chpay.core.controller.PageController;
 import ch.wisv.chpay.core.model.User;
 import ch.wisv.chpay.core.model.transaction.ExternalTransaction;
 import ch.wisv.chpay.core.model.transaction.Transaction;
