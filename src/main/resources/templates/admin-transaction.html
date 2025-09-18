@@ -81,9 +81,9 @@
                 </div>
             </div>
             <div class="transaction-actions">
-                <button th:attr="onclick=|location.href='/admin/users/${transaction.getUser().getId()}'|" class="transaction-action-button">View User</button>
+                <button th:attr="onclick=|location.href='/admin/user/${transaction.getUser().getId()}'|" class="transaction-action-button">View User</button>
                 <a th:if="${transaction.getType().name().equals('PAYMENT') ||transaction.getType().name().equals('EXTERNAL_PAYMENT')}" href="#open-modal" class="transaction-action-button" style="align-items: center;text-decoration: none;">Refund</a>
-                <button th:if="${transaction.getType().name().equals('REFUND')}" th:attr="onclick=|location.href='/admin/transactions/${refundId}'|"  class="transaction-action-button">Original Transaction</button>
+                <button th:if="${transaction.getType().name().equals('REFUND')}" th:attr="onclick=|location.href='/admin/transaction/${refundId}'|"  class="transaction-action-button">Original Transaction</button>
                 <button th:unless="${transaction.getType().name().equals('PAYMENT') || transaction.getType().name().equals('REFUND') || transaction.getType().name().equals('EXTERNAL_PAYMENT')}" class="transaction-action-button" disabled>Refund</button>
             </div>
         </div>
@@ -132,7 +132,7 @@
         }
         //set the button for submit
         submitButton.onclick = function() {
-            location.href = '/admin/transactions/'+tx+'/refund?amount='+value.value;
+            location.href = '/admin/transaction/'+tx+'/refund?amount='+value.value;
         }
     </script>
 </div>

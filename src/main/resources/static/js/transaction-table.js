@@ -175,7 +175,7 @@ function populateTransactionsAdmin() {
         // Add event listener for the receipt button here:
         receiptButton.addEventListener('click', () => {
             console.log('Receipt clicked for:', transactions[i]);
-            location.href = "/admin/transactions/" + transactions[i].id;
+            location.href = "/admin/transaction/" + transactions[i].id;
             //  Implement your receipt viewing logic (e.g., show modal, navigate)
         });
         receiptCell.appendChild(receiptButton);

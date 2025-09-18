@@ -6,7 +6,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link th:href="@{/css/main.css}" rel="stylesheet" />
-    <link th:href="@{/css/apexcharts.css}" rel="stylesheet" />
     <title layout:title-pattern="$CONTENT_TITLE - CHPay">CHPay</title>
     <th:block layout:fragment="script"></th:block>
     <th:block layout:fragment="css"></th:block>
@@ -189,8 +188,6 @@
       <script th:src="@{/js/jquery.min.js}"></script>
       <script th:src="@{/js/dataTables.min.js}"></script>
       <script th:src="@{/js/flyonui.js}"></script>
-      <script th:src="@{/js/lodash.js}"></script>
-      <script th:src="@{/js/apexcharts.js}"></script>
     
     <!-- Notifications -->
     <div th:replace="fragments/notifications :: notifications"></div>

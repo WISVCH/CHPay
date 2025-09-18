@@ -41,12 +41,12 @@
             <div class="stat-info-text" th:if="${type.equals('outcoming-funds')}">
                 <p style="color:var(--turqoise);font-size: 3rem;" th:text="${mainStat.toString()+'EUR'}"></p>
                 <p style="font-size: 0.8rem;opacity: 70%">Average Outgoing Funds Per Month for The Specified Period</p>
-                <p style="font-size: 1.2rem;">Go Back to User: <a style="color:var(--turqoise)" th:text="${user.getOpenID()}" th:href="@{'/admin/users/'+${user.getId().toString()}}"></a></p>
+                <p style="font-size: 1.2rem;">Go Back to User: <a style="color:var(--turqoise)" th:text="${user.getOpenID()}" th:href="@{'/admin/user/'+${user.getId().toString()}}"></a></p>
             </div>
             <div class="stat-info-text" th:unless="${type.equals('outcoming-funds')}">
                 <p style="color:var(--turqoise);font-size: 3rem;" th:text="${mainStat.toString()+'EUR'}"></p>
                 <p style="font-size: 0.8rem;opacity: 70%">Average Incoming Funds Per Month for The Specified Period</p>
-                <p style="font-size: 1.2rem;">Go Back to User: <a style="color:var(--turqoise)" th:text="${user.getOpenID()}" th:href="@{'/admin/users/'+${user.getId().toString()}}"></a></p>
+                <p style="font-size: 1.2rem;">Go Back to User: <a style="color:var(--turqoise)" th:text="${user.getOpenID()}" th:href="@{'/admin/user/'+${user.getId().toString()}}"></a></p>
             </div>
             <div class="stat-download-container">
                 <select name="my-filter" class="time-select" aria-label="Time Period" id="fieldTime">

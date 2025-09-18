@@ -23,7 +23,7 @@ const fieldTime = document.getElementById("fieldTime");
 function redirectStat(){
     let stat = fieldSelect.options[ fieldSelect.selectedIndex ].value;
     let daysBack = fieldTime.options[ fieldTime.selectedIndex ].value;
-    location.href = "/admin/users/"+userId+"/stats/"+stat+"?daysBack="+daysBack;
+    location.href = "/admin/user/"+userId+"/stats/"+stat+"?daysBack="+daysBack;
 }
 searchButton.addEventListener("click", redirectStat);
 

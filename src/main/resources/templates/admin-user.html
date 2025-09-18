@@ -72,7 +72,7 @@
             <div class="user-actions">
                 <button th:attr="onclick=|location.href='/admin/transactions?userOpenIdQuery=${user.getOpenID()}'|" class="user-action-button">View Transactions</button>
                 <button id="change-rfid-button" class="user-action-button">Change RFID</button>
-                <button th:attr="onclick=|location.href='/admin/users/${user.getId()}/stats/incoming-funds'|" class="user-action-button">View Statistics</button>
+                <button th:attr="onclick=|location.href='/admin/user/${user.getId()}/stats/incoming-funds'|" class="user-action-button">View Statistics</button>
                 <button
                         style="background-color:var(--red); color: white;"
                         class="user-action-button"
@@ -113,7 +113,7 @@
                     document.getElementById("ban-modal-confirm-button").addEventListener("click", () => {
                         if (!banTarget.userId || !banTarget.action) return;
 
-                        fetch(`/admin/users/${banTarget.userId}/ban`, {
+                        fetch(`/admin/user/${banTarget.userId}/ban`, {
                             method: 'POST',
                             headers: {
                                 'X-CSRF-TOKEN': /*[[${_csrf.token}]]*/ ''

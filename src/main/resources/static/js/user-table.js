@@ -63,7 +63,7 @@ function populateUsersAdmin() {
         // Handler for view button click
         viewButton.addEventListener('click', () => {
             console.log('View clicked for:', users[i]);
-            location.href="/admin/users/"+users[i].id;
+            location.href="/admin/user/"+users[i].id;
             //  Implement your receipt viewing logic (e.g., show modal, navigate)
         });
         viewCell.appendChild(viewButton);
@@ -121,7 +121,7 @@ function closeBanModal() {
 document.getElementById("ban-modal-confirm-button").addEventListener("click", () => {
     if (!banTarget.userId || !banTarget.action) return;
 
-    fetch(`/admin/users/${banTarget.userId}/ban`, {
+    fetch(`/admin/user/${banTarget.userId}/ban`, {
         method: 'POST',
         headers: {
             'X-CSRF-TOKEN': csrfToken
