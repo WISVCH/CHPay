@@ -65,7 +65,7 @@
       <script th:src="@{/js/flyonui.js}"></script>
     
     <!-- Notifications -->
-    <div th:replace="fragments/notifications :: notifications"></div>
+    <div th:replace="~{fragments/notifications :: notifications}"></div>
     
     <!-- Additional scripts from pages -->
     <th:block layout:fragment="script"></th:block>

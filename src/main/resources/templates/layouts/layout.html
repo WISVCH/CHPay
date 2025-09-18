@@ -81,7 +81,7 @@
               
              <!-- Add Funds -->
              <li th:class="${currentUser!=null and currentUser.getBanned()} ? 'menu-disabled' : ''">
-                 <a href="/balance" th:class="${urlPage == 'balance'} ? 'menu-active' : ''">
+                 <a href="/topup" th:class="${urlPage == 'topup'} ? 'menu-active' : ''">
                      <span class="icon-[tabler--plus] size-5"></span>
                      Add Funds
                  </a>
@@ -190,7 +190,7 @@
       <script th:src="@{/js/flyonui.js}"></script>
     
     <!-- Notifications -->
-    <div th:replace="fragments/notifications :: notifications"></div>
+    <div th:replace="~{fragments/notifications :: notifications}"></div>
     
     <!-- Additional scripts from pages -->
     <th:block layout:fragment="script"></th:block>
