@@ -23,28 +23,35 @@ public class GlobalModelAttributes {
   }
 
   @ModelAttribute
-  public void addCurrentUserToModel(Model model, Authentication authentication) {
+  public void addGlobalAttributes(Model model, Authentication authentication) {
+    addCurrentUser(model, authentication);
+    addAdminStatus(model, authentication);
+    addSystemStatus(model);
+  }
+
+  private void addCurrentUser(Model model, Authentication authentication) {
+    if (authentication != null && authentication.getPrincipal() instanceof OidcUser oidcUser) {
+      String sub = oidcUser.getAttribute("sub");
+      if (sub != null) {
+        userRepository
+            .findByOpenID(sub)
+            .ifPresent(user -> model.addAttribute("currentUser", user));
+      }
+    }
+  }
+
+  private void addAdminStatus(Model model, Authentication authentication) {
     if (authentication != null) {
       if (authentication.getPrincipal() instanceof OidcUser oidcUser) {
-        String sub = oidcUser.getAttribute("sub");
-        if (sub != null) {
-          userRepository
-              .findByOpenID(sub)
-              .ifPresent(user -> model.addAttribute("currentUser", user));
-        }
-
-        if (oidcUser.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
-          model.addAttribute("isAdmin", true);
-        } else {
-          model.addAttribute("isAdmin", false);
-        }
-      } else if (authentication
-          .getAuthorities()
-          .contains(new SimpleGrantedAuthority("ROLE_API_USER"))) {
-        // API user authentication - no currentUser or admin status
+        boolean isAdmin = oidcUser.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        model.addAttribute("isAdmin", isAdmin);
+      } else if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_API_USER"))) {
         model.addAttribute("isAdmin", false);
       }
     }
+  }
+
+  private void addSystemStatus(Model model) {
     model.addAttribute("systemFrozen", settingService.isFrozen());
   }
 }
