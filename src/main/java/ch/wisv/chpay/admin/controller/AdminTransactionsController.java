@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.time.YearMonth;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -39,6 +40,7 @@ public class AdminTransactionsController extends AdminController {
   public String getPage(
       RedirectAttributes redirectAttributes,
       Model model,
+      HttpServletRequest request,
       @RequestParam(required = false) String yearMonth) {
 
     YearMonth selectedYearMonth;
@@ -46,7 +48,13 @@ public class AdminTransactionsController extends AdminController {
     // Parse yearMonth parameter or redirect to most recent
     if (yearMonth == null || yearMonth.trim().isEmpty()) {
       selectedYearMonth = adminTransactionService.getMostRecentYearMonth();
-      return "redirect:/admin/transactions?yearMonth=" + selectedYearMonth;
+      String queryString = request.getQueryString();
+      String preservedParams = "";
+      if (queryString != null && !queryString.isEmpty()) {
+        // Remove yearMonth parameter if it exists, keep others
+        preservedParams = "&" + queryString.replaceAll("(&?)yearMonth=[^&]*(&?)", "").replaceAll("^&|&$", "");
+      }
+      return "redirect:/admin/transactions?yearMonth=" + selectedYearMonth + preservedParams;
     }
 
     try {
@@ -54,7 +62,13 @@ public class AdminTransactionsController extends AdminController {
     } catch (DateTimeParseException e) {
       // Invalid format, redirect to most recent month
       selectedYearMonth = adminTransactionService.getMostRecentYearMonth();
-      return "redirect:/admin/transactions?yearMonth=" + selectedYearMonth;
+      String queryString = request.getQueryString();
+      String preservedParams = "";
+      if (queryString != null && !queryString.isEmpty()) {
+        // Remove yearMonth parameter if it exists, keep others
+        preservedParams = "&" + queryString.replaceAll("(&?)yearMonth=[^&]*(&?)", "").replaceAll("^&|&$", "");
+      }
+      return "redirect:/admin/transactions?yearMonth=" + selectedYearMonth + preservedParams;
     }
 
     // Get all transactions for the specified month

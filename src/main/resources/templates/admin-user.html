@@ -1,145 +1,343 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/admin-layout}">
+      layout:decorate="~{layouts/layout}">
 <head>
-    <title>User</title>
-    <th:block layout:fragment="css">
-        <link rel="stylesheet" th:href="@{/css/style.css}"/>
-        <meta name="_csrf" th:content="${_csrf.token}"/>
-        <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
-    </th:block>
-    <th:block layout:fragment="script">
-        <script th:src="@{/js/rfid-change.js}"></script>
-        <script th:inline="javascript">
-            /*<![CDATA[*/
-            window.userOpenId = /*[[${user.getOpenID()}]]*/ '';
-            /*]]>*/
-        </script>
-    </th:block>
+    <title>User Details</title>
 </head>
-<script th:src="@{/js/cookies.js}"></script>
-<body>
-<div layout:fragment="content">
 
-    <div class="main-content-user">
-        <div class="card-user user-info-card">
-            <div class="card-header-user">
-                <h1>User Info</h1>
-            </div>
-            <div class="user-info-container">
-                <div class="user-info">
-                    <div class="user-info-desc">
-                        <p>ID:</p>
+<body>
+<div layout:fragment="main-content">
+        <!-- Header Section -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-base-content mb-2">User Details</h1>
+            <p class="text-base-content/70 text-lg">Complete user information and management</p>
+        </div>
+
+        <!-- User Details Card -->
+        <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow mb-8">
+            <div class="card-body">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="avatar avatar-placeholder">
+                        <div class="bg-primary/20 text-primary size-12 rounded-full">
+                            <span class="icon-[tabler--user] size-6"></span>
+                        </div>
                     </div>
-                    <p th:text="${user.getId()}"></p>
+                    <div>
+                        <h3 class="card-title text-xl">User Information</h3>
+                        <p class="text-base-content/70">Complete user details and management</p>
+                    </div>
                 </div>
-                <div class="user-info">
-                    <div class="user-info-desc">
-                        <p>RFID:</p>
+
+                <div class="space-y-4">
+                    <!-- Name -->
+                    <div class="py-2 border-b border-base-content/10">
+                        <div class="text-base-content/70 text-sm mb-1">Name</div>
+                        <div th:text="${user.name}">John Doe</div>
                     </div>
-                    <p th:text="${user.getRfid()} ?: 'Not available'"></p>
-                    <i id="clear-rfid-button" class="fa-solid fa-trash-can remove-rfid"></i>
+
+                    <!-- Email -->
+                    <div class="py-2 border-b border-base-content/10">
+                        <div class="text-base-content/70 text-sm mb-1">Email</div>
+                        <div th:text="${user.email}">john.doe@example.com</div>
+                    </div>
+
+                    <!-- Current Balance -->
+                    <div class="py-2 border-b border-base-content/10">
+                        <div class="text-base-content/70 text-sm mb-1">Current Balance</div>
+                        <div class="font-mono text-lg text-success" 
+                             th:text="'€' + ${#numbers.formatDecimal(user.balance, 1, 2)}">€0.00</div>
+                    </div>
+
+                    <!-- Account Status -->
+                    <div class="py-2 border-b border-base-content/10">
+                        <div class="text-base-content/70 text-sm mb-1">Account Status</div>
+                        <div>
+                            <span th:if="${user.banned}" class="badge badge-soft badge-error badge-sm">Banned</span>
+                            <span th:unless="${user.banned}" class="badge badge-soft badge-success badge-sm">Active</span>
+                        </div>
+                    </div>
+
+                    <!-- OpenID -->
+                    <div class="py-2 border-b border-base-content/10">
+                        <div class="text-base-content/70 text-sm mb-1">OpenID</div>
+                        <div class="font-mono text-sm" th:text="${user.openID}">user123</div>
+                    </div>
+
+                    <!-- RFID -->
+                    <div class="py-2 border-b border-base-content/10">
+                        <div class="text-base-content/70 text-sm mb-1">RFID</div>
+                        <div class="flex items-center justify-between">
+                            <span class="font-mono text-sm" th:text="${user.rfid} ?: 'Not available'">Not available</span>
+                            <div class="flex gap-2">
+                                <button class="btn btn-secondary btn-sm" id="change-rfid-button">
+                                    <span class="icon-[tabler--edit] size-4"></span>
+                                    Change
+                                </button>
+                                <button th:if="${user.rfid != null}" 
+                                        class="btn btn-error btn-sm" 
+                                        id="clear-rfid-button">
+                                    <span class="icon-[tabler--trash] size-4"></span>
+                                    Clear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User ID -->
+                    <div class="py-2 border-b border-base-content/10">
+                        <div class="text-base-content/70 text-sm mb-1">User ID</div>
+                        <div class="font-mono text-sm" th:text="${user.getId()}">abc-123-def-456</div>
+                    </div>
                 </div>
-                <div class="user-info">
-                    <div class="user-info-desc">
-                        <p>Name:</p>
-                    </div>
-                    <p th:text="${user.getName()}"></p>
-                </div>
-                <div class="user-info">
-                    <div class="user-info-desc">
-                        <p>OpenID:</p>
-                    </div>
-                    <p th:text="${user.getOpenID()}"></p>
-                </div>
-                <div class="user-info">
-                    <div class="user-info-desc">
-                        <p>Email:</p>
-                    </div>
-                    <p th:text="${user.getEmail()}"></p>
+
+                <!-- Action Buttons -->
+                <div class="card-actions justify-end pt-4 border-base-content/10 mt-6 gap-3">
+                    <button class="btn btn-primary view-transactions-btn" 
+                            th:data-user-id="${user.getId()}">
+                        <span class="icon-[tabler--receipt] size-4"></span>
+                        View Transactions
+                    </button>
+                    <button class="btn btn-primary view-statistics-btn" 
+                            th:data-user-id="${user.getId()}">
+                        <span class="icon-[tabler--chart-bar] size-4"></span>
+                        View Statistics
+                    </button>
+                    <button class="btn ban-user-btn" 
+                            th:data-user-id="${user.getId()}"
+                            th:data-user-name="${user.name}"
+                            th:data-action="${user.banned} ? 'unban' : 'ban'"
+                            th:class="${user.banned} ? 'btn btn-success ban-user-btn' : 'btn btn-error ban-user-btn'">
+                        <span th:class="${user.banned} ? 'icon-[tabler--user-check] size-4' : 'icon-[tabler--user-x] size-4'"></span>
+                        <span th:text="${user.banned} ? 'Unban User' : 'Ban User'">Ban User</span>
+                    </button>
                 </div>
             </div>
         </div>
-        <div class="card-user" style="height: 40%; align-items: normal;">
-            <div class="card-header-user">
-                <h1>Financial Overview</h1>
-            </div>
-            <div class="user-info-balance">
-                <p>Balance:</p>
-                <p style="color:var(--turqoise); font-size: clamp(1rem, 2.75vw, 3rem);" th:text="${user.getBalance().toString()+'EUR'}"></p>
-            </div>
-            <div class="user-actions">
-                <button th:attr="onclick=|location.href='/admin/transactions?userOpenIdQuery=${user.getOpenID()}'|" class="user-action-button">View Transactions</button>
-                <button id="change-rfid-button" class="user-action-button">Change RFID</button>
-                <button th:attr="onclick=|location.href='/admin/user/${user.getId()}/stats/incoming-funds'|" class="user-action-button">View Statistics</button>
-                <button
-                        style="background-color:var(--red); color: white;"
-                        class="user-action-button"
-                        th:text="${user.getBanned() ? 'Unban User' : 'Ban User'}"
-                        th:attr="data-user-id=${user.getId()}, data-action=${user.getBanned() ? 'unban' : 'ban'}"
-                        onclick="confirmBanAction(this)">
-                </button>
 
-                <script th:inline="javascript">
-                    let banTarget = { userId: null, action: null };
+    </div>
+</div>
 
-                    function confirmBanAction(button) {
-                        const userId = button.getAttribute('data-user-id');
-                        const selfId = [[${currentUser.getId()}]];
+<!-- Modals -->
+<th:block layout:fragment="modals">
+    <!-- Hidden trigger for ban confirmation modal -->
+    <button type="button" 
+            class="hidden" 
+            id="ban-confirmation-trigger"
+            aria-haspopup="dialog" 
+            aria-expanded="false" 
+            aria-controls="ban-confirmation-modal" 
+            data-overlay="#ban-confirmation-modal">
+    </button>
 
-                        if (userId === selfId) {
-                            triggerNotificationFromData({
-                                type: "message",
-                                message: "Warning: You cannot ban/unban your own account."
-                            });
-                            return;
-                        }
+    <!-- Ban/Unban Confirmation Modal -->
+    <div id="ban-confirmation-modal" 
+         class="overlay modal overlay-open:opacity-100 overlay-open:duration-300 hidden" 
+         role="dialog" 
+         tabindex="-1">
+        <div class="modal-dialog overlay-open:mt-12 overlay-open:duration-300 transition-all ease-out">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="ban-modal-title">Confirm Action</h3>
+                    <button type="button" 
+                            class="btn btn-text btn-circle btn-sm absolute end-3 top-3" 
+                            aria-label="Close" 
+                            data-overlay="#ban-confirmation-modal">
+                        <span class="icon-[tabler--x] size-4"></span>
+                    </button>
+                </div>
+                
+                <div class="modal-body">
+                    <div class="bg-base-200/50 rounded-lg p-4">
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-base-content/70">User:</span>
+                                <span id="ban-user-name">John Doe</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-base-content/70">Action:</span>
+                                <span id="ban-action-text" class="font-semibold">Ban User</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <p class="text-base-content/70" id="ban-warning-text">
+                            Are you sure you want to ban this user? They will no longer be able to make transactions.
+                        </p>
+                    </div>
+                </div>
 
-                        banTarget.userId = userId;
-                        banTarget.action = button.getAttribute('data-action');
-
-                        document.getElementById("ban-modal-title").innerText = "Confirm " + banTarget.action;
-                        document.getElementById("ban-modal-message").innerText =
-                            `Are you sure you want to ${banTarget.action} this user?`;
-
-                        document.getElementById("ban-confirm-modal").classList.add("show");
-                    }
-
-                    function closeBanModal() {
-                        document.getElementById("ban-confirm-modal").classList.remove("show");
-                    }
-
-                    document.getElementById("ban-modal-confirm-button").addEventListener("click", () => {
-                        if (!banTarget.userId || !banTarget.action) return;
-
-                        fetch(`/admin/user/${banTarget.userId}/ban`, {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': /*[[${_csrf.token}]]*/ ''
-                            }
-                        })
-                            .then(response => {
-                                if (response.ok) {
-                                    location.reload();
-                                } else {
-                                    return response.json().then(error => {
-                                        throw new Error(error.message || 'Failed to process request.');
-                                    });
-                                }
-                            })
-                            .catch(error => {
-                                triggerNotificationFromData({
-                                    type: "error",
-                                    message: "Error: " + error.message
-                                });
-                            })
-                            .finally(() => closeBanModal());
-                    });
-                </script>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-soft btn-secondary" data-overlay="#ban-confirmation-modal">Cancel</button>
+                    <button type="button" class="btn btn-error" id="confirmBanBtn">
+                        <span class="icon-[tabler--user-x] size-4" id="ban-action-icon"></span>
+                        <span id="ban-confirm-text">Ban User</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
-</div>
+</th:block>
+
+<!-- Scripts -->
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        // User management functionality
+        window.addEventListener('load', () => {
+            const viewTransactionsBtn = document.querySelector('.view-transactions-btn');
+            const viewStatisticsBtn = document.querySelector('.view-statistics-btn');
+            const banUserBtn = document.querySelector('.ban-user-btn');
+            const changeRfidBtn = document.getElementById('change-rfid-button');
+            const clearRfidBtn = document.getElementById('clear-rfid-button');
+            
+            const currentUserId = [[${currentUser.getId()}]];
+            const csrfToken = [[${_csrf.token}]];
+            const userOpenId = [[${user.getOpenID()}]];
+
+            // View Transactions functionality
+            if (viewTransactionsBtn) {
+                viewTransactionsBtn.addEventListener('click', function() {
+                    const userId = this.getAttribute('data-user-id');
+                    window.location.href = `/admin/transactions?search=${encodeURIComponent(userId)}`;
+                });
+            }
+
+            // View Statistics functionality
+            if (viewStatisticsBtn) {
+                viewStatisticsBtn.addEventListener('click', function() {
+                    const userId = this.getAttribute('data-user-id');
+                    window.location.href = `/admin/user/${userId}/stats/incoming-funds`;
+                });
+            }
+
+            // Ban/unban confirmation function (same as admin-user-table.html)
+            function confirmBanAction(button) {
+                const userId = button.getAttribute('data-user-id');
+                const userName = button.getAttribute('data-user-name');
+                const action = button.getAttribute('data-action');
+
+                if (userId === currentUserId) {
+                    triggerNotificationFromData({
+                        type: "warning",
+                        message: "You cannot ban/unban your own account."
+                    });
+                    return;
+                }
+
+                // Update modal content
+                document.getElementById('ban-user-name').textContent = userName;
+                document.getElementById('ban-action-text').textContent = action === 'ban' ? 'Ban User' : 'Unban User';
+                
+                const warningText = action === 'ban' 
+                    ? 'Are you sure you want to ban this user? They will no longer be able to make transactions.'
+                    : 'Are you sure you want to unban this user? They will be able to make transactions again.';
+                document.getElementById('ban-warning-text').textContent = warningText;
+                
+                // Update button styling and text
+                const confirmBtn = document.getElementById('confirmBanBtn');
+                const actionIcon = document.getElementById('ban-action-icon');
+                const confirmText = document.getElementById('ban-confirm-text');
+                
+                if (action === 'ban') {
+                    confirmBtn.className = 'btn btn-error';
+                    actionIcon.className = 'icon-[tabler--user-x] size-4';
+                    confirmText.textContent = 'Ban User';
+                } else {
+                    confirmBtn.className = 'btn btn-success';
+                    actionIcon.className = 'icon-[tabler--user-check] size-4';
+                    confirmText.textContent = 'Unban User';
+                }
+                
+                // Store data for final action
+                window.pendingBanAction = { userId, action };
+                
+                // Show modal
+                const modalTrigger = document.getElementById('ban-confirmation-trigger');
+                if (modalTrigger) {
+                    modalTrigger.click();
+                }
+            }
+
+            // Execute ban/unban action
+            function executeBanAction(userId, action) {
+                triggerNotificationFromData({
+                    type: 'info',
+                    message: `Processing ${action} action...`
+                });
+
+                fetch(`/admin/user/${userId}/ban`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        triggerNotificationFromData({
+                            type: 'success',
+                            message: `User ${action === 'ban' ? 'banned' : 'unbanned'} successfully.`
+                        });
+                        setTimeout(() => location.reload(), 1000);
+                    } else {
+                        return response.json().then(error => {
+                            throw new Error(error.message || 'Failed to process request.');
+                        });
+                    }
+                })
+                .catch(error => {
+                    triggerNotificationFromData({
+                        type: "error",
+                        message: "Error: " + error.message
+                    });
+                });
+            }
+
+            // Modal confirmation button
+            const confirmBanBtn = document.getElementById('confirmBanBtn');
+            if (confirmBanBtn) {
+                confirmBanBtn.addEventListener('click', function() {
+                    if (window.pendingBanAction) {
+                        const { userId, action } = window.pendingBanAction;
+                        executeBanAction(userId, action);
+                        
+                        // Close modal
+                        const closeBtn = document.querySelector('[data-overlay="#ban-confirmation-modal"]');
+                        if (closeBtn) {
+                            closeBtn.click();
+                        }
+                    }
+                });
+            }
+
+            // Ban button click handler
+            if (banUserBtn) {
+                banUserBtn.addEventListener('click', function() {
+                    confirmBanAction(this);
+                });
+            }
+
+            // RFID functionality (minimal changes from original)
+            if (changeRfidBtn) {
+                changeRfidBtn.addEventListener('click', function() {
+                    // Trigger existing RFID change functionality
+                    if (typeof changeRfid === 'function') {
+                        changeRfid();
+                    }
+                });
+            }
+
+            if (clearRfidBtn) {
+                clearRfidBtn.addEventListener('click', function() {
+                    // Trigger existing RFID clear functionality
+                    if (typeof clearRfid === 'function') {
+                        clearRfid();
+                    }
+                });
+            }
+        });
+    </script>
+    <script th:src="@{/js/rfid-change.js}"></script>
+</th:block>
 </body>
 </html>

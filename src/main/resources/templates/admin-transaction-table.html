@@ -28,8 +28,12 @@
                             "ordering": true,
                             "columnDefs": [
                                 {
-                                    "targets": [0, 1, 2, 4, 5, 6],
+                                    "targets": [0, 1, 2, 4, 5, 6, 7],
                                     "orderable": false
+                                },
+                                {
+                                    "targets": [7],
+                                    "visible": false
                                 }
                             ],
                             "pagingOptions": {
@@ -153,6 +157,7 @@
                                             </div>
                                         </th>
                                         <th scope="col" class="--exclude-from-ordering">Actions</th>
+                                        <th scope="col" class="--exclude-from-ordering" style="display: none;">User ID</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -210,6 +215,9 @@
                                                 <span class="icon-[tabler--eye] size-5"></span>
                                             </button>
                                         </td>
+
+                                        <!-- Hidden User ID Column (for search) -->
+                                        <td style="display: none;" th:text="${transaction.user.id}">550e8400-e29b-41d4-a716-446655440000</td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -308,9 +316,24 @@
                     yearMonthSelect.addEventListener('change', function() {
                         const selectedYearMonth = this.value;
                         if (selectedYearMonth) {
-                            window.location.href = `/admin/transactions?yearMonth=${selectedYearMonth}`;
+                            // Preserve current search term when switching months
+                            const currentSearch = document.getElementById('transactions-search').value;
+                            const searchParam = currentSearch ? `&search=${encodeURIComponent(currentSearch)}` : '';
+                            window.location.href = `/admin/transactions?yearMonth=${selectedYearMonth}${searchParam}`;
                         }
                     });
+                }
+
+                // Restore search state from URL parameters
+                const urlParams = new URLSearchParams(window.location.search);
+                const savedSearch = urlParams.get('search');
+                if (savedSearch) {
+                    const searchInput = document.getElementById('transactions-search');
+                    if (searchInput) {
+                        searchInput.value = decodeURIComponent(savedSearch);
+                        // Trigger the search in DataTable
+                        dataTable.search(savedSearch).draw();
+                    }
                 }
 
                 // View Details Function
