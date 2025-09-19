@@ -5,17 +5,16 @@ import ch.wisv.chpay.core.exception.InsufficientBalanceException;
 import ch.wisv.chpay.core.model.User;
 import ch.wisv.chpay.core.repository.UserRepository;
 import ch.wisv.chpay.core.service.UserService;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.UUID;
 
 @RestController
 @RequestMapping(path = "/api/rfid", produces = MediaType.APPLICATION_JSON_VALUE)

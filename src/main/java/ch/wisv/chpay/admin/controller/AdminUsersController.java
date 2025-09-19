@@ -2,6 +2,7 @@ package ch.wisv.chpay.admin.controller;
 
 import ch.wisv.chpay.core.service.NotificationService;
 import ch.wisv.chpay.core.service.UserService;
+import java.time.format.DateTimeParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -9,8 +10,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.time.format.DateTimeParseException;
 
 @Controller
 @PreAuthorize("hasRole('ADMIN')")
@@ -21,9 +20,7 @@ public class AdminUsersController extends AdminController {
   private final NotificationService notificationService;
 
   @Autowired
-  protected AdminUsersController(
-      UserService userService,
-      NotificationService notificationService) {
+  protected AdminUsersController(UserService userService, NotificationService notificationService) {
     super();
     this.userService = userService;
     this.notificationService = notificationService;
@@ -36,9 +33,7 @@ public class AdminUsersController extends AdminController {
    * @return String
    */
   @GetMapping
-  public String getPage(
-      RedirectAttributes redirectAttributes,
-      Model model)
+  public String getPage(RedirectAttributes redirectAttributes, Model model)
       throws DateTimeParseException {
 
     model.addAttribute(MODEL_ATTR_URL_PAGE, "adminUsers");

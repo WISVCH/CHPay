@@ -6,6 +6,7 @@ import ch.wisv.chpay.core.model.PendingWebhook;
 import ch.wisv.chpay.core.model.transaction.ExternalTransaction;
 import ch.wisv.chpay.core.repository.PendingWebhookRepository;
 import ch.wisv.chpay.core.repository.TransactionRepository;
+import java.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,8 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-
-import java.time.Instant;
 
 @Service
 public class ExternalPaymentServiceImpl implements ExternalPaymentService {

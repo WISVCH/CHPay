@@ -5,18 +5,15 @@ import ch.wisv.chpay.core.model.User;
 import ch.wisv.chpay.core.model.transaction.*;
 import ch.wisv.chpay.core.model.transaction.Transaction.TransactionStatus;
 import jakarta.persistence.LockModeType;
-import org.springframework.data.domain.Pageable;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
   List<Transaction> findByUser(User user);
@@ -94,22 +91,19 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
   List<Transaction> findAllSuccessfulForRequest(
       @Param("requestId") UUID requestId, @Param("status") TransactionStatus status);
 
-  /**
-   * Find all transactions for a given year and month.
-   */
+  /** Find all transactions for a given year and month. */
   @Query(
       """
         SELECT t
-        FROM Transaction t 
-        WHERE YEAR(t.timestamp) = :year 
-        AND MONTH(t.timestamp) = :month 
+        FROM Transaction t
+        WHERE YEAR(t.timestamp) = :year
+        AND MONTH(t.timestamp) = :month
         ORDER BY t.timestamp DESC
       """)
-  List<Transaction> findTransactionsByYearAndMonth(@Param("year") int year, @Param("month") int month);
+  List<Transaction> findTransactionsByYearAndMonth(
+      @Param("year") int year, @Param("month") int month);
 
-  /**
-   * Get distinct year-month combinations from all transactions.
-   */
+  /** Get distinct year-month combinations from all transactions. */
   @Query(
       """
         SELECT DISTINCT YEAR(t.timestamp), MONTH(t.timestamp)

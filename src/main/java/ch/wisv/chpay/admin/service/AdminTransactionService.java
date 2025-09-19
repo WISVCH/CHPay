@@ -2,14 +2,13 @@ package ch.wisv.chpay.admin.service;
 
 import ch.wisv.chpay.core.model.transaction.Transaction;
 import ch.wisv.chpay.core.repository.TransactionRepository;
+import java.time.YearMonth;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.YearMonth;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class AdminTransactionService {
@@ -42,7 +41,8 @@ public class AdminTransactionService {
   @Transactional(readOnly = true)
   @PreAuthorize("hasRole('ADMIN')")
   public List<YearMonth> getAllPossibleMonths() {
-    List<Object[]> yearMonthCombinations = transactionRepository.findDistinctYearMonthCombinations();
+    List<Object[]> yearMonthCombinations =
+        transactionRepository.findDistinctYearMonthCombinations();
     return yearMonthCombinations.stream()
         .map(obj -> YearMonth.of((Integer) obj[0], (Integer) obj[1]))
         .collect(Collectors.toList());

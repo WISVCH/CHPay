@@ -2,6 +2,10 @@ package ch.wisv.chpay.admin.controller;
 
 import ch.wisv.chpay.admin.service.AdminTransactionService;
 import ch.wisv.chpay.core.model.transaction.Transaction;
+import jakarta.servlet.http.HttpServletRequest;
+import java.time.YearMonth;
+import java.time.format.DateTimeParseException;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -10,11 +14,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import jakarta.servlet.http.HttpServletRequest;
-import java.time.YearMonth;
-import java.time.format.DateTimeParseException;
-import java.util.List;
 
 @Controller
 @PreAuthorize("hasRole('ADMIN')")
@@ -52,7 +51,8 @@ public class AdminTransactionsController extends AdminController {
       String preservedParams = "";
       if (queryString != null && !queryString.isEmpty()) {
         // Remove yearMonth parameter if it exists, keep others
-        preservedParams = "&" + queryString.replaceAll("(&?)yearMonth=[^&]*(&?)", "").replaceAll("^&|&$", "");
+        preservedParams =
+            "&" + queryString.replaceAll("(&?)yearMonth=[^&]*(&?)", "").replaceAll("^&|&$", "");
       }
       return "redirect:/admin/transactions?yearMonth=" + selectedYearMonth + preservedParams;
     }
@@ -66,13 +66,15 @@ public class AdminTransactionsController extends AdminController {
       String preservedParams = "";
       if (queryString != null && !queryString.isEmpty()) {
         // Remove yearMonth parameter if it exists, keep others
-        preservedParams = "&" + queryString.replaceAll("(&?)yearMonth=[^&]*(&?)", "").replaceAll("^&|&$", "");
+        preservedParams =
+            "&" + queryString.replaceAll("(&?)yearMonth=[^&]*(&?)", "").replaceAll("^&|&$", "");
       }
       return "redirect:/admin/transactions?yearMonth=" + selectedYearMonth + preservedParams;
     }
 
     // Get all transactions for the specified month
-    List<Transaction> transactions = adminTransactionService.getTransactionsByYearMonth(selectedYearMonth);
+    List<Transaction> transactions =
+        adminTransactionService.getTransactionsByYearMonth(selectedYearMonth);
 
     // Get all possible months for the dropdown
     List<YearMonth> allPossibleMonths = adminTransactionService.getAllPossibleMonths();
@@ -81,7 +83,7 @@ public class AdminTransactionsController extends AdminController {
     model.addAttribute(MODEL_ATTR_TRANSACTIONS, transactions);
     model.addAttribute(MODEL_ATTR_SELECTED_YEAR_MONTH, selectedYearMonth);
     model.addAttribute(MODEL_ATTR_ALL_POSSIBLE_MONTHS, allPossibleMonths);
- 
+
     model.addAttribute(MODEL_ATTR_URL_PAGE, "adminTransactions");
 
     return "admin-transaction-table";

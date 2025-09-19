@@ -1,6 +1,5 @@
 package ch.wisv.chpay.customer.controller;
 
-
 import ch.wisv.chpay.core.controller.PageController;
 import ch.wisv.chpay.core.service.NotificationService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,25 +21,25 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HomeController extends PageController {
 
-    private final NotificationService notificationService;
+  private final NotificationService notificationService;
 
-    public HomeController(NotificationService notificationService) {
-        this.notificationService = notificationService;
-    }
+  public HomeController(NotificationService notificationService) {
+    this.notificationService = notificationService;
+  }
 
-    @GetMapping("/")
-    public String root() {
-        return "redirect:/index";
-    }
+  @GetMapping("/")
+  public String root() {
+    return "redirect:/index";
+  }
 
-    @PreAuthorize("hasAnyRole('USER', 'BANNED')")
-    @GetMapping("/index")
-    public String index() {
-        return "index"; // Renders templates/index.html
-    }
+  @PreAuthorize("hasAnyRole('USER', 'BANNED')")
+  @GetMapping("/index")
+  public String index() {
+    return "index"; // Renders templates/index.html
+  }
 
-    @GetMapping("/error")
-    public String handleError() {
-        return "error"; // refers to templates/error.html
-    }
+  @GetMapping("/error")
+  public String handleError() {
+    return "error"; // refers to templates/error.html
+  }
 }

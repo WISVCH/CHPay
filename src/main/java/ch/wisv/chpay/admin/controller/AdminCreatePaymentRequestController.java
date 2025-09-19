@@ -2,6 +2,7 @@ package ch.wisv.chpay.admin.controller;
 
 import ch.wisv.chpay.core.model.PaymentRequest;
 import ch.wisv.chpay.core.service.RequestService;
+import java.math.BigDecimal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -11,12 +12,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.math.BigDecimal;
-
 @Controller
 @PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/admin/createPaymentRequest")
-public class AdminCreatePaymentRequestController extends AdminController{
+public class AdminCreatePaymentRequestController extends AdminController {
 
   private final RequestService requestService;
 

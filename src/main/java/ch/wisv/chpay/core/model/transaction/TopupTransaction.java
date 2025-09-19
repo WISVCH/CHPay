@@ -4,9 +4,8 @@ import ch.wisv.chpay.core.model.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import lombok.Setter;
-
 import java.math.BigDecimal;
+import lombok.Setter;
 
 @Entity
 @DiscriminatorValue("TOPUP")

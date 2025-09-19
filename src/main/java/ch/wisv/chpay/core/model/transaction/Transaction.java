@@ -3,13 +3,12 @@ package ch.wisv.chpay.core.model.transaction;
 import ch.wisv.chpay.core.model.PaymentRequest;
 import ch.wisv.chpay.core.model.User;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)

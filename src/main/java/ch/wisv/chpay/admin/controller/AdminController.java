@@ -5,6 +5,7 @@ import ch.wisv.chpay.core.controller.PageController;
 abstract class AdminController extends PageController {
   /** Model attr Url Page. */
   static final String MODEL_ATTR_USERS = "users";
+
   static final String MODEL_ATTR_STATUS = "status";
   static final String MODEL_ATTR_BALANCE = "balanceAvailable";
   static final String MODEL_ATTR_INCOMING = "incomingFunds";

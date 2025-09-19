@@ -12,6 +12,8 @@ import ch.wisv.chpay.core.repository.TransactionRepository;
 import ch.wisv.chpay.core.service.NotificationService;
 import ch.wisv.chpay.core.service.RequestService;
 import ch.wisv.chpay.core.service.TransactionService;
+import java.util.NoSuchElementException;
+import java.util.UUID;
 import javassist.NotFoundException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -22,9 +24,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.NoSuchElementException;
-import java.util.UUID;
 
 @Controller
 @PreAuthorize("hasRole('USER') and !hasRole('BANNED')")
@@ -40,12 +39,11 @@ public class PaymentController extends PageController {
   private final ExternalPaymentServiceImpl externalPaymentServiceImpl;
 
   protected PaymentController(
-          RequestService requestService,
-          TransactionService transactionService,
-            NotificationService notificationService,
-          TransactionRepository transactionRepository,
-            ExternalPaymentServiceImpl externalPaymentServiceImpl
-          ) {
+      RequestService requestService,
+      TransactionService transactionService,
+      NotificationService notificationService,
+      TransactionRepository transactionRepository,
+      ExternalPaymentServiceImpl externalPaymentServiceImpl) {
     super();
     this.requestService = requestService;
     this.transactionService = transactionService;
@@ -123,17 +121,17 @@ public class PaymentController extends PageController {
   @PreAuthorize("hasRole('USER') and !hasRole('BANNED')")
   @GetMapping(value = "pay")
   public String getPage(
-          Model model, @RequestParam(name = "tx") String tx, RedirectAttributes redirectAttributes) {
+      Model model, @RequestParam(name = "tx") String tx, RedirectAttributes redirectAttributes) {
     Transaction transaction =
-            transactionService
-                    .getTransactionById(UUID.fromString(tx))
-                    .orElseThrow(() -> new NoSuchElementException("Transaction not found"));
+        transactionService
+            .getTransactionById(UUID.fromString(tx))
+            .orElseThrow(() -> new NoSuchElementException("Transaction not found"));
     if (transaction.getType().equals(Transaction.TransactionType.EXTERNAL_PAYMENT)) {
       return "redirect:/payment/externalcomplete/" + transaction.getId();
     }
 
     transactionService.fullfillTransaction(
-            transaction.getId(), (User) model.getAttribute("currentUser"));
+        transaction.getId(), (User) model.getAttribute("currentUser"));
 
     notificationService.addSuccessMessage(redirectAttributes, "Authorized Transaction");
     return "redirect:/payment/complete/" + tx;
@@ -148,12 +146,12 @@ public class PaymentController extends PageController {
   @PreAuthorize("hasAnyRole('USER', 'BANNED')")
   @GetMapping("/complete/{key}")
   public String depositSuccess(
-          @PathVariable String key, RedirectAttributes redirectAttributes, Model model)
-          throws NotFoundException {
+      @PathVariable String key, RedirectAttributes redirectAttributes, Model model)
+      throws NotFoundException {
     Transaction t =
-            transactionRepository
-                    .findById(UUID.fromString(key))
-                    .orElseThrow(() -> new NotFoundException(key));
+        transactionRepository
+            .findById(UUID.fromString(key))
+            .orElseThrow(() -> new NotFoundException(key));
     model.addAttribute(MODEL_ATTR_TRANSACTION_ID, key);
     return switch (t.getStatus()) {
       case Transaction.TransactionStatus.PENDING -> "pending";
@@ -178,12 +176,12 @@ public class PaymentController extends PageController {
   @PreAuthorize("hasRole('USER') and !hasRole('BANNED')")
   @GetMapping("/externalcomplete/{id}")
   public String completeExternalTransaction(@PathVariable String id, Model model)
-          throws RestClientException {
+      throws RestClientException {
     ExternalTransaction transaction =
-            (ExternalTransaction)
-                    transactionRepository
-                            .findById(UUID.fromString(id))
-                            .orElseThrow(() -> new NoSuchElementException("Transaction not found"));
+        (ExternalTransaction)
+            transactionRepository
+                .findById(UUID.fromString(id))
+                .orElseThrow(() -> new NoSuchElementException("Transaction not found"));
 
     if (transaction.getStatus() != ExternalTransaction.TransactionStatus.PENDING) {
       return "redirect:" + transaction.getFallbackUrl(); // already paid, just redirect to events.

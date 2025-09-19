@@ -4,6 +4,8 @@ import ch.wisv.chpay.core.model.transaction.Transaction;
 import ch.wisv.chpay.core.repository.TransactionRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import java.math.BigDecimal;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
@@ -12,9 +14,6 @@ import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.UUID;
 
 @Service
 public class MailService {

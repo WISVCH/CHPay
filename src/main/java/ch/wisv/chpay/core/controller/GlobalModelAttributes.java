@@ -43,9 +43,12 @@ public class GlobalModelAttributes {
   private void addAdminStatus(Model model, Authentication authentication) {
     if (authentication != null) {
       if (authentication.getPrincipal() instanceof OidcUser oidcUser) {
-        boolean isAdmin = oidcUser.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        boolean isAdmin =
+            oidcUser.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
         model.addAttribute(PageController.MODEL_ATTR_IS_ADMIN, isAdmin);
-      } else if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_API_USER"))) {
+      } else if (authentication
+          .getAuthorities()
+          .contains(new SimpleGrantedAuthority("ROLE_API_USER"))) {
         model.addAttribute(PageController.MODEL_ATTR_IS_ADMIN, false);
       }
     }

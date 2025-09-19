@@ -10,25 +10,20 @@ import ch.wisv.chpay.core.model.transaction.*;
 import ch.wisv.chpay.core.repository.RequestRepository;
 import ch.wisv.chpay.core.repository.TransactionRepository;
 import jakarta.persistence.LockTimeoutException;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 import org.hibernate.dialect.lock.PessimisticEntityLockException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 @Service
 public class TransactionService {

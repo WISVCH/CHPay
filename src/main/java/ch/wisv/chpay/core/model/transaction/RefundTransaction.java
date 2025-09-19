@@ -5,9 +5,8 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import lombok.Setter;
-
 import java.math.BigDecimal;
+import lombok.Setter;
 
 @Entity
 @DiscriminatorValue("REFUND")

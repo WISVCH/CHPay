@@ -4,9 +4,8 @@ import ch.wisv.chpay.core.model.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import lombok.Getter;
-
 import java.math.BigDecimal;
+import lombok.Getter;
 
 @Entity
 @DiscriminatorValue("EXTERNAL_PAYMENT")

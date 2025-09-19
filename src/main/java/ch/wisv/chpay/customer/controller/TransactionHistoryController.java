@@ -5,6 +5,9 @@ import ch.wisv.chpay.core.model.transaction.Transaction;
 import ch.wisv.chpay.core.service.NotificationService;
 import ch.wisv.chpay.core.service.TransactionService;
 import ch.wisv.chpay.customer.service.MailService;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +19,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @Controller
 public class TransactionHistoryController extends CustomerController {
@@ -81,11 +80,13 @@ public class TransactionHistoryController extends CustomerController {
 
       // Check if user is admin
       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-      boolean isAdmin = authentication.getAuthorities().stream()
-          .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+      boolean isAdmin =
+          authentication.getAuthorities().stream()
+              .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
 
       // Get the transaction to verify ownership
-      Optional<Transaction> transactionOpt = transactionService.getTransactionById(UUID.fromString(id));
+      Optional<Transaction> transactionOpt =
+          transactionService.getTransactionById(UUID.fromString(id));
       if (transactionOpt.isEmpty()) {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
       }

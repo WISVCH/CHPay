@@ -5,13 +5,12 @@ import ch.wisv.chpay.api.external_payment.model.CHPaymentResponse;
 import ch.wisv.chpay.api.external_payment.service.ExternalPaymentServiceImpl;
 import ch.wisv.chpay.core.model.transaction.Transaction;
 import ch.wisv.chpay.core.repository.TransactionRepository;
+import java.util.Optional;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/events")
@@ -51,7 +50,6 @@ public class ExternalPaymentController {
    * of the payment.
    *
    * @param PaymentId the id of the transaction
-   * @param response the HttpServletResponse
    * @return Response entity containing the status ( one of {@code FAILED}, {@code PENDING} {@code
    *     SUCCESSFUL}
    */

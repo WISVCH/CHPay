@@ -2,12 +2,11 @@ package ch.wisv.chpay.core.model;
 
 import ch.wisv.chpay.core.exception.InsufficientBalanceException;
 import jakarta.persistence.*;
+import java.math.BigDecimal;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.math.BigDecimal;
-import java.util.UUID;
 
 @Entity
 @Table(

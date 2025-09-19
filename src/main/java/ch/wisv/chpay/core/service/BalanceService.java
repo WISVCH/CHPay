@@ -11,6 +11,8 @@ import ch.wisv.chpay.core.model.transaction.Transaction;
 import ch.wisv.chpay.core.repository.TransactionRepository;
 import ch.wisv.chpay.core.repository.UserRepository;
 import jakarta.persistence.LockTimeoutException;
+import java.math.BigDecimal;
+import java.util.NoSuchElementException;
 import org.hibernate.dialect.lock.PessimisticEntityLockException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +22,6 @@ import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.util.NoSuchElementException;
 
 @Service
 public class BalanceService {

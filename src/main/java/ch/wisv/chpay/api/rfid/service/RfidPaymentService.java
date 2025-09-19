@@ -6,11 +6,10 @@ import ch.wisv.chpay.core.model.User;
 import ch.wisv.chpay.core.model.transaction.PaymentTransaction;
 import ch.wisv.chpay.core.service.RequestService;
 import ch.wisv.chpay.core.service.TransactionService;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RfidPaymentService {
