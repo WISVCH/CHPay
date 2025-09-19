@@ -50,9 +50,9 @@ public class TransactionHistoryController extends CustomerController {
   public String getSimplifiedTransactionsPage(Model model) {
     User currentUser = (User) model.getAttribute("currentUser");
 
-    // Get all transactions for the user (no pagination for simplicity)
+    // Get all transactions for the user
     List<ch.wisv.chpay.core.model.transaction.Transaction> transactions =
-        transactionService.getTransactionsForUserPageable(currentUser, 0, Integer.MAX_VALUE);
+        transactionService.getTransactionsForUser(currentUser);
 
     // Sort transactions by date in descending order (most recent first)
     transactions.sort((t1, t2) -> t2.getTimestamp().compareTo(t1.getTimestamp()));

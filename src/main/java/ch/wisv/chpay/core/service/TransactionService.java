@@ -349,17 +349,14 @@ public class TransactionService {
   }
 
   /**
-   * Gets a list of the transactions for a given user for a certain page.
+   * Gets a list of the transactions for a given user.
    *
    * @param user The user to get the transactions for.
-   * @param page The page number to get
-   * @param size how many transactions by page
    * @return A list of transactions for the given user.
    */
   @Transactional(readOnly = true)
-  public List<Transaction> getTransactionsForUserPageable(User user, long page, long size) {
-    Pageable pageable = PageRequest.of(((int) page), ((int) size));
-    return transactionRepository.findByUser(user, pageable);
+  public List<Transaction> getTransactionsForUser(User user) {
+    return transactionRepository.findByUser(user);
   }
 
   /**

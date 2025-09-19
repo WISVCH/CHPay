@@ -19,7 +19,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
-  List<Transaction> findByUser(User user, Pageable pageable);
+  List<Transaction> findByUser(User user);
 
   @Query(
       "SELECT SUM(t.amount) FROM Transaction t WHERE t.type='TOP_UP' AND t.status='SUCCESSFUL' AND t.timestamp BETWEEN :dateStart AND :dateEnd")
