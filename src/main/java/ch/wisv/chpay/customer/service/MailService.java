@@ -1,4 +1,4 @@
-package ch.wisv.chpay.core.service;
+package ch.wisv.chpay.customer.service;
 
 import ch.wisv.chpay.core.model.transaction.Transaction;
 import ch.wisv.chpay.core.repository.TransactionRepository;

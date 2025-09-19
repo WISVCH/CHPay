@@ -41,7 +41,7 @@
                     <div class="grid grid-rows-2 sm:grid-cols-2 sm:grid-rows-1 gap-4 w-full">
                         <!-- Pay Button -->
                         <button th:if="${transaction.amount.abs()}<=${currentUser.balance}" 
-                                th:attr="onclick=|location.href='/payTransaction?tx=${transaction.id}'|" 
+                                th:attr="onclick=|location.href='/payment/pay?tx=${transaction.id}'|"
                                 class="btn btn-primary btn-xl sm:btn-lg">
                             Pay
                         </button>

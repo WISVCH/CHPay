@@ -1,4 +1,4 @@
-package ch.wisv.chpay.core.service;
+package ch.wisv.chpay.customer.service;
 
 import be.woutschoovaerts.mollie.Client;
 import be.woutschoovaerts.mollie.ClientBuilder;
@@ -13,6 +13,7 @@ import ch.wisv.chpay.core.model.transaction.TopupTransaction;
 import ch.wisv.chpay.core.model.transaction.Transaction;
 import ch.wisv.chpay.core.repository.TransactionRepository;
 import ch.wisv.chpay.core.repository.UserRepository;
+import ch.wisv.chpay.core.service.BalanceService;
 import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;

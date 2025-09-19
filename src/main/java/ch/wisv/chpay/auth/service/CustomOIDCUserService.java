@@ -1,4 +1,4 @@
-package ch.wisv.chpay.auth;
+package ch.wisv.chpay.auth.service;
 
 import ch.wisv.chpay.core.model.User;
 import ch.wisv.chpay.core.repository.UserRepository;

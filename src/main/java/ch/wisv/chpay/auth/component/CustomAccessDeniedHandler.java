@@ -1,4 +1,4 @@
-package ch.wisv.chpay.auth;
+package ch.wisv.chpay.auth.component;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

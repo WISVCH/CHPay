@@ -50,7 +50,7 @@ public class QRPageController extends PageController {
   @GetMapping("/{paymentRequestId}")
   public String showQR(@PathVariable String paymentRequestId, Model model)
       throws IOException, WriterException {
-    String paymentURL = baseUrl + "/payment/" + paymentRequestId;
+    String paymentURL = baseUrl + "/payment/request/" + paymentRequestId;
     String qrCodeBase64 = QRCodeUtil.generateQRCodeBase64(paymentURL, 250, 250);
 
     PaymentRequest pr =

@@ -57,41 +57,6 @@ public class StatisticsService {
     Statistic statistic =
         new Statistic(Statistic.StatisticType.BALANCE, userRepository.getBalanceNow());
     statisticsRepository.save(statistic);
-    saveTestRecords();
-  }
-
-  /** Temporary method to generate records for the purpose of testing the frontend */
-  @Transactional
-  public void saveTestRecords() {
-    LocalDate date = LocalDate.now();
-    for (int i = 1; i < 100; i++) {
-      // check if records have been generated for today already
-      if (statisticsRepository
-          .getFirstByTypeIsAndDate(Statistic.StatisticType.BALANCE, LocalDate.now().minusDays(i))
-          .isPresent()) {
-        // balance already saved for today
-        return;
-      }
-
-      Statistic statistic =
-          new Statistic(
-              Statistic.StatisticType.BALANCE,
-              BigDecimal.valueOf(Math.random() * 1000),
-              LocalDateTime.now().minusDays(i));
-      statisticsRepository.save(statistic);
-      Statistic statistic1 =
-          new Statistic(
-              Statistic.StatisticType.INCOMING_FUNDS,
-              BigDecimal.valueOf(Math.random() * 1000),
-              LocalDateTime.now().minusDays(i));
-      statisticsRepository.save(statistic1);
-      Statistic statistic2 =
-          new Statistic(
-              Statistic.StatisticType.OUTGOING_FUNDS,
-              BigDecimal.valueOf(Math.random() * 1000),
-              LocalDateTime.now().minusDays(i));
-      statisticsRepository.save(statistic2);
-    }
   }
 
   /**

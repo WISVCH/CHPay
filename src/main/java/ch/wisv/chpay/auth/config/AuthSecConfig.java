@@ -1,5 +1,9 @@
-package ch.wisv.chpay.auth;
+package ch.wisv.chpay.auth.config;
 
+import ch.wisv.chpay.auth.component.ApiKeyFilter;
+import ch.wisv.chpay.auth.component.CustomAccessDeniedHandler;
+import ch.wisv.chpay.auth.service.CustomOIDCUserService;
+import ch.wisv.chpay.auth.component.OAuth2FailureHandler;
 import ch.wisv.chpay.core.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

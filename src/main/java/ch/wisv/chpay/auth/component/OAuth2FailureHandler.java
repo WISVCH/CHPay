@@ -1,4 +1,4 @@
-package ch.wisv.chpay.auth;
+package ch.wisv.chpay.auth.component;
 
 import ch.wisv.chpay.core.service.NotificationService;
 import jakarta.servlet.http.HttpServletRequest;

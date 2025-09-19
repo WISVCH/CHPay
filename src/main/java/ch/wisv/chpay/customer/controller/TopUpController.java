@@ -7,7 +7,7 @@ import ch.wisv.chpay.core.model.transaction.TopupTransaction;
 import ch.wisv.chpay.core.model.transaction.Transaction;
 import ch.wisv.chpay.core.repository.TransactionRepository;
 import ch.wisv.chpay.core.service.BalanceService;
-import ch.wisv.chpay.core.service.DepositService;
+import ch.wisv.chpay.customer.service.DepositService;
 import ch.wisv.chpay.core.service.NotificationService;
 import ch.wisv.chpay.core.service.SettingService;
 import ch.wisv.chpay.core.service.TransactionService;
@@ -122,7 +122,6 @@ public class TopUpController extends CustomerController {
    * Redirects the user to a payment status page
    *
    * @param key transaction's id
-   * @param redirectAttributes
    * @return either a purgatory page, a success or fail page
    */
   @PreAuthorize("hasAnyRole('USER', 'BANNED')")

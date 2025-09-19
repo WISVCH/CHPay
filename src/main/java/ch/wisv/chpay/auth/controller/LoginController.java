@@ -1,4 +1,4 @@
-package ch.wisv.chpay.auth;
+package ch.wisv.chpay.auth.controller;
 
 import ch.wisv.chpay.core.controller.PageController;
 import ch.wisv.chpay.core.service.NotificationService;
@@ -27,43 +27,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
  * confirming that logout has been completed successfully.
  */
 @Controller
-public class HomeController extends PageController {
+public class LoginController extends PageController {
 
   private final NotificationService notificationService;
 
-  public HomeController(NotificationService notificationService) {
+  public LoginController(NotificationService notificationService) {
     this.notificationService = notificationService;
-  }
-
-  @GetMapping("/")
-  public String root() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication != null
-        && authentication.isAuthenticated()
-        && !(authentication instanceof AnonymousAuthenticationToken)) {
-
-      /* HOW TO ACCESS THE USER ATTRIBUTES:
-      // Retreive principal and cast it to OAuth2User which is the type of authentication we use
-      OAuth2User principal = (OAuth2User) authentication.getPrincipal();
-      // principal will have getAttributes() method
-      System.out.println("attributes: " + principal.getAttributes());
-      */
-
-      return "redirect:/index";
-    }
-    return "redirect:/login";
-  }
-
-  @PreAuthorize("hasAnyRole('USER', 'BANNED')")
-  @GetMapping("/index")
-  public String index() {
-    return "index"; // Renders templates/index.html
-  }
-
-  @PreAuthorize("hasAnyRole('USER', 'BANNED')")
-  @GetMapping("/dashboard")
-  public String home() {
-    return "dashboard"; // refers to templates/dashboard.html
   }
 
   @GetMapping("/login")
@@ -101,11 +70,6 @@ public class HomeController extends PageController {
     notificationService.addInfoMessage(
         redirectAttributes, "You have been banned/unbanned. Please contact support.");
     return "redirect:/login";
-  }
-
-  @GetMapping("/error")
-  public String handleError() {
-    return "error"; // refers to templates/error.html
   }
 
   @GetMapping("/logout-success")
