@@ -3,6 +3,7 @@ package ch.wisv.chpay.core.repository;
 import ch.wisv.chpay.core.model.User;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
@@ -19,25 +20,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
   Optional<User> findById(UUID id);
 
-  List<User> findBy(Pageable pageable);
-
-  List<User> findAllByNameContainingIgnoreCase(String name);
-
   @Query("SELECT SUM(u.balance) FROM User u")
   BigDecimal getBalanceNow();
-
-  List<User> findAllByNameContainingIgnoreCase(String name, Pageable pageable);
-
-  List<User> findAllByBalanceBetween(
-      BigDecimal balanceAfter, BigDecimal balanceBefore, Pageable pageable);
-
-  List<User> findAllByEmailContainingIgnoreCase(String email, Pageable pageable);
-
-  long countAllByBalanceBetween(BigDecimal balanceAfter, BigDecimal balanceBefore);
-
-  long countAllByNameContainingIgnoreCase(String name);
-
-  long countAllByEmailContainingIgnoreCase(String email);
 
   @Lock(LockModeType.PESSIMISTIC_WRITE)
   @Query("SELECT u FROM User u WHERE u.openID = :openID")
@@ -47,15 +31,5 @@ public interface UserRepository extends JpaRepository<User, UUID> {
   @Query("SELECT u FROM User u WHERE u.id = :id")
   User findByIdForUpdate(@Param("id") UUID id);
 
-  @Lock(LockModeType.PESSIMISTIC_WRITE)
-  @Query("SELECT u FROM User u WHERE u.openID = :open_id")
-  User findByOpenIDForUpdate(@Param("open_id") String open_id);
-
-  @Lock(LockModeType.PESSIMISTIC_WRITE)
-  @Query("SELECT u FROM User u WHERE u.email = :email")
-  Optional<User> findAndLockByEmail(String email);
-
   Optional<User> findByRfid(String rfid);
-
-  Optional<User> findByEmail(String email);
 }

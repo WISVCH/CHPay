@@ -42,7 +42,7 @@ public class AdminUsersController extends AdminController {
       throws DateTimeParseException {
 
     model.addAttribute(MODEL_ATTR_URL_PAGE, "adminUsers");
-    model.addAttribute(MODEL_ATTR_USERS, userService.getAllUsers(0, Integer.MAX_VALUE));
+    model.addAttribute(MODEL_ATTR_USERS, userService.getAllUsers());
     return "admin-user-table";
   }
 }

@@ -19,46 +19,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
-  List<Transaction> findByUserId(UUID userId);
-
-  List<Transaction> findByUserId(UUID userId, Pageable pageable);
-
   List<Transaction> findByUser(User user, Pageable pageable);
-
-  List<Transaction> findBy(Pageable pageable);
-
-  List<Transaction> findByUserAndTypeIn(
-      User user, Collection<Transaction.TransactionType> type, Pageable pageable);
-
-  long countByUser(User user);
-
-  long countByUserAndTypeIn(User user, Collection<Transaction.TransactionType> type);
-
-  List<Transaction> findTransactionsByTimestampBetween(
-      LocalDateTime timestampAfter, LocalDateTime timestampBefore, Pageable pageable);
-
-  List<Transaction> findTransactionByAmountBetween(
-      BigDecimal amountUnder, BigDecimal amountOver, Pageable pageable);
-
-  List<Transaction> findTransactionByUserIn(Collection<User> users, Pageable pageable);
-
-  List<Transaction> findTransactionsByDescriptionContainingIgnoreCase(
-      String description, Pageable pageable);
-
-  List<Transaction> findTransactionByTypeInAndStatusIn(
-      Collection<Transaction.TransactionType> types,
-      Collection<Transaction.TransactionStatus> statuses,
-      Pageable pageable);
-
-  long countByUser_Id(UUID userId);
-
-  long countTransactionsByTimestampBetween(LocalDateTime dateBefore, LocalDateTime dateAfter);
-
-  long countTransactionsByAmountBetween(BigDecimal amount, BigDecimal amountOver);
-
-  long countTransactionsByUserIn(Collection<User> users);
-
-  long countTransactionsByDescriptionContainsIgnoreCase(String description);
 
   @Query(
       "SELECT SUM(t.amount) FROM Transaction t WHERE t.type='TOP_UP' AND t.status='SUCCESSFUL' AND t.timestamp BETWEEN :dateStart AND :dateEnd")
@@ -89,10 +50,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
       LocalDateTime timestampAfter,
       LocalDateTime timestampBefore,
       Transaction.TransactionStatus status);
-
-  long countTransactionByTypeInAndStatusIn(
-      Collection<Transaction.TransactionType> types,
-      Collection<Transaction.TransactionStatus> statuses);
 
   @Lock(LockModeType.PESSIMISTIC_WRITE)
   @Query("SELECT t FROM TopupTransaction t WHERE t.id = :id")
@@ -142,7 +99,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
    */
   @Query(
       """
-        SELECT t 
+        SELECT t
         FROM Transaction t 
         WHERE YEAR(t.timestamp) = :year 
         AND MONTH(t.timestamp) = :month 
@@ -156,7 +113,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
   @Query(
       """
         SELECT DISTINCT YEAR(t.timestamp), MONTH(t.timestamp)
-        FROM Transaction t 
+        FROM Transaction t
         ORDER BY YEAR(t.timestamp) DESC, MONTH(t.timestamp) DESC
       """)
   List<Object[]> findDistinctYearMonthCombinations();
