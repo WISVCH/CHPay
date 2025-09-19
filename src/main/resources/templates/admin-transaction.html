@@ -100,6 +100,12 @@
                     <div class="font-mono text-warning" th:text="'€' + ${#numbers.formatDecimal(transaction.amount.abs().subtract(refundPossible), 1, 2)}">€0.00</div>
                     </div>
 
+                <!-- Mollie ID (for top-ups) -->
+                <div th:if="${transaction.getType().name().equals('TOP_UP') && transaction.hasMollieId()}" class="py-2 border-b border-base-content/10">
+                    <div class="text-base-content/70 text-sm mb-1">Mollie ID</div>
+                    <div class="font-mono text-sm" th:text="${transaction.getMollieId()}">mol_abc123</div>
+                </div>
+
                 <!-- Request ID (for payments) -->
                 <div th:if="${requestId != null}" class="py-2 border-b border-base-content/10">
                     <div class="text-base-content/70 text-sm mb-1">Request ID</div>
