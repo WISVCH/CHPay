@@ -16,8 +16,9 @@ abstract class AdminController extends PageController {
   static final String MODEL_ATTR_REFUND_ID = "refundId";
   static final String MODEL_ATTR_REQUEST_ID = "requestId";
   static final String MODEL_ATTR_REFUND_POSSIBLE = "refundPossible";
-  static final String MODEL_ATTR_PAGE_FILTERS = "pageFilters";
-  static final String MODEL_ATTR_SORTING_PARAMS = "sortingParams";
   static final String MODEL_ATTR_USER = "user";
   static final String MODEL_ATTR_ERROR_LOG = "errorLog";
+  static final String MODEL_ATTR_TRANSACTIONS = "transactions";
+  static final String MODEL_ATTR_SELECTED_YEAR_MONTH = "selectedYearMonth";
+  static final String MODEL_ATTR_ALL_POSSIBLE_MONTHS = "allPossibleMonths";
 }

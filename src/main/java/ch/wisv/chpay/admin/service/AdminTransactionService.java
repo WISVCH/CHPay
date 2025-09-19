@@ -4,21 +4,34 @@ import ch.wisv.chpay.admin.util.TransactionJSONConverter;
 import ch.wisv.chpay.core.dto.PaginationInfo;
 import ch.wisv.chpay.core.model.User;
 import ch.wisv.chpay.core.model.transaction.Transaction;
+import ch.wisv.chpay.core.repository.TransactionRepository;
 import ch.wisv.chpay.core.service.TransactionService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AdminTransactionService {
+
+  private final TransactionRepository transactionRepository;
+
+  @Autowired
+  public AdminTransactionService(TransactionRepository transactionRepository) {
+    this.transactionRepository = transactionRepository;
+  }
 
   /**
    * Retrieves a list of transaction types based on the provided input string. If the input string
@@ -389,5 +402,47 @@ public class AdminTransactionService {
         transactionsService.countTransactionsByTypeAndStatus(
             getTransactionTypes(type), getTransactionStatus(status));
     return PaginationInfo.buildPaginationInfo(transactionsSize, page, size);
+  }
+
+  /**
+   * Gets all transactions for a given YearMonth.
+   *
+   * @param yearMonth the YearMonth to filter transactions
+   * @return a list of Transaction objects for the specified month
+   */
+  @Transactional(readOnly = true)
+  @PreAuthorize("hasRole('ADMIN')")
+  public List<Transaction> getTransactionsByYearMonth(YearMonth yearMonth) {
+    return transactionRepository.findTransactionsByYearAndMonth(
+        yearMonth.getYear(), yearMonth.getMonthValue());
+  }
+
+  /**
+   * Gets all possible months that have transactions.
+   *
+   * @return a list of YearMonth objects containing available year-month combinations
+   */
+  @Transactional(readOnly = true)
+  @PreAuthorize("hasRole('ADMIN')")
+  public List<YearMonth> getAllPossibleMonths() {
+    List<Object[]> yearMonthCombinations = transactionRepository.findDistinctYearMonthCombinations();
+    return yearMonthCombinations.stream()
+        .map(obj -> YearMonth.of((Integer) obj[0], (Integer) obj[1]))
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * Gets the most recent month that has transactions.
+   *
+   * @return the most recent YearMonth with transactions, or current month if none exist
+   */
+  @Transactional(readOnly = true)
+  @PreAuthorize("hasRole('ADMIN')")
+  public YearMonth getMostRecentYearMonth() {
+    List<YearMonth> availableMonths = getAllPossibleMonths();
+    if (!availableMonths.isEmpty()) {
+      return availableMonths.get(0); // First item since ordered DESC
+    }
+    return YearMonth.now(); // Fallback to current month
   }
 }

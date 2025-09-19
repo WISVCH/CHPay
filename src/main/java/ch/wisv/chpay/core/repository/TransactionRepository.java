@@ -136,4 +136,28 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
       """)
   List<Transaction> findAllSuccessfulForRequest(
       @Param("requestId") UUID requestId, @Param("status") TransactionStatus status);
+
+  /**
+   * Find all transactions for a given year and month.
+   */
+  @Query(
+      """
+        SELECT t 
+        FROM Transaction t 
+        WHERE YEAR(t.timestamp) = :year 
+        AND MONTH(t.timestamp) = :month 
+        ORDER BY t.timestamp DESC
+      """)
+  List<Transaction> findTransactionsByYearAndMonth(@Param("year") int year, @Param("month") int month);
+
+  /**
+   * Get distinct year-month combinations from all transactions.
+   */
+  @Query(
+      """
+        SELECT DISTINCT YEAR(t.timestamp), MONTH(t.timestamp)
+        FROM Transaction t 
+        ORDER BY YEAR(t.timestamp) DESC, MONTH(t.timestamp) DESC
+      """)
+  List<Object[]> findDistinctYearMonthCombinations();
 }
