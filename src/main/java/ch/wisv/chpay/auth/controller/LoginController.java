@@ -3,7 +3,6 @@ package ch.wisv.chpay.auth.controller;
 import ch.wisv.chpay.core.controller.PageController;
 import ch.wisv.chpay.core.service.NotificationService;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

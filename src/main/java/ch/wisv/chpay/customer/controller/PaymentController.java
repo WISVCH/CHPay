@@ -12,9 +12,6 @@ import ch.wisv.chpay.core.repository.TransactionRepository;
 import ch.wisv.chpay.core.service.NotificationService;
 import ch.wisv.chpay.core.service.RequestService;
 import ch.wisv.chpay.core.service.TransactionService;
-import java.util.NoSuchElementException;
-import java.util.UUID;
-
 import javassist.NotFoundException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -25,6 +22,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.NoSuchElementException;
+import java.util.UUID;
 
 @Controller
 @PreAuthorize("hasRole('USER') and !hasRole('BANNED')")

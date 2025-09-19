@@ -5,10 +5,11 @@ import ch.wisv.chpay.core.dto.PaginationInfo;
 import ch.wisv.chpay.core.model.User;
 import ch.wisv.chpay.core.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.stereotype.Service;
 
 @Service
 public class AdminUserService {

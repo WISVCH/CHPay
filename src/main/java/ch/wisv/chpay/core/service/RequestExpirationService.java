@@ -3,12 +3,13 @@ package ch.wisv.chpay.core.service;
 import ch.wisv.chpay.core.model.PaymentRequest;
 import ch.wisv.chpay.core.repository.RequestRepository;
 import jakarta.transaction.Transactional;
-import java.time.LocalDateTime;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class RequestExpirationService {

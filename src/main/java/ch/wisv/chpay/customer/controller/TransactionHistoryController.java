@@ -2,12 +2,9 @@ package ch.wisv.chpay.customer.controller;
 
 import ch.wisv.chpay.core.model.User;
 import ch.wisv.chpay.core.model.transaction.Transaction;
-import ch.wisv.chpay.customer.service.MailService;
 import ch.wisv.chpay.core.service.NotificationService;
 import ch.wisv.chpay.core.service.TransactionService;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import ch.wisv.chpay.customer.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +16,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Controller
 public class TransactionHistoryController extends CustomerController {

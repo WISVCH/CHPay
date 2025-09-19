@@ -2,10 +2,11 @@ package ch.wisv.chpay.admin.model;
 
 import ch.wisv.chpay.core.model.transaction.RefundTransaction;
 import ch.wisv.chpay.core.model.transaction.Transaction;
+import lombok.Getter;
+
 import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
-import lombok.Getter;
 
 @Getter
 public class TransactionJSON {

@@ -1,10 +1,11 @@
 package ch.wisv.chpay.core.model;
 
 import jakarta.persistence.*;
-import java.time.Instant;
-import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.time.Instant;
+import java.util.UUID;
 
 @Getter
 @Setter

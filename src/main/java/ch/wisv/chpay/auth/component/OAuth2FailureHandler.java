@@ -3,12 +3,13 @@ package ch.wisv.chpay.auth.component;
 import ch.wisv.chpay.core.service.NotificationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.FlashMap;
 import org.springframework.web.servlet.support.SessionFlashMapManager;
+
+import java.io.IOException;
 
 @Component
 public class OAuth2FailureHandler implements AuthenticationFailureHandler {

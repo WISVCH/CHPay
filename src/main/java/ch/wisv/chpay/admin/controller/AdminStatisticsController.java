@@ -3,8 +3,6 @@ package ch.wisv.chpay.admin.controller;
 import ch.wisv.chpay.core.model.Statistic;
 import ch.wisv.chpay.core.service.NotificationService;
 import ch.wisv.chpay.core.service.StatisticsService;
-import java.math.BigDecimal;
-import java.util.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -14,6 +12,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.math.BigDecimal;
+import java.util.NoSuchElementException;
 
 @Controller
 @PreAuthorize("hasRole('ADMIN')")

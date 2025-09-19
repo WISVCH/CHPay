@@ -1,9 +1,13 @@
 package ch.wisv.chpay.core.model.transaction;
 
 import ch.wisv.chpay.core.model.User;
-import jakarta.persistence.*;
-import java.math.BigDecimal;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Setter;
+
+import java.math.BigDecimal;
 
 @Entity
 @DiscriminatorValue("REFUND")

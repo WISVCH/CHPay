@@ -3,6 +3,7 @@ package ch.wisv.chpay.admin.util;
 import ch.wisv.chpay.core.model.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.util.ArrayList;
 import java.util.List;
 

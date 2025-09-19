@@ -1,9 +1,10 @@
 package ch.wisv.chpay.api.external_payment.model;
 
-import java.math.BigDecimal;
-import java.util.Map;
 import lombok.Data;
 import lombok.Getter;
+
+import java.math.BigDecimal;
+import java.util.Map;
 
 @Getter
 @Data

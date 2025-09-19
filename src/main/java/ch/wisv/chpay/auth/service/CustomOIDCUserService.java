@@ -2,7 +2,6 @@ package ch.wisv.chpay.auth.service;
 
 import ch.wisv.chpay.core.model.User;
 import ch.wisv.chpay.core.repository.UserRepository;
-import java.util.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +16,8 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+
+import java.util.*;
 
 /**
  * CustomOIDCUserService is an extension of the {@link OidcUserService} class that provides custom

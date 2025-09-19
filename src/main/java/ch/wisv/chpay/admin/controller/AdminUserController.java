@@ -5,11 +5,6 @@ import ch.wisv.chpay.core.model.User;
 import ch.wisv.chpay.core.service.NotificationService;
 import ch.wisv.chpay.core.service.StatisticsService;
 import ch.wisv.chpay.core.service.UserService;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.session.SessionInformation;
@@ -20,6 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.UUID;
 
 @Controller
 @PreAuthorize("hasRole('ADMIN')")

@@ -3,8 +3,6 @@ package ch.wisv.chpay.core.service;
 import ch.wisv.chpay.core.model.SystemSettings;
 import ch.wisv.chpay.core.repository.SystemSettingsRepository;
 import jakarta.annotation.PostConstruct;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
@@ -12,6 +10,9 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Service
 public class SettingService {

@@ -5,7 +5,6 @@ import ch.wisv.chpay.core.dto.PaginationInfo;
 import ch.wisv.chpay.core.service.NotificationService;
 import ch.wisv.chpay.core.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import java.time.format.DateTimeParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -14,6 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.time.format.DateTimeParseException;
 
 @Controller
 @PreAuthorize("hasRole('ADMIN')")

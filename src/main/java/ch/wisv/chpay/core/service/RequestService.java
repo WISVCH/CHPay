@@ -8,10 +8,6 @@ import ch.wisv.chpay.core.model.transaction.Transaction;
 import ch.wisv.chpay.core.repository.RequestRepository;
 import ch.wisv.chpay.core.repository.TransactionRepository;
 import jakarta.persistence.LockTimeoutException;
-import java.math.BigDecimal;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.UUID;
 import org.hibernate.dialect.lock.PessimisticEntityLockException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.annotation.Backoff;
@@ -19,6 +15,11 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class RequestService {

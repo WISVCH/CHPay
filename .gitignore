@@ -35,8 +35,7 @@ out/
 ### VS Code ###
 .vscode/
 
-src/main/resources/logs/application.log
-*.log
+logs/
 
 ## Nix
 .direnv/

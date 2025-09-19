@@ -5,9 +5,6 @@ import ch.wisv.chpay.core.model.PaymentRequest;
 import ch.wisv.chpay.core.repository.RequestRepository;
 import ch.wisv.chpay.qr.util.QRCodeUtil;
 import com.google.zxing.WriterException;
-import java.io.IOException;
-import java.util.NoSuchElementException;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,6 +13,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.io.IOException;
+import java.util.NoSuchElementException;
+import java.util.UUID;
 
 @Controller
 @PreAuthorize("hasRole('ADMIN')")

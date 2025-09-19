@@ -5,6 +5,7 @@ import ch.wisv.chpay.core.model.transaction.Transaction;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+
 import java.util.ArrayList;
 import java.util.List;
 
