@@ -4,7 +4,6 @@
       layout:decorate="~{layouts/basic-layout}">
 <head>
     <title>QR Payment</title>
-    <th:block layout:fragment="css"></th:block>
     <th:block layout:fragment="script">
         <meta name="_csrf" th:content="${_csrf.token}"/>
         <meta name="_csrf_header" th:content="${_csrf.headerName}"/>

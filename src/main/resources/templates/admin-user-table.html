@@ -1,118 +1,280 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/admin-layout}">
+      layout:decorate="~{layouts/layout}">
 <head>
-    <meta charset="UTF-8">
     <title>Users</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-    />
 </head>
-<body>
 
-<div layout:fragment="content">
-    <script th:inline="javascript">
-        const currentUserId = [[${currentUser.getId()}]];
-        const csrfToken = /*[[${_csrf.token}]]*/ '';
-    </script>
-    <div class="transactions-container">
-        <div class="transaction-info-header">
-            <h2 class="transactions-title">Users</h2>
-            <select name="my-filter" aria-label="Filter by" id="fieldFilter">
-                <button>
-                            <span aria-hidden="true">
-                                <span>Filter by :</span>
-                                <selectedcontent></selectedcontent>
-                            </span>
-                    <span class="arrow">
-                                <i class="fa-solid fa-angle-down"></i>
-                            </span>
-                </button>
-                <option value="balance">Balance</option>
-                <option value="email">User Email</option>
-                <option value="name">User Name</option>
-            </select>
-        </div>
-        <div class="filter-field">
-            <div class="search" style="display: none" id="fieldEmail">
-                <input type="text" class="search-field" id="usersEmailSearch" placeholder="User Email">
+<body>
+    <div layout:fragment="main-content">
+        <div class="container max-w-6xl mx-auto">
+            <!-- Header Section -->
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-base-content mb-2">Users</h1>
+                <p class="text-base-content/70 text-lg">View and manage users</p>
             </div>
-            <div class="search" style="display: none" id="fieldName">
-                <input type="text" class="search-field" id="usersNameSearch" placeholder="User Name">
+
+            <!-- DataTable Card -->
+            <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow">
+                <div class="card-body p-0">
+                    <div
+                        id="users-datatable"
+                        class="flex flex-col"
+                        data-datatable='{
+                            "pageLength": 5,
+                            "paging": true,
+                            "searching": true,
+                            "ordering": true,
+                            "columnDefs": [
+                                {
+                                    "targets": [0, 1, 2, 4],
+                                    "orderable": false
+                                }
+                            ],
+                            "pagingOptions": {
+                                "pageBtnClasses": "btn btn-text btn-circle btn-sm"
+                            },
+                            "language": {
+                                "zeroRecords": "<div class=\"py-10 px-5 flex flex-col justify-center items-center text-center\"><span class=\"icon-[tabler--search] shrink-0 size-6 text-base-content\"></span><div class=\"max-w-sm mx-auto\"><p class=\"mt-2 text-sm text-base-content/80\">No users found</p></div></div>"
+                            }
+                        }'
+                    >
+                        <!-- Search and Controls Header -->
+                        <div class="border-base-content/25 flex items-center border-b px-5 py-3 gap-3">
+                            <div class="input input-sm max-w-60">
+                                <span class="icon-[tabler--search] text-base-content/80 my-auto me-3 size-4 shrink-0"></span>
+                                <label class="sr-only" for="users-search"></label>
+                                <input type="search" class="grow" placeholder="Search users..." id="users-search" data-datatable-search="" />
+                            </div>
+                            <div class="flex flex-1 items-center justify-end gap-3">
+                                <!-- Select -->
+                                <select
+                                    data-select='{
+                                        "placeholder": "Select option...",
+                                        "toggleTag": "<button type=\"button\" aria-expanded=\"false\"></button>",
+                                        "toggleClasses": "advance-select-toggle advance-select-sm",
+                                        "dropdownClasses": "advance-select-menu w-24 max-sm:w-16",
+                                        "optionClasses": "advance-select-option selected:select-active",
+                                        "optionTemplate": "<div class=\"flex justify-between items-center w-full\"><span data-title></span><span class=\"icon-[tabler--check] shrink-0 size-3 text-primary hidden selected:block \"></span></div>",
+                                        "extraMarkup": "<span class=\"icon-[tabler--caret-up-down] shrink-0 size-4 text-base-content absolute top-1/2 end-2 -translate-y-1/2 \"></span>"
+                                    }'
+                                    class="hidden"
+                                    data-datatable-page-entities=""
+                                >
+                                    <option value="5" selected="">5</option>
+                                    <option value="10">10</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
+                                <!-- End Select -->
+                            </div>
             </div>
-            <div class="date-field" style="display: flex" id="fieldBalance">
-                <label for="startBalance" class="label-date">Start Balance:</label>
-                <div class="input-with-icon">
-                    <span class="icon">€</span>
-                    <input type="number" id="startBalance" class="number-input" min="0" max="1000">
+                        
+                        <div class="overflow-x-auto">
+                            <div class="inline-block min-w-full align-middle">
+                                <div class="overflow-hidden">
+                                    <table class="table min-w-full">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col" class="--exclude-from-ordering">
+                                                    Name
+                                                </th>
+                                                <th scope="col" class="--exclude-from-ordering">
+                                                    Email
+                                                </th>
+                                                <th scope="col" class="--exclude-from-ordering">
+                                                    OpenID
+                                                </th>
+                                                <th scope="col" class="group">
+                                                    <div class="flex items-center justify-between">
+                                                        Balance
+                                                        <span class="icon-[tabler--chevron-up] hidden datatable-ordering-asc:block"></span>
+                                                        <span class="icon-[tabler--chevron-down] hidden datatable-ordering-desc:block"></span>
                 </div>
-                <label for="endBalance" class="label-date">End Balance:</label>
-                <div class="input-with-icon">
-                    <span class="icon">€</span>
-                    <input type="number" id="endBalance" class="number-input" min="0" max="1000">
+                                                </th>
+                                                <th scope="col" class="--exclude-from-ordering">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="user : ${users}">
+                                                <!-- Name Column -->
+                                                <td th:text="${user.name}">John Doe</td>
+                                                
+                                                <!-- Email Column -->
+                                                <td th:text="${user.email}">john.doe@example.com</td>
+                                                
+                                                <!-- OpenID Column -->
+                                                <td>
+                                                    <span class="font-mono text-sm" th:text="${user.openID}">user123</span>
+                                                </td>
+                                                
+                                                <!-- Balance Column -->
+                                                <td class="font-mono">
+                                                    <span class="text-success" 
+                                                        th:text="'€' + ${#numbers.formatDecimal(user.balance, 1, 2)}">€0.00</span>
+                                                </td>
+                                                
+                                                <!-- Actions Column -->
+                                                <td>
+                                                    <div class="flex items-center gap-1">
+                                                        <button 
+                                                            type="button" 
+                                                            class="btn btn-circle btn-text btn-sm view-details-btn"
+                                                            th:data-user-id="${user.id}"
+                                                            title="View Details">
+                                                            <span class="icon-[tabler--eye] size-5"></span>
+                                                        </button>
+                                                        <button 
+                                                            type="button" 
+                                                            class="btn btn-circle btn-text btn-sm ban-user-btn"
+                                                            th:data-user-id="${user.id}"
+                                                            th:data-action="${user.banned} ? 'unban' : 'ban'"
+                                                            th:class="${user.banned} ? 'btn btn-circle btn-text btn-sm text-success ban-user-btn' : 'btn btn-circle btn-text btn-sm text-error ban-user-btn'"
+                                                            th:title="${user.banned} ? 'Unban User' : 'Ban User'">
+                                                            <span th:class="${user.banned} ? 'icon-[tabler--user-check] size-5' : 'icon-[tabler--user-x] size-5'"></span>
+                                                        </button>
+                </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+            </div>
+        </div>
+                </div>
+
+                        <!-- Pagination Footer -->
+                        <div class="border-base-content/25 flex items-center justify-between gap-3 border-t p-3 max-md:flex-wrap max-md:justify-center">
+                            <div class="text-sm text-base-content/80" data-datatable-info="">
+                                Showing
+                                <span data-datatable-info-from=""></span>
+                                to
+                                <span data-datatable-info-to=""></span>
+                                of
+                                <span data-datatable-info-length=""></span>
+                                users
+            </div>
+                            <div class="flex hidden items-center space-x-1" data-datatable-paging="">
+                                <button type="button" class="btn btn-text btn-circle btn-sm" data-datatable-paging-prev="">
+                                    <span class="icon-[tabler--chevrons-left] size-4.5 rtl:rotate-180"></span>
+                                    <span class="sr-only">Previous</span>
+                                </button>
+                                <div class="flex items-center space-x-1 [&>.active]:text-bg-soft-primary" data-datatable-paging-pages=""></div>
+                                <button type="button" class="btn btn-text btn-circle btn-sm" data-datatable-paging-next="">
+                                    <span class="sr-only">Next</span>
+                                    <span class="icon-[tabler--chevrons-right] size-4.5 rtl:rotate-180"></span>
+                                </button>
+                    </div>
+                    </div>
+                </div>
                 </div>
             </div>
-            <button class="transaction-nav-button" id="searchButt">Search</button>
         </div>
-        <div class="transactions-table">
-            <div class="table-header">
-                <div th:attr="onclick=|sortButtonsOnClick('openID', 'users', '${pageFilters}')|" id="openIDCell"
-                     class="table-cell">OpenID
-                </div>
-                <div class="table-cell">Email</div>
-                <div th:attr="onclick=|sortButtonsOnClick('name', 'users', '${pageFilters}')|" id="nameCell"
-                     class="table-cell">Name
-                </div>
-                <div th:attr="onclick=|sortButtonsOnClick('balance', 'users', '${pageFilters}')|" id="balanceCell"
-                     class="table-cell">Balance
-                </div>
-                <div class="table-cell"></div>
-            </div>
-        </div>
-        <div class="table-navigation">
-            <button th:attr="onclick=|location.href='/admin/users?page=${info.getPage()-1}${pageFilters+sortingParams}'|"
-                    id="prevButt" class="transaction-nav-button previous">←
-            </button>
-            <button th:attr="onclick=|location.href='/admin/users?page=${info.getPage()+1}${pageFilters+sortingParams}'|"
-                    id="nextButt" class="transaction-nav-button next">→
-            </button>
-        </div>
+
     </div>
 
-    <script th:src="@{/js/user-table.js}"></script>
-    <script>
-        const ORDER = "[[${order}]]";
-        const SORT_BY = "[[${sortBy}]]";
-        const page = parseInt('[[${page}]]');
+    <!-- Scripts -->
+    <th:block layout:fragment="script">
+        <script th:inline="javascript">
+            // Define global variables needed for user management
+            const currentUserId = [[${currentUser.getId()}]];
+            const csrfToken = [[${_csrf.token}]];
+        </script>
+        <script>
+            // User management functionality
+            window.addEventListener('load', () => {
+                setTimeout(() => {
+                    // Initialize DataTable
+                    const dataTable = $('#users-datatable table').DataTable()
+
+                    // Custom search function for name, email, and OpenID
+                    dataTable.search.fixed('users', (searchStr, data, index) => {
+                        if (!searchStr) return true
+                        
+                        const searchTerm = searchStr.toLowerCase()
+                        const name = data[0].toLowerCase()
+                        const email = data[1].toLowerCase()
+                        const openId = data[2].toLowerCase()
+                        
+                        return name.includes(searchTerm) || 
+                               email.includes(searchTerm) || 
+                               openId.includes(searchTerm)
+                    })
+
+                    // View user details function
+                    function viewUserDetails(userId) {
+                        window.location.href = `/admin/user/${userId}`
+                    }
+
+                    // Ban/unban confirmation function
+                    function confirmBanAction(button) {
+                        const userId = button.getAttribute('data-user-id');
+                        const action = button.getAttribute('data-action');
+
+                        if (userId === currentUserId) {
+                            triggerNotificationFromData({
+                                type: "warning",
+                                message: "You cannot ban/unban your own account."
+                            });
+                            return;
+                        }
+
+                        const confirmMessage = `Are you sure you want to ${action} this user?`;
+                        
+                        if (confirm(confirmMessage)) {
+                            executeBanAction(userId, action);
+                        }
+                    }
+                    
+                    // Execute ban/unban action
+                    function executeBanAction(userId, action) {
+                        fetch(`/admin/user/${userId}/ban`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken
+                            }
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                location.reload();
+                            } else {
+                                return response.json().then(error => {
+                                    throw new Error(error.message || 'Failed to process request.');
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            triggerNotificationFromData({
+                                type: "error",
+                                message: "Error: " + error.message
+                            });
+                        });
+                    }
+
+                    // Event delegation for action buttons
+                    if (!window.userActionsListenerAttached) {
+                        document.addEventListener('click', function(event) {
+                            // View Details button
+                            const viewButton = event.target.closest('.view-details-btn');
+                            if (viewButton) {
+                                const userId = viewButton.getAttribute('data-user-id');
+                                if (userId) {
+                                    viewUserDetails(userId);
+                                }
+                            }
+
+                            // Ban/Unban button
+                            const banButton = event.target.closest('.ban-user-btn');
+                            if (banButton) {
+                                confirmBanAction(banButton);
+                            }
+                        });
+                        window.userActionsListenerAttached = true;
+                    }
+                }, 100)
+            })
     </script>
-    <script th:src="@{/js/sort-admin-table.js}"></script>
-    <script type='module' th:src="@{/js/filter-user.js}"></script>
-    <script>
-
-        let userString = '[[${users}]]';
-        let prevButtonStatus = '[[${info.isHasPrev()}]]';
-        let nextButtonStatus = '[[${info.isHasNext()}]]';
-        userString = userString.replaceAll("&quot;", '"');
-        console.log(userString);
-        const users = JSON.parse(userString);
-        const prevButton = document.getElementById('prevButt');
-        const nextButton = document.getElementById('nextButt');
-
-        if (prevButtonStatus === 'false') {
-            prevButton.setAttribute("disabled", true);
-        }
-        if (nextButtonStatus === 'false') {
-            nextButton.setAttribute("disabled", true);
-        }
-
-        populateUsersAdmin();
-        displaySort();
-
-    </script>
-</div>
+    </th:block>
 </body>
 </html>

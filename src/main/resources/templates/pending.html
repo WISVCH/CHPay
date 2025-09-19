@@ -4,14 +4,6 @@
       layout:decorate="~{layouts/layout}">
 <head>
     <title>Payment Pending</title>
-    <th:block layout:fragment="css"></th:block>
-    <th:block layout:fragment="script">
-        <script th:inline="javascript">
-            setTimeout(function() {
-                location.reload();
-            }, 2000);
-        </script>
-    </th:block>
 </head>
 <body>
     <div layout:fragment="main-content">
@@ -51,5 +43,12 @@
             </div>
         </div>
     </div>
+    <th:block layout:fragment="script">
+        <script>
+            setTimeout(function() {
+                    location.reload();
+                }, 2000);
+        </script>
+    </th:block>
 </body>
 </html>
