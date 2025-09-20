@@ -206,17 +206,6 @@ If you want to restrict users from having access to the system due to errors or 
 - System Freeze: Temporarily disable all transactions
 - System Maximum balance: Set a Maximum balance so user do not hold a unnecessary big credits in their accounts
 
-### Statistics
-As an administrator, you can view various statistics about the system:
-- Available Balance by day
-- Income funds over time
-- Outgoing funds over time
-
-![](images/stat4.png)
-
-Statistics are shown for periods between a week and 3 years with selection box. You can query custom amount of days by setting GET param `daysBack`.
-
-Statistics can be exported to a `csv` file holding the statistics for the selected type and time period.
 
 ### Admin Logs
 The admin logs page allows you to view system logs for monitoring and troubleshooting purposes.
