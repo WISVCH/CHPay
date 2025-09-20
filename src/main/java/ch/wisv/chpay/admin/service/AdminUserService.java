@@ -10,9 +10,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-/**
- * Service for handling admin user-related operations.
- */
+/** Service for handling admin user-related operations. */
 @Service
 public class AdminUserService {
 
@@ -25,7 +23,7 @@ public class AdminUserService {
 
   /**
    * Calculates a user's balance history by processing their transactions chronologically.
-   * 
+   *
    * @param user the user to calculate balance history for
    * @return list of balance entries showing balance progression over time
    */
@@ -36,9 +34,9 @@ public class AdminUserService {
   }
 
   /**
-   * Processes a list of transactions chronologically to build balance history.
-   * Only includes transactions that affect the balance (successful, refunded, partially refunded).
-   * 
+   * Processes a list of transactions chronologically to build balance history. Only includes
+   * transactions that affect the balance (successful, refunded, partially refunded).
+   *
    * @param transactions list of transactions sorted by timestamp
    * @return list of balance entries showing balance progression over time
    */
@@ -51,13 +49,13 @@ public class AdminUserService {
         BigDecimal amount = transaction.getAmount();
         currentBalance = currentBalance.add(amount != null ? amount : BigDecimal.ZERO);
 
-        balanceHistory.add(new BalanceEntry(
-            transaction.getTimestamp(),
-            currentBalance,
-            transaction.getId().toString(),
-            transaction.getDescription(),
-            transaction.getType().toString()
-        ));
+        balanceHistory.add(
+            new BalanceEntry(
+                transaction.getTimestamp(),
+                currentBalance,
+                transaction.getId().toString(),
+                transaction.getDescription(),
+                transaction.getType().toString()));
       }
     }
 
@@ -65,15 +63,15 @@ public class AdminUserService {
   }
 
   /**
-   * Determines if a transaction should be included in balance calculation.
-   * Includes successful transactions and transactions that were later refunded.
-   * 
+   * Determines if a transaction should be included in balance calculation. Includes successful
+   * transactions and transactions that were later refunded.
+   *
    * @param status the transaction status to check
    * @return true if the transaction affects the balance
    */
   private boolean isTransactionIncludedInBalance(Transaction.TransactionStatus status) {
-    return status == Transaction.TransactionStatus.SUCCESSFUL ||
-           status == Transaction.TransactionStatus.REFUNDED ||
-           status == Transaction.TransactionStatus.PARTIALLY_REFUNDED;
+    return status == Transaction.TransactionStatus.SUCCESSFUL
+        || status == Transaction.TransactionStatus.REFUNDED
+        || status == Transaction.TransactionStatus.PARTIALLY_REFUNDED;
   }
 }

@@ -27,9 +27,7 @@ public class AdminUserController extends AdminController {
   private final AdminUserService adminUserService;
 
   @Autowired
-  protected AdminUserController(
-      UserService userService,
-      AdminUserService adminUserService) {
+  protected AdminUserController(UserService userService, AdminUserService adminUserService) {
     super();
     this.userService = userService;
     this.adminUserService = adminUserService;
@@ -59,9 +57,7 @@ public class AdminUserController extends AdminController {
 
   @GetMapping(value = "/{userKey}/stats")
   public String showUserStatPage(
-      Model model,
-      @PathVariable String userKey,
-      RedirectAttributes redirectAttributes) {
+      Model model, @PathVariable String userKey, RedirectAttributes redirectAttributes) {
     model.addAttribute(MODEL_ATTR_URL_PAGE, "adminUsers");
 
     // get the user instance
@@ -111,5 +107,4 @@ public class AdminUserController extends AdminController {
     }
     return "redirect:/admin/user/" + user.getId().toString();
   }
-
 }

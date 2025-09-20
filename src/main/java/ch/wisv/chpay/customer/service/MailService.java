@@ -36,7 +36,7 @@ public class MailService {
    * @param t the transaction
    * @param amount how much they deposited
    */
-  public void sendDepositSuccessEmail(Transaction t, BigDecimal amount) throws MailSendException{
+  public void sendDepositSuccessEmail(Transaction t, BigDecimal amount) throws MailSendException {
     String to = t.getUser().getEmail();
     try {
       MimeMessage message = mailSender.createMimeMessage();
