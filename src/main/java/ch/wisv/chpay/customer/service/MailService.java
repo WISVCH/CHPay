@@ -36,7 +36,7 @@ public class MailService {
    * @param t the transaction
    * @param amount how much they deposited
    */
-  public void sendDepositSuccessEmail(Transaction t, BigDecimal amount) {
+  public void sendDepositSuccessEmail(Transaction t, BigDecimal amount) throws MailSendException{
     String to = t.getUser().getEmail();
     try {
       MimeMessage message = mailSender.createMimeMessage();
@@ -71,7 +71,7 @@ public class MailService {
    * @param t the transaction
    * @param amount the amount of money deposited
    */
-  public void sendDepositFailEmail(Transaction t, BigDecimal amount) {
+  public void sendDepositFailEmail(Transaction t, BigDecimal amount) throws MailSendException {
     String to = t.getUser().getEmail();
     try {
       MimeMessage message = mailSender.createMimeMessage();
@@ -105,7 +105,7 @@ public class MailService {
    *
    * @param id transaction's id
    */
-  public void sendReceiptByEmail(String id) {
+  public void sendReceiptByEmail(String id) throws MailSendException {
     Transaction t = transactionRepository.findById(UUID.fromString(id)).get();
     String to = t.getUser().getEmail();
     try {

@@ -17,7 +17,7 @@ public class AdminLogController extends AdminController {
   @GetMapping
   public String getLog(Model model) {
     try {
-      Path path = Paths.get("src/main/resources/logs/application.log");
+      Path path = Paths.get("logs/application.log");
       String logContent = Files.readString(path);
       model.addAttribute(MODEL_ATTR_ERROR_LOG, logContent);
     } catch (IOException e) {

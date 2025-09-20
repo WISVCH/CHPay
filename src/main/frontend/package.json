@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "tailwind.config.js",
   "scripts": {
-    "copy-js": "cp node_modules/flyonui/flyonui.js ../resources/static/js/flyonui.js && cp node_modules/jquery/dist/jquery.min.js ../resources/static/js/jquery.min.js && cp node_modules/datatables.net/js/dataTables.min.js ../resources/static/js/dataTables.min.js",
+    "copy-js": "cp node_modules/flyonui/flyonui.js ../resources/static/js/flyonui.js && cp node_modules/jquery/dist/jquery.min.js ../resources/static/js/jquery.min.js && cp node_modules/datatables.net/js/dataTables.min.js ../resources/static/js/dataTables.min.js && cp node_modules/apexcharts/dist/apexcharts.css ../resources/static/css/apexcharts.css && cp node_modules/apexcharts/dist/apexcharts.min.js ../resources/static/js/apexcharts.min.js && cp node_modules/lodash/lodash.min.js ../resources/static/js/lodash.min.js && cp node_modules/flyonui/dist/helper-apexcharts.js ../resources/static/js/helper-apexcharts.js",
     "build": "npm run copy-js && tailwindcss -i ./styles.css -o ../resources/static/css/main.css",
     "watch": "npm run copy-js && tailwindcss --watch -i ./styles.css -o ../resources/static/css/main.css"
   },
@@ -12,9 +12,11 @@
   "description": "",
   "dependencies": {
     "@tailwindcss/cli": "^4.1.13",
+    "apexcharts": "^5.3.5",
     "datatables.net": "^2.3.4",
     "flyonui": "^2.4.0",
     "jquery": "^3.7.1",
+    "lodash": "^4.17.21",
     "tailwindcss": "^4.1.13"
   },
   "devDependencies": {

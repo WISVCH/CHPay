@@ -1,12 +1,9 @@
 package ch.wisv.chpay.admin.controller;
 
-import ch.wisv.chpay.core.model.Statistic;
+import ch.wisv.chpay.admin.model.BalanceEntry;
+import ch.wisv.chpay.admin.service.AdminUserService;
 import ch.wisv.chpay.core.model.User;
-import ch.wisv.chpay.core.service.NotificationService;
-import ch.wisv.chpay.core.service.StatisticsService;
 import ch.wisv.chpay.core.service.UserService;
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -27,18 +24,15 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class AdminUserController extends AdminController {
 
   private final UserService userService;
-  private final StatisticsService statisticsService;
-  private final NotificationService notificationService;
+  private final AdminUserService adminUserService;
 
   @Autowired
   protected AdminUserController(
       UserService userService,
-      NotificationService notificationService,
-      StatisticsService statisticsService) {
+      AdminUserService adminUserService) {
     super();
     this.userService = userService;
-    this.notificationService = notificationService;
-    this.statisticsService = statisticsService;
+    this.adminUserService = adminUserService;
   }
 
   @Autowired private SessionRegistry sessionRegistry;
@@ -63,54 +57,27 @@ public class AdminUserController extends AdminController {
     return "admin-user";
   }
 
-  @GetMapping(value = "/{userKey}/stats/{type}")
+  @GetMapping(value = "/{userKey}/stats")
   public String showUserStatPage(
       Model model,
       @PathVariable String userKey,
-      @PathVariable String type,
-      @RequestParam(required = false) String daysBack,
       RedirectAttributes redirectAttributes) {
-    // get how back the stats extend
-    int days = 90;
-    if (daysBack != null) {
-      days = Integer.parseInt(daysBack);
-    }
-    if (days < 1) {
-      throw new IllegalArgumentException("Days cannot be less than 1");
-    }
+    model.addAttribute(MODEL_ATTR_URL_PAGE, "adminUsers");
 
     // get the user instance
-    model.addAttribute(MODEL_ATTR_URL_PAGE, "adminUserStats");
     User user = userService.getUserById(userKey);
     if (user == null) {
       throw new NoSuchElementException("User not found");
     }
     model.addAttribute(MODEL_ATTR_USER, user);
 
-    // generate the statistics for the user
-    List<Statistic> stats = new ArrayList<>();
-    if (type.equals("incoming-funds")) {
+    // Calculate balance over time using AdminUserService
+    List<BalanceEntry> balanceHistory = adminUserService.calculateUserBalanceHistory(user);
+    model.addAttribute("balanceHistory", balanceHistory);
 
-      model.addAttribute(MODEL_ATTR_TYPE, "incoming-funds");
-      stats = statisticsService.getIncomeFundsPerUser(days, user);
+    // Enable charts for this page
+    model.addAttribute("hasCharts", true);
 
-    } else if (type.equals("outcoming-funds")) {
-
-      model.addAttribute(MODEL_ATTR_TYPE, "outcoming-funds");
-      stats = statisticsService.getOutgoingFundsPerUser(days, user);
-
-    } else {
-      throw new NoSuchElementException("Statistic not found");
-    }
-    BigDecimal averageFunds = statisticsService.getAverageMonthlyFundsPerUser(stats, days);
-
-    if (averageFunds != null && averageFunds.compareTo(BigDecimal.ZERO) > 0) {
-      model.addAttribute(MODEL_ATTR_MAIN_STAT, averageFunds);
-    } else {
-      model.addAttribute(MODEL_ATTR_MAIN_STAT, 0);
-    }
-
-    model.addAttribute(MODEL_ATTR_STATS, stats);
     return "admin-user-stats";
   }
 
@@ -144,4 +111,5 @@ public class AdminUserController extends AdminController {
     }
     return "redirect:/admin/user/" + user.getId().toString();
   }
+
 }

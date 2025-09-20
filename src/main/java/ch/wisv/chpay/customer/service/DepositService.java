@@ -114,12 +114,21 @@ public class DepositService {
         }
         case CANCELED, EXPIRED -> {
           balanceService.markTopUpAsFailed(transaction);
-          mailService.sendDepositFailEmail(transaction, transaction.getAmount());
+          try {
+            mailService.sendDepositFailEmail(transaction, transaction.getAmount());
+          } catch (Exception e) {
+            logger.error("Failed to send deposit fail email for transaction {}", transactionId, e);
+          }
         }
         case PAID -> {
           transaction.setStatus(Transaction.TransactionStatus.SUCCESSFUL);
           balanceService.markTopUpAsPaid(transaction);
-          mailService.sendDepositSuccessEmail(transaction, transaction.getAmount());
+          try {
+            mailService.sendDepositSuccessEmail(transaction, transaction.getAmount());
+          } catch (Exception e) {
+            logger.error(
+                "Failed to send deposit success email for transaction {}", transactionId, e);
+          }
         }
       }
       return transactionRepository.saveAndFlush(transaction);
