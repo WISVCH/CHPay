@@ -7,7 +7,19 @@
 </head>
 
 <body>
-<div layout:fragment="main-content">
+    <div layout:fragment="breadcrumbs">
+        <div class="breadcrumbs">
+            <ul>
+                <li>
+                    <a href="/admin/users">Users</a>
+                </li>
+                <li class="breadcrumbs-separator rtl:rotate-180"><span class="icon-[tabler--chevron-right]"></span></li>
+                <li aria-current="page">User Details</li>
+            </ul>
+        </div>
+    </div>
+
+    <div layout:fragment="main-content">
         <!-- Header Section -->
         <div class="mb-8">
             <h1 class="text-3xl font-bold text-base-content mb-2">User Details</h1>

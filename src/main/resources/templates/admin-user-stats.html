@@ -8,6 +8,22 @@
 </head>
 
 <body>
+    <div layout:fragment="breadcrumbs">
+        <div class="breadcrumbs">
+            <ul>
+                <li>
+                    <a href="/admin/users">Users</a>
+                </li>
+                <li class="breadcrumbs-separator rtl:rotate-180"><span class="icon-[tabler--chevron-right]"></span></li>
+                <li>
+                    <a th:href="@{/admin/user/{id}(id=${user.getId()})}">User Details</a>
+                </li>
+                <li class="breadcrumbs-separator rtl:rotate-180"><span class="icon-[tabler--chevron-right]"></span></li>
+                <li aria-current="page">Statistics</li>
+            </ul>
+        </div>
+    </div>
+
     <div layout:fragment="main-content">
         <div class="container max-w-6xl mx-auto">
             <!-- Header Section -->

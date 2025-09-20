@@ -5,9 +5,14 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/images/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg" />
+    <link rel="shortcut icon" href="/images/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="CHPay" />
+    <link rel="manifest" href="/images/site.webmanifest" />
     <link th:href="@{/css/main.css}" rel="stylesheet" />
     <title layout:title-pattern="$CONTENT_TITLE - CHPay">CHPay</title>
-    <th:block layout:fragment="script"></th:block>
     <th:block layout:fragment="css"></th:block>
 </head>
 
@@ -64,6 +69,9 @@
       <script th:src="@{/js/dataTables.min.js}"></script>
       <script th:src="@{/js/flyonui.js}"></script>
     
+    <!-- Modals Fragment -->
+    <th:block layout:fragment="modals"></th:block>
+        
     <!-- Notifications -->
     <div th:replace="~{fragments/notifications :: notifications}"></div>
     

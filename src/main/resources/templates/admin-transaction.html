@@ -7,6 +7,18 @@
 </head>
 
 <body>
+<div layout:fragment="breadcrumbs">
+    <div class="breadcrumbs">
+        <ul>
+            <li>
+                <a href="/admin/transactions">Transactions</a>
+            </li>
+            <li class="breadcrumbs-separator rtl:rotate-180"><span class="icon-[tabler--chevron-right]"></span></li>
+            <li aria-current="page">Transaction Details</li>
+        </ul>
+    </div>
+</div>
+
 <div layout:fragment="main-content">
     <div class="container max-w-4xl mx-auto">
         <!-- Header Section -->
