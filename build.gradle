@@ -121,7 +121,7 @@ jacocoTestCoverageVerification {
 
 
 // Frontend build task using npm run build
-task frontendBuild(type: NpmTask) {
+tasks.register('frontendBuild', NpmTask) {
 	description = 'Build frontend assets using npm'
 	group = 'build'
 	args = ['run', 'build']

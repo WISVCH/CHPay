@@ -1,95 +1,260 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/admin-layout}">
+      layout:decorate="~{layouts/layout}"
+      th:with="hasCharts=true">
 <head>
-    <meta charset="UTF-8">
-    <title>User Statistics</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-    />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
+    <title>User Balance History</title>
 </head>
-<body>
-<div layout:fragment="content">
 
-    <div class="stat-content" id="statContent">
-        <div class="stat-header">
-            <h2 th:if="${type.equals('outcoming-funds')}" class="transactions-title">Outgoing Funds For <span th:text="${user.getName()}"></span></h2>
-            <h2 th:unless="${type.equals('outcoming-funds')}" class="transactions-title">Incoming Funds For <span th:text="${user.getName()}"></span></h2>
-            <div class="stat-header-action">
-                <select style="width: 14rem" name="my-filter" aria-label="Statistic For" id="fieldStat">
-                    <button>
-                                <span aria-hidden="true">
-                                    <span>Statistic For</span>
-                                    <selectedcontent></selectedcontent>
-                                </span>
-                        <span class="arrow">
-                                    <i class="fa-solid fa-angle-down"></i>
-                                </span>
-                    </button>
-                    <option value="incoming-funds">Incoming Funds</option>
-                    <option value="outcoming-funds">Outgoing Funds</option>
-                </select>
-                <button class="transaction-nav-button" style="min-width: 4rem;" id="searchButt">Update</button>
-            </div>
+<body>
+    <div layout:fragment="breadcrumbs">
+        <div class="breadcrumbs">
+            <ul>
+                <li>
+                    <a href="/admin/users">Users</a>
+                </li>
+                <li class="breadcrumbs-separator rtl:rotate-180"><span class="icon-[tabler--chevron-right]"></span></li>
+                <li>
+                    <a th:href="@{/admin/user/{id}(id=${user.getId()})}">User Details</a>
+                </li>
+                <li class="breadcrumbs-separator rtl:rotate-180"><span class="icon-[tabler--chevron-right]"></span></li>
+                <li aria-current="page">Statistics</li>
+            </ul>
         </div>
-        <div class="stat-info">
-            <div class="stat-info-text" th:if="${type.equals('outcoming-funds')}">
-                <p style="color:var(--turqoise);font-size: 3rem;" th:text="${mainStat.toString()+'EUR'}"></p>
-                <p style="font-size: 0.8rem;opacity: 70%">Average Outgoing Funds Per Month for The Specified Period</p>
-                <p style="font-size: 1.2rem;">Go Back to User: <a style="color:var(--turqoise)" th:text="${user.getOpenID()}" th:href="@{'/admin/users/'+${user.getId().toString()}}"></a></p>
-            </div>
-            <div class="stat-info-text" th:unless="${type.equals('outcoming-funds')}">
-                <p style="color:var(--turqoise);font-size: 3rem;" th:text="${mainStat.toString()+'EUR'}"></p>
-                <p style="font-size: 0.8rem;opacity: 70%">Average Incoming Funds Per Month for The Specified Period</p>
-                <p style="font-size: 1.2rem;">Go Back to User: <a style="color:var(--turqoise)" th:text="${user.getOpenID()}" th:href="@{'/admin/users/'+${user.getId().toString()}}"></a></p>
-            </div>
-            <div class="stat-download-container">
-                <select name="my-filter" class="time-select" aria-label="Time Period" id="fieldTime">
-                    <button>
-                                <span aria-hidden="true">
-                                    <span>Time Period</span>
-                                    <selectedcontent></selectedcontent>
-                                </span>
-                        <span class="arrow">
-                                    <i class="fa-solid fa-angle-down"></i>
-                                </span>
-                    </button>
-                    <option value="7">1 Week</option>
-                    <option value="30">1 Month</option>
-                    <option value="90">3 Month</option>
-                    <option value="180">6 Month</option>
-                    <option value="210">9 Month</option>
-                    <option value="365">1 Year</option>
-                    <option value="1096">3 Years</option>
-                </select>
-                <a class="stat-download-button" id="downloadLink">Download CSV</a>
-            </div>
-        </div>
-        <div id="canvasWrap" class="stat-canvas"><canvas id="balance"></canvas></div>
     </div>
 
+    <div layout:fragment="main-content">
+        <div class="container max-w-6xl mx-auto">
+            <!-- Header Section -->
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-base-content mb-2">Balance History</h1>
+                <p class="text-base-content/70 text-lg">
+                    Balance progression for <span th:text="${user.getName()}" class="font-medium">User Name</span>
+                </p>
+            </div>
 
-    <script th:src="@{/js/csv-export.js}"></script>
-    <script th:inline="javascript">
-        let statString='[[${stats}]]';
-        let typeString='[[${type}]]';
-        let userIdString='[[${user.getId().toString()}]]';
-        let userNamesString='[[${user.getName()}]]';
-        let userOpenIDString='[[${user.getOpenID()}]]';
-        statString=statString.replaceAll("&quot;", '"');
-        const type=typeString.replaceAll("\"", '');
-        const userId=userIdString.replaceAll("\"", '');
-        const stats=JSON.parse(statString).reverse();
-        console.log(statString);
-        downloadJSONAsCSV(stats, type, userNamesString.replaceAll("\"", ''), userOpenIDString.replaceAll("\"", ''))
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <!-- Current Balance Card -->
+                <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow">
+                    <div class="card-body">
+                        <div class="flex items-center gap-4">
+                            <div class="avatar avatar-placeholder">
+                                <div class="bg-primary/20 text-primary size-16 rounded-full">
+                                    <span class="icon-[tabler--wallet] size-8"></span>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <h2 class="card-title text-2xl">Current Balance</h2>
+                                <div class="stat-value text-primary text-4xl">
+                                    €<span th:text="${#numbers.formatDecimal(user.balance, 1, 2)}">0.00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transaction Count Card -->
+                <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow">
+                    <div class="card-body">
+                        <div class="flex items-center gap-4">
+                            <div class="avatar avatar-placeholder">
+                                <div class="bg-secondary/20 text-secondary size-16 rounded-full">
+                                    <span class="icon-[tabler--receipt] size-8"></span>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <h2 class="card-title text-2xl">Total Transactions</h2>
+                                <div class="stat-value text-secondary text-4xl" th:text="${#lists.size(balanceHistory)}">0</div>
+                            </div>
+                        </div>
+            </div>
+        </div>
+            </div>
+
+            <!-- Balance Chart Section -->
+            <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow mb-8">
+                <div class="card-body">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="avatar avatar-placeholder">
+                            <div class="bg-secondary/20 text-secondary size-12 rounded-full">
+                                <span class="icon-[tabler--chart-line] size-6"></span>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="card-title text-xl">Balance Progression</h3>
+                            <p class="text-base-content/70">Visual representation of balance changes over time</p>
+                        </div>
+                    </div>
+                    
+                    <div th:if="${balanceHistory.empty}" class="text-center py-12">
+                        <div class="avatar avatar-placeholder mx-auto mb-4">
+                            <div class="bg-secondary/20 text-secondary size-16 rounded-full">
+                                <span class="icon-[tabler--chart-line] size-8"></span>
+                            </div>
+                        </div>
+                        <h4 class="text-lg font-medium text-base-content/70 mb-2">No Transaction Data</h4>
+                        <p class="text-base-content/50">No successful transactions found for this user.</p>
+                    </div>
+                    
+                    <div th:unless="${balanceHistory.empty}" id="balanceChart" class="w-full"></div>
+            </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Chart Script -->
+    <th:block layout:fragment="script" th:if="${not balanceHistory.empty}">
+        <script th:inline="javascript">
+            window.addEventListener('load', () => {
+                ;(function () {
+                    // Prepare chart data from Thymeleaf
+                    const balanceData = /*[[${balanceHistory}]]*/ [];
+                    
+                    // Transform data for ApexCharts datetime format
+                    const chartData = balanceData.map(entry => ({
+                        x: new Date(entry.timestamp).getTime(),
+                        y: parseFloat(entry.balance)
+                    }));
+                    
+                    // Apex Single Area Chart (Start)
+                    buildChart('#balanceChart', () => ({
+                        chart: {
+                            height: 400,
+                            type: 'area',
+                            toolbar: {
+                                show: false
+                            },
+                            zoom: {
+                                enabled: false
+                            }
+                        },
+                        series: [{
+                            name: 'Balance',
+                            data: chartData
+                        }],
+                        legend: {
+                            show: false
+                        },
+                        dataLabels: {
+                            enabled: false
+                        },
+                        stroke: {
+                            curve: 'stepline',
+                            width: 2
+                        },
+                        markers: {
+                            size: 4,
+                            hover: {
+                                size: 6
+                            }
+                        },
+                        grid: {
+                            strokeDashArray: 2,
+                            borderColor: 'color-mix(in oklab, var(--color-base-content) 40%, transparent)'
+                        },
+                        colors: ['var(--color-success)'],
+                        fill: {
+                            type: 'gradient',
+                            gradient: {
+                                shadeIntensity: 1,
+                                opacityFrom: 0.7,
+                                gradientToColors: ['var(--color-success)'],
+                                opacityTo: 0.3,
+                                stops: [0, 90, 100]
+                            }
+                        },
+                        xaxis: {
+                            type: 'datetime',
+                            axisBorder: {
+                                show: false
+                            },
+                            axisTicks: {
+                                show: false
+                            },
+                            tooltip: {
+                                enabled: false
+                            },
+                            labels: {
+                                style: {
+                                    colors: 'var(--color-base-content)',
+                                    fontSize: '12px',
+                                    fontWeight: 400
+                                },
+                                datetimeFormatter: {
+                                    year: 'yyyy',
+                                    month: 'MMM yyyy',
+                                    day: 'dd MMM',
+                                    hour: 'HH:mm'
+                                }
+                            }
+                        },
+                        yaxis: {
+                            min: 0,
+                            labels: {
+                                align: 'left',
+                                minWidth: 0,
+                                maxWidth: 140,
+                                style: {
+                                    colors: 'var(--color-base-content)',
+                                    fontSize: '12px',
+                                    fontWeight: 400
+                                },
+                                formatter: value => `€${value.toFixed(2)}`
+                            }
+                        },
+                        tooltip: {
+                            x: {
+                                format: 'dd MMM yyyy HH:mm'
+                            },
+                            y: {
+                                formatter: value => `€${value.toFixed(2)}`
+                            }
+                        },
+                        responsive: [
+                            {
+                                breakpoint: 568,
+                                options: {
+                                    chart: {
+                                        height: 300
+                                    },
+                                    xaxis: {
+                                        labels: {
+                                            style: {
+                                                fontSize: '10px',
+                                                colors: 'var(--color-base-content)'
+                                            },
+                                            datetimeFormatter: {
+                                                year: 'yyyy',
+                                                month: 'MMM',
+                                                day: 'dd',
+                                                hour: 'HH:mm'
+                                            }
+                                        }
+                                    },
+                                    yaxis: {
+                                        min: 0,
+                                        labels: {
+                                            align: 'left',
+                                            minWidth: 0,
+                                            maxWidth: 140,
+                                            style: {
+                                                fontSize: '10px',
+                                                colors: 'var(--color-base-content)'
+                                            },
+                                            formatter: value => `€${value.toFixed(2)}`
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }))
+                    // Apex Single Area Chart (End)
+                })()
+            })
     </script>
-    <script type='module' th:src="@{/js/admin-charts.js}"></script>
-    <script th:src="@{/js/statistics-user-select.js}"></script>
-</div>
+    </th:block>
 </body>
 </html>

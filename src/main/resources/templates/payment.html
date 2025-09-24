@@ -4,10 +4,7 @@
       layout:decorate="~{layouts/layout}">
 <head>
     <title>Payment</title>
-    <th:block layout:fragment="css"></th:block>
-    <th:block layout:fragment="script"></th:block>
 </head>
-<script th:src="@{/js/cookies.js}"></script>
 <body>
     <div layout:fragment="main-content">
         <div class="container max-w-2xl mx-auto py-8">
@@ -41,7 +38,7 @@
                     <div class="grid grid-rows-2 sm:grid-cols-2 sm:grid-rows-1 gap-4 w-full">
                         <!-- Pay Button -->
                         <button th:if="${transaction.amount.abs()}<=${currentUser.balance}" 
-                                th:attr="onclick=|location.href='/payTransaction?tx=${transaction.id}'|" 
+                                th:attr="onclick=|location.href='/payment/pay?tx=${transaction.id}'|"
                                 class="btn btn-primary btn-xl sm:btn-lg">
                             Pay
                         </button>
@@ -53,7 +50,7 @@
                         </button>
 
                         <!-- Top-Up Button -->
-                        <button onclick="window.open('/balance', '_blank').focus();" 
+                        <button onclick="window.open('/topup', '_blank').focus();"
                                 class="btn btn-outline btn-m sm:btn-lg">
                             <span class="icon-[tabler--plus] size-5"></span>
                             Top-Up Balance

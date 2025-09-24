@@ -1,140 +1,411 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/admin-layout}">
+      layout:decorate="~{layouts/layout}">
 <head>
-    <title>Transaction</title>
-    <th:block layout:fragment="css">
-        <link rel="stylesheet" th:href="@{/css/style.css}"/>
-    </th:block>
+    <title>Transaction Details</title>
 </head>
-<script th:src="@{/js/cookies.js}"></script>
-<body>
-<div layout:fragment="content">
 
-    <div class="main-content-transaction">
-        <div class="card-transaction" style="height: 50%;">
-            <div class="transaction-header-card">
-                <h1>Transaction Info</h1>
-            </div>
-            <div class="transaction-info-container" style="height: 70%; width: 100%;">
-                <div class="transaction-info-column">
-                    <div class="transaction-info">
-                        <div class="transaction-info-desc">
-                            <p>ID:</p>
-                        </div>
-                        <p th:text="${transaction.getId()}"></p>
-                    </div>
-                    <div th:if="${transaction.getType().name().equals('PAYMENT')}" class="transaction-info">
-                        <div class="transaction-info-desc">
-                            <p>Description:</p>
-                        </div>
-                        <p th:text="${transaction.getDescription()}"></p>
-                    </div>
-                    <div class="transaction-info">
-                        <div class="transaction-info-desc">
-                            <p>Date:</p>
-                        </div>
-                        <p th:text="${#temporals.format(transaction.getTimestamp(), 'yyyy-MM-dd HH:mm:ss')}"></p>
-                    </div>
-                    <div class="transaction-info">
-                        <div class="transaction-info-desc">
-                            <p>User:</p>
-                        </div>
-                        <p th:text="${transaction.getUser().getOpenID()}"></p>
-                    </div>
-                </div>
-                <div class="transaction-info-column">
-                    <div class="transaction-info">
-                        <div class="transaction-info-desc">
-                            <p>Status:</p>
-                        </div>
-                        <span th:text="${transaction.getStatus().name()}" id="statusSpan" class="status" style="padding: 0.2rem 0.5rem;line-height: 1rem;"></span>
-                    </div>
-                    <div class="transaction-info">
-                        <div class="transaction-info-desc">
-                            <p>Type:</p>
-                        </div>
-                        <p th:text="${transaction.getType().name()}"></p>
-                    </div>
-                    <div th:if="${requestId!=null}" class="transaction-info">
-                        <div class="transaction-info-desc">
-                            <p>Request:</p>
-                        </div>
-                        <p th:text="${requestId}"></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="card-transaction" style="height: 50%; align-items: normal;">
-            <div class="transaction-header-card">
-                <h1>Actions:</h1>
-            </div>
-            <div class="transaction-info-balance">
-                <div class="transaction-info-balance-sub">
-                    <p>Amount:</p>
-                    <p class="transaction-info-balance-amount" th:text="${transaction.getAmount()+'EUR'}"></p>
-                </div>
-                <div th:if="${transaction.getType().name().equals('PAYMENT')}" class="transaction-info-balance-sub">
-                    <p>Non-Refunded:</p>
-                    <p class="transaction-info-balance-amount" th:text="${refundPossible+'EUR'}"></p>
-                </div>
-            </div>
-            <div class="transaction-actions">
-                <button th:attr="onclick=|location.href='/admin/users/${transaction.getUser().getId()}'|" class="transaction-action-button">View User</button>
-                <a th:if="${transaction.getType().name().equals('PAYMENT') ||transaction.getType().name().equals('EXTERNAL_PAYMENT')}" href="#open-modal" class="transaction-action-button" style="align-items: center;text-decoration: none;">Refund</a>
-                <button th:if="${transaction.getType().name().equals('REFUND')}" th:attr="onclick=|location.href='/admin/transactions/${refundId}'|"  class="transaction-action-button">Original Transaction</button>
-                <button th:unless="${transaction.getType().name().equals('PAYMENT') || transaction.getType().name().equals('REFUND') || transaction.getType().name().equals('EXTERNAL_PAYMENT')}" class="transaction-action-button" disabled>Refund</button>
-            </div>
-        </div>
+<body>
+<div layout:fragment="breadcrumbs">
+    <div class="breadcrumbs">
+        <ul>
+            <li>
+                <a href="/admin/transactions">Transactions</a>
+            </li>
+            <li class="breadcrumbs-separator rtl:rotate-180"><span class="icon-[tabler--chevron-right]"></span></li>
+            <li aria-current="page">Transaction Details</li>
+        </ul>
     </div>
-    <div th:if="${transaction.getType().name().equals('PAYMENT') or transaction.getType().name().equals('EXTERNAL_PAYMENT')}" id="open-modal" class="modal-window">
-        <div>
-            <a href="#" title="Close" class="modal-close">Close</a>
-            <h1>
-                Pick Refund Amount:
-            </h1>
-            <div>
-                <input type="range" min="0" max="" value="0" class="slider-transaction" step="0.10" id="refundSlider">
-            </div>
-            <br>
-            <div class="transaction-modal-info">
-                <p>Value: <input type="number" style="width: 4.5rem;border: none;" class="transaction-modal-value" id="value"><span class="transaction-modal-value">EUR</span></p>
-                <button id="submitButton" class="transaction-action-button">Refund</button>
-            </div>
-        </div>
-    </div>
-    <script th:inline="javascript">
-        //set the correct class for the status span
-        let status = '[[${transaction.getStatus().name()}]]';
-        status = status.replaceAll('"', '').toLowerCase();
-        const statusSpan = document.getElementById('statusSpan');
-        statusSpan.classList.add(status);
-    </script>
-    <script th:if="${transaction.getType().name().equals('PAYMENT') or transaction.getType().name().equals('EXTERNAL_PAYMENT')}" th:inline="javascript">
-        //get the thymeleaf properties
-        let maxValue = parseFloat('[[${refundPossible}]]');
-        let tx='[[${transaction.getId()}]]'.replaceAll('"',  '');
-        //get the modal elements
-        const refundSlider = document.getElementById('refundSlider');
-        const value = document.getElementById('value');
-        const submitButton = document.getElementById('submitButton');
-        //set the value string from slider
-        value.value=maxValue.toFixed(2);
-        refundSlider.oninput = function() {
-            value.value = parseFloat(this.value).toFixed(2);
-        }
-        //set the slider properties
-        refundSlider.max=maxValue;
-        refundSlider.value=maxValue;
-        value.onchange = function() {
-            refundSlider.value=value.value;
-        }
-        //set the button for submit
-        submitButton.onclick = function() {
-            location.href = '/admin/transactions/'+tx+'/refund?amount='+value.value;
-        }
-    </script>
 </div>
+
+<div layout:fragment="main-content">
+    <div class="container max-w-4xl mx-auto">
+        <!-- Header Section -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-base-content mb-2">Transaction Details</h1>
+            <p class="text-base-content/70 text-lg">Complete transaction information and actions</p>
+            </div>
+
+    <!-- Transaction Details Card -->
+    <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow mb-8">
+        <div class="card-body">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="avatar avatar-placeholder">
+                    <div class="bg-primary/20 text-primary size-12 rounded-full">
+                        <span class="icon-[tabler--receipt] size-6"></span>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="card-title text-xl">Transaction Information</h3>
+                    <p class="text-base-content/70">Complete transaction details</p>
+                </div>
+                        </div>
+
+            <div class="space-y-4">
+                <!-- Date -->
+                <div class="py-2 border-b border-base-content/10">
+                    <div class="text-base-content/70 text-sm mb-1">Date & Time</div>
+                    <div th:text="${#temporals.format(transaction.getTimestamp(), 'dd MMM yyyy, HH:mm:ss')}">01 Jan 2025, 12:00:00</div>
+                    </div>
+
+                <!-- User (clickable) -->
+                <div class="py-2 border-b border-base-content/10">
+                    <div class="text-base-content/70 text-sm mb-1">User</div>
+                    <button class="link link-primary view-user-btn hover:link-hover text-left" 
+                            th:data-user-id="${transaction.getUser().getId()}"
+                            th:text="${transaction.user.name}">John Doe</button>
+                    <div class="text-sm text-base-content/70" th:text="${transaction.user.email}">john@example.com</div>
+                        </div>
+
+                <!-- Amount -->
+                <div class="py-2 border-b border-base-content/10">
+                    <div class="text-base-content/70 text-sm mb-1">Amount</div>
+                    <div class="font-mono">
+                        <span th:if="${transaction.amount >= 0}"
+                              class="text-success"
+                              th:text="'€' + ${#numbers.formatDecimal(transaction.amount, 1, 2)}">€0.00</span>
+                        <span th:if="${transaction.amount < 0}"
+                              class="text-error"
+                              th:text="'€' + ${#numbers.formatDecimal(transaction.amount, 1, 2)}">€0.00</span>
+                    </div>
+                        </div>
+
+                <!-- Type -->
+                <div class="py-2 border-b border-base-content/10">
+                    <div class="text-base-content/70 text-sm mb-1">Type</div>
+                    <div>
+                        <span th:if="${transaction.type.name() == 'TOP_UP'}" class="badge badge-soft badge-info badge-sm">Top Up</span>
+                        <span th:if="${transaction.type.name() == 'REFUND'}" class="badge badge-soft badge-warning badge-sm">Refund</span>
+                        <span th:if="${transaction.type.name() == 'PAYMENT'}" class="badge badge-soft badge-success badge-sm">Payment</span>
+                        <span th:if="${transaction.type.name() == 'EXTERNAL_PAYMENT'}" class="badge badge-soft badge-success badge-sm">External</span>
+                    </div>
+                </div>
+
+                <!-- Status -->
+                <div class="py-2 border-b border-base-content/10">
+                    <div class="text-base-content/70 text-sm mb-1">Status</div>
+                    <div>
+                        <span th:if="${transaction.status.name() == 'SUCCESSFUL'}" class="badge badge-soft badge-success badge-sm">Successful</span>
+                        <span th:if="${transaction.status.name() == 'PENDING'}" class="badge badge-soft badge-warning badge-sm">Pending</span>
+                        <span th:if="${transaction.status.name() == 'FAILED'}" class="badge badge-soft badge-error badge-sm">Failed</span>
+                        <span th:if="${transaction.status.name() == 'REFUNDED'}" class="badge badge-soft badge-info badge-sm">Refunded</span>
+                        <span th:if="${transaction.status.name() == 'PARTIALLY_REFUNDED'}" class="badge badge-soft badge-info badge-sm">Partial Refund</span>
+                    </div>
+                        </div>
+
+                <!-- Description (for payments) -->
+                <div th:if="${transaction.getType().name().equals('PAYMENT')}" class="py-2 border-b border-base-content/10">
+                    <div class="text-base-content/70 text-sm mb-1">Description</div>
+                    <div th:text="${transaction.getDescription()}">Payment description</div>
+                    </div>
+
+                <!-- Transaction ID -->
+                <div class="py-2 border-b border-base-content/10">
+                    <div class="text-base-content/70 text-sm mb-1">Transaction ID</div>
+                    <div class="font-mono text-sm" th:text="${transaction.getId()}">abc-123</div>
+                        </div>
+
+                <!-- Already Refunded Amount (only if > 0) -->
+                <div th:if="${(transaction.getType().name().equals('PAYMENT') || transaction.getType().name().equals('EXTERNAL_PAYMENT')) && transaction.amount.abs().subtract(refundPossible) > 0}" class="py-2 border-b border-base-content/10">
+                    <div class="text-base-content/70 text-sm mb-1">Already Refunded</div>
+                    <div class="font-mono text-warning" th:text="'€' + ${#numbers.formatDecimal(transaction.amount.abs().subtract(refundPossible), 1, 2)}">€0.00</div>
+                    </div>
+
+                <!-- Mollie ID (for top-ups) -->
+                <div th:if="${transaction.getType().name().equals('TOP_UP') && transaction.hasMollieId()}" class="py-2 border-b border-base-content/10">
+                    <div class="text-base-content/70 text-sm mb-1">Mollie ID</div>
+                    <div class="font-mono text-sm" th:text="${transaction.getMollieId()}">mol_abc123</div>
+                </div>
+
+                <!-- Request ID (for payments) -->
+                <div th:if="${requestId != null}" class="py-2 border-b border-base-content/10">
+                    <div class="text-base-content/70 text-sm mb-1">Request ID</div>
+                    <div class="font-mono text-sm" th:text="${requestId}">req-123</div>
+                </div>
+            </div>
+
+            <!-- Refund Action Button (for refundable transactions) -->
+            <div th:if="${transaction.getType().name().equals('PAYMENT') || transaction.getType().name().equals('EXTERNAL_PAYMENT')}" class="card-actions justify-end pt-4 border-base-content/10 mt-6">
+                <button type="button" 
+                        class="btn btn-warning" 
+                        th:disabled="${refundPossible <= 0}"
+                        aria-haspopup="dialog" 
+                        aria-expanded="false" 
+                        aria-controls="refund-modal" 
+                        data-overlay="#refund-modal">
+                    <span class="icon-[tabler--arrow-back] size-4"></span>
+                    <span th:text="${refundPossible > 0} ? 'Process Refund' : 'Fully Refunded'">Process Refund</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Original Transaction Link (for refunds) -->
+    <div th:if="${transaction.getType().name().equals('REFUND') && refundId != null}" 
+         class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow mb-8">
+        <div class="card-body">
+            <div class="flex items-center gap-4">
+                <div class="avatar avatar-placeholder">
+                    <div class="bg-info/20 text-info size-12 rounded-full">
+                        <span class="icon-[tabler--link] size-6"></span>
+            </div>
+                </div>
+                <div class="flex-1">
+                    <h3 class="card-title text-xl">Related Transaction</h3>
+                    <p class="text-base-content/70">This is a refund for another transaction</p>
+                </div>
+                <button class="btn btn-info view-original-transaction-btn" 
+                        th:data-transaction-id="${refundId}">
+                    <span class="icon-[tabler--external-link] size-4"></span>
+                    View Original Transaction
+                </button>
+            </div>
+        </div>
+    </div>
+
+    </div>
+</div>
+
+<!-- Modals -->
+<th:block layout:fragment="modals">
+    <!-- Hidden trigger for confirmation modal -->
+    <button type="button" 
+            class="hidden" 
+            id="confirmation-modal-trigger"
+            aria-haspopup="dialog" 
+            aria-expanded="false" 
+            aria-controls="refund-confirmation-modal" 
+            data-overlay="#refund-confirmation-modal">
+    </button>
+
+    <!-- Refund Modal -->
+    <div id="refund-modal" 
+         class="overlay modal overlay-open:opacity-100 overlay-open:duration-300 hidden" 
+         role="dialog" 
+         tabindex="-1"
+         th:if="${transaction.getType().name().equals('PAYMENT') || transaction.getType().name().equals('EXTERNAL_PAYMENT')}">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Process Refund</h3>
+                    <button type="button" 
+                            class="btn btn-text btn-circle btn-sm absolute end-3 top-3" 
+                            aria-label="Close" 
+                            data-overlay="#refund-modal">
+                        <span class="icon-[tabler--x] size-4"></span>
+                    </button>
+                </div>
+                
+                <div class="modal-body">
+                    <p class="text-base-content/70 mb-4">Select the amount to refund for this transaction.</p>
+                    
+                    <!-- Amount Available -->
+                    <div class="bg-base-200/50 rounded-lg p-4 mb-4">
+                        <div class="flex justify-between items-center">
+                            <span>Available for refund:</span>
+                            <span class="font-bold text-lg font-mono" th:text="'€' + ${#numbers.formatDecimal(refundPossible, 1, 2)}">€0.00</span>
+                        </div>
+                    </div>
+
+                    <!-- Amount Input -->
+                    <div class="mb-4">
+                        <label class="label">
+                            <span class="label-text">Refund Amount</span>
+                        </label>
+                        <div class="flex items-center gap-4">
+                            <div class="input flex-1">
+                                <label class="label-text my-auto me-3 p-0">€</label>
+                                <input type="number" 
+                                       id="refundAmount" 
+                                       class="grow" 
+                                       step="0.01" 
+                                       min="0" 
+                                       th:max="${refundPossible}"
+                                       th:value="${refundPossible}">
+                            </div>
+                            <button class="btn btn-secondary" id="maxRefundBtn">Max</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-soft btn-secondary" data-overlay="#refund-modal">Cancel</button>
+                    <button type="button" 
+                            class="btn btn-warning" 
+                            id="confirmRefundBtn">
+                        <span class="icon-[tabler--arrow-back] size-4"></span>
+                        Continue
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Refund Confirmation Modal -->
+    <div id="refund-confirmation-modal" 
+         class="overlay modal overlay-open:opacity-100 overlay-open:duration-300 hidden" 
+         role="dialog" 
+         tabindex="-1"
+         th:if="${transaction.getType().name().equals('PAYMENT') || transaction.getType().name().equals('EXTERNAL_PAYMENT')}">
+        <div class="modal-dialog overlay-open:mt-12 overlay-open:duration-300 transition-all ease-out">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Confirm Refund</h3>
+                    <button type="button" 
+                            class="btn btn-text btn-circle btn-sm absolute end-3 top-3" 
+                            aria-label="Close" 
+                            data-overlay="#refund-confirmation-modal">
+                        <span class="icon-[tabler--x] size-4"></span>
+                    </button>
+                </div>
+                
+                <div class="modal-body">
+                    
+                    <div class="bg-base-200/50 rounded-lg p-4">
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-base-content/70">Transaction ID:</span>
+                                <span class="font-mono text-sm" th:text="${transaction.getId()}">abc-123</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-base-content/70">User:</span>
+                                <span th:text="${transaction.user.name}">John Doe</span>
+                            </div>
+                            <div class="flex justify-between font-semibold">
+                                <span>Refund Amount:</span>
+                                <span class="font-mono text-warning" id="confirmRefundAmount">€0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" 
+                            class="btn btn-soft btn-secondary" 
+                            aria-haspopup="dialog" 
+                            aria-expanded="false" 
+                            aria-controls="refund-modal" 
+                            data-overlay="#refund-modal">
+                        Back
+                    </button>
+                    <button type="button" class="btn btn-error" id="finalConfirmRefundBtn">
+                        <span class="icon-[tabler--check] size-4"></span>
+                        Confirm Refund
+                    </button>
+            </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<!-- Scripts -->
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        // Transaction management functionality
+        window.addEventListener('load', () => {
+            const refundAmountInput = document.getElementById('refundAmount');
+            const maxRefundBtn = document.getElementById('maxRefundBtn');
+            const confirmRefundBtn = document.getElementById('confirmRefundBtn');
+            const viewUserBtn = document.querySelector('.view-user-btn');
+            const viewOriginalTransactionBtn = document.querySelector('.view-original-transaction-btn');
+            
+            const maxValue = parseFloat([[${refundPossible ?: 0}]]);
+            const transactionId = [[${transaction.getId()}]];
+
+            // View User Details functionality
+            if (viewUserBtn) {
+                viewUserBtn.addEventListener('click', function() {
+                    const userId = this.getAttribute('data-user-id');
+                    if (userId) {
+                        window.location.href = `/admin/user/${userId}`;
+                    }
+                });
+            }
+
+            // View Original Transaction functionality
+            if (viewOriginalTransactionBtn) {
+                viewOriginalTransactionBtn.addEventListener('click', function() {
+                    const originalTransactionId = this.getAttribute('data-transaction-id');
+                    if (originalTransactionId) {
+                        window.location.href = `/admin/transaction/${originalTransactionId}`;
+                    }
+                });
+            }
+
+            // Max button functionality
+            if (maxRefundBtn && refundAmountInput) {
+                maxRefundBtn.addEventListener('click', function() {
+                    refundAmountInput.value = maxValue.toFixed(2);
+                });
+            }
+
+            // Continue to confirmation modal functionality
+            if (confirmRefundBtn) {
+                confirmRefundBtn.addEventListener('click', function() {
+                    const refundAmount = parseFloat(refundAmountInput.value);
+                    
+                    if (refundAmount <= 0) {
+                        triggerNotificationFromData({
+                            type: 'error',
+                            message: 'Please enter a valid refund amount.'
+                        });
+                        return;
+                    }
+                    
+                    if (refundAmount > maxValue) {
+                        triggerNotificationFromData({
+                            type: 'error',
+                            message: 'Refund amount cannot exceed the available amount.'
+                        });
+                        return;
+                    }
+
+                    // Update confirmation modal with the selected amount
+                    const confirmAmountElement = document.getElementById('confirmRefundAmount');
+                    if (confirmAmountElement) {
+                        confirmAmountElement.textContent = `€${refundAmount.toFixed(2)}`;
+                    }
+                    
+                    // Store the amount for final confirmation
+                    window.selectedRefundAmount = refundAmount;
+                    
+                    // Manually trigger the confirmation modal
+                    const confirmationModalTrigger = document.getElementById('confirmation-modal-trigger');
+                    if (confirmationModalTrigger) {
+                        confirmationModalTrigger.click();
+                    }
+                });
+            }
+
+            // Final confirmation and processing
+            const finalConfirmRefundBtn = document.getElementById('finalConfirmRefundBtn');
+            if (finalConfirmRefundBtn) {
+                finalConfirmRefundBtn.addEventListener('click', function() {
+                    const refundAmount = window.selectedRefundAmount;
+                    
+                    if (!refundAmount || refundAmount <= 0) {
+                        triggerNotificationFromData({
+                            type: 'error',
+                            message: 'Invalid refund amount.'
+                        });
+                        return;
+                    }
+
+                    // Show processing notification
+                    triggerNotificationFromData({
+                        type: 'info',
+                        message: `Processing refund of €${refundAmount.toFixed(2)}...`
+                    });
+                    
+                    // Small delay to show the notification, then redirect
+                    setTimeout(() => {
+                        window.location.href = `/admin/transaction/${transactionId}/refund?amount=${refundAmount}`;
+                    }, 500);
+                });
+            }
+        });
+    </script>
+</th:block>
 </body>
 </html>

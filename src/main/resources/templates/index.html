@@ -4,8 +4,6 @@
       layout:decorate="~{layouts/layout}">
 <head>
     <title>Home</title>
-    <th:block layout:fragment="script"></th:block>
-    <th:block layout:fragment="css"></th:block>
 </head>
 
 <body>
@@ -57,7 +55,7 @@
                         <button class="btn btn-primary btn-block" 
                                 th:class="${currentUser!=null and currentUser.getBanned()} ? 'btn btn-primary btn-block btn-disabled' : 'btn btn-primary btn-block'"
                                 th:disabled="${currentUser!=null and currentUser.getBanned()}"
-                                onclick="location.href='/balance';">
+                                onclick="location.href='/topup';">
                             <span class="icon-[tabler--plus] size-4"></span>
                             Add Funds
                         </button>

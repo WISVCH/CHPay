@@ -34,11 +34,11 @@ Required external services:
 
 ### **[Mollie:](https://mollie.com/)**
 1. After logging in, begin by creating a new organization
-![createOrg.png](src/main/resources/static/readme/createOrg.png)
+![createOrg.png](images/createOrg.png)
 2. Go to the payments tab from the navbar on top of the screen, you should setup the account so you can get ready with processing payments 
-![paymentsTab.png](src/main/resources/static/readme/paymentsTab.png)
+![paymentsTab.png](images/paymentsTab.png)
 3. Now you can go to the API keys section and include them in your application.yml 
-![apiKeyOrg.png](src/main/resources/static/readme/apiKeyOrg.png)
+![apiKeyOrg.png](images/apiKeyOrg.png)
 4. Below are the environmental variables you need to set
 ```
 spring:
@@ -63,20 +63,20 @@ Note: For Mollie to work, the base URL must be reachable from an external networ
 ### **[CH Connect:](https://connect.ch.tudelft.nl/)**
 1. Visit the [CH Connect website](https://connect.ch.tudelft.nl/) and log in
 2. Click Self-service client registration
-![CHConnectIndex.jpg](src/main/resources/static/readme/CHConnectIndex.jpg)
+![CHConnectIndex.jpg](images/CHConnectIndex.jpg)
 
 3. Click "New Client"
-![ChConnectNewClientButton.jpg](src/main/resources/static/readme/ChConnectNewClientButton.jpg)
+![ChConnectNewClientButton.jpg](images/ChConnectNewClientButton.jpg)
 
 4. Scroll down to 'Redirect URI(s)', and add a new entry of your base application URL, adding "/login/oauth2/code/wisvchconnect". eg. https://[example.com]/login/oauth2/code/wisvchconnect
-![CHConnectRedirectURI.jpg](src/main/resources/static/readme/CHConnectRedirectURI.jpg)
+![CHConnectRedirectURI.jpg](images/CHConnectRedirectURI.jpg)
 
 5. Go to the 'Access' tab, and under scope, in addition to the default options also make sure 'student' is checked.
-![CHConnectScope.jpg](src/main/resources/static/readme/CHConnectScope.jpg)
+![CHConnectScope.jpg](images/CHConnectScope.jpg)
 
 6. Leave everything else as the default option and click 'Save'
 7. Take note of the underlined newly generated tokens 
-![CHConnectGeneratedTokens.jpg](src/main/resources/static/readme/CHConnectGeneratedTokens.jpg)
+![CHConnectGeneratedTokens.jpg](images/CHConnectGeneratedTokens.jpg)
 8. Add the following environmental variables:
 ```  security:
     oauth2:

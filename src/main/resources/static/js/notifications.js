@@ -17,6 +17,7 @@ function getIconClass(type) {
     switch (type) {
         case 'success': return 'icon-[tabler--circle-check]';
         case 'error': return 'icon-[tabler--circle-x]';
+        case 'warning': return 'icon-[tabler--alert-triangle]';
         case 'message': return 'icon-[tabler--info-circle]';
         default: return 'icon-[tabler--bell]';
     }
@@ -26,6 +27,7 @@ function getAlertClass(type) {
     switch (type) {
         case 'success': return 'alert-soft alert-success';
         case 'error': return 'alert-soft alert-error';
+        case 'warning': return 'alert-soft alert-warning';
         case 'message': return 'alert-soft alert-info';
         default: return 'alert-soft alert-info';
     }

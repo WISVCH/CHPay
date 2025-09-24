@@ -4,7 +4,6 @@
       layout:decorate="~{layouts/basic-layout}">
 <head>
     <title>QR Payment</title>
-    <th:block layout:fragment="css"></th:block>
     <th:block layout:fragment="script">
         <meta name="_csrf" th:content="${_csrf.token}"/>
         <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
@@ -33,7 +32,7 @@
                     <div class="flex flex-col lg:flex-row gap-8 items-center">
                         <!-- QR Code on Left -->
                         <div class="flex-shrink-0">
-                            <a th:href="@{'/payment/' + ${paymentRequestId}}">
+                            <a th:href="@{'/payment/request/' + ${paymentRequestId}}">
                                 <img th:src="'data:image/png;base64,' + ${qrCodeBase64}" 
                                      alt="QR Code" 
                                      class="w-64 h-64 sm:w-72 sm:h-72 lg:w-80 lg:h-80"/>

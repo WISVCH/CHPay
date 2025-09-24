@@ -4,8 +4,6 @@
       layout:decorate="~{layouts/layout}">
 <head>
     <title>Admin Dashboard</title>
-    <th:block layout:fragment="script"></th:block>
-    <th:block layout:fragment="css"></th:block>
 </head>
 
 <body>
@@ -67,53 +65,32 @@
                         <div class="stat-title">Max Balance</div>
                         <div class="stat-value text-warning" th:text="'€' + ${maxBalance}">€0.00</div>
                     </div>
+
                 </div>
             </div>
 
-            <!-- Financial Overview Section -->
+            <!-- Total Balance Card -->
             <div class="mb-8">
-                <h2 class="text-2xl font-semibold text-base-content mb-6">Financial Overview</h2>
-                <div class="stats stats-vertical sm:stats-horizontal stats-border shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow w-full bg-base-100 rounded-lg">
-                    <div class="stat">
-                        <div class="stat-figure">
+                <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow">
+                    <div class="card-body">
+                        <div class="flex items-center gap-4">
                             <div class="avatar avatar-placeholder">
-                                <div class="bg-success/20 text-success size-12 rounded-full">
-                                    <span class="icon-[tabler--wallet] size-6"></span>
+                                <div class="bg-success/20 text-success size-16 rounded-full">
+                                    <span class="icon-[tabler--coins] size-8"></span>
                                 </div>
                             </div>
-                        </div>
-                        <div class="stat-title">Available Balance</div>
-                        <div class="stat-value text-success" th:text="'€' + ${balanceAvailable}">€0.00</div>
-                    </div>
-
-                    <div class="stat">
-                        <div class="stat-figure">
-                            <div class="avatar avatar-placeholder">
-                                <div class="bg-error/20 text-error size-12 rounded-full">
-                                    <span class="icon-[tabler--arrow-down] size-6"></span>
-                                </div>
+                            <div class="flex-1">
+                                <h2 class="card-title text-2xl">Total Balance</h2>
+                                <div class="stat-value text-success text-4xl" th:text="'€' + ${balanceAvailable}">€0.00</div>
+                                <p class="text-base-content/70">Total funds available across all users</p>
                             </div>
                         </div>
-                        <div class="stat-title">Outgoing Funds</div>
-                        <div class="stat-value text-error" th:text="'€' + ${outgoingFunds}">€0.00</div>
-                        <div class="stat-desc">Last month</div>
-                    </div>
-
-                    <div class="stat">
-                        <div class="stat-figure">
-                            <div class="avatar avatar-placeholder">
-                                <div class="bg-info/20 text-info size-12 rounded-full">
-                                    <span class="icon-[tabler--arrow-up] size-6"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="stat-title">Incoming Funds</div>
-                        <div class="stat-value text-info" th:text="'€' + ${incomingFunds}">€0.00</div>
-                        <div class="stat-desc">Last month</div>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </body>
+</html>
 </html>

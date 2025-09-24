@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/layout}">
+      layout:decorate="~{layouts/layout}"
+      th:with="hasDataTable=true">
 <head>
     <title>Transactions</title>
-    <th:block layout:fragment="script"></th:block>
-    <th:block layout:fragment="css"></th:block>
 </head>
 
 <body>

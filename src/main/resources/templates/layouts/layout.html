@@ -5,10 +5,18 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/images/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg" />
+    <link rel="shortcut icon" href="/images/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="CHPay" />
+    <link rel="manifest" href="/images/site.webmanifest" />
     <link th:href="@{/css/main.css}" rel="stylesheet" />
-    <link th:href="@{/css/apexcharts.css}" rel="stylesheet" />
+    <!-- Charts styles - only load when needed -->
+    <th:block th:if="${hasCharts}">
+        <link th:href="@{/css/apexcharts.css}" rel="stylesheet" />
+    </th:block>
     <title layout:title-pattern="$CONTENT_TITLE - CHPay">CHPay</title>
-    <th:block layout:fragment="script"></th:block>
     <th:block layout:fragment="css"></th:block>
 </head>
 
@@ -82,7 +90,7 @@
               
              <!-- Add Funds -->
              <li th:class="${currentUser!=null and currentUser.getBanned()} ? 'menu-disabled' : ''">
-                 <a href="/balance" th:class="${urlPage == 'balance'} ? 'menu-active' : ''">
+                 <a href="/topup" th:class="${urlPage == 'topup'} ? 'menu-active' : ''">
                      <span class="icon-[tabler--plus] size-5"></span>
                      Add Funds
                  </a>
@@ -99,14 +107,14 @@
               <!-- Admin Section (if user is admin) -->
               <li th:if="${isAdmin}" class="space-y-0.5">
                   <a class="collapse-toggle collapse-open:bg-warning/10 text-warning hover:bg-warning/10" 
-                     th:class="${urlPage == 'admin' or urlPage == 'createPaymentRequest' or urlPage == 'adminTransactions' or urlPage == 'adminUsers' or urlPage == 'systemSettings' or urlPage == 'adminLogs' or urlPage == 'adminStatistics'} ? 'collapse-toggle collapse-open collapse-open:bg-warning/10 text-warning hover:bg-warning/10' : 'collapse-toggle collapse-open:bg-warning/10 text-warning hover:bg-warning/10'"
+                     th:class="${urlPage == 'admin' or urlPage == 'createPaymentRequest' or urlPage == 'adminTransactions' or urlPage == 'adminUsers' or urlPage == 'systemSettings' or urlPage == 'adminLogs'} ? 'collapse-toggle collapse-open collapse-open:bg-warning/10 text-warning hover:bg-warning/10' : 'collapse-toggle collapse-open:bg-warning/10 text-warning hover:bg-warning/10'"
                      id="menu-admin" data-collapse="#menu-admin-collapse">
                       <span class="icon-[tabler--shield] size-5"></span>
                       Admin
                       <span class="icon-[tabler--chevron-down] collapse-open:rotate-180 size-4 transition-all duration-300"></span>
                   </a>
                   <ul id="menu-admin-collapse" 
-                      th:class="${urlPage == 'admin' or urlPage == 'createPaymentRequest' or urlPage == 'adminTransactions' or urlPage == 'adminUsers' or urlPage == 'systemSettings' or urlPage == 'adminLogs' or urlPage == 'adminStatistics'} ? 'collapse collapse-open w-auto space-y-0.5 overflow-hidden transition-[height] duration-300' : 'collapse w-auto space-y-0.5 overflow-hidden transition-[height] duration-300 hidden'"
+                      th:class="${urlPage == 'admin' or urlPage == 'createPaymentRequest' or urlPage == 'adminTransactions' or urlPage == 'adminUsers' or urlPage == 'systemSettings' or urlPage == 'adminLogs'} ? 'collapse collapse-open w-auto space-y-0.5 overflow-hidden transition-[height] duration-300' : 'collapse w-auto space-y-0.5 overflow-hidden transition-[height] duration-300 hidden'"
                       aria-labelledby="menu-admin">
                       <li>
                           <a href="/admin" th:class="${urlPage == 'admin'} ? 'menu-active' : ''">
@@ -144,12 +152,6 @@
                               Error Log
                           </a>
                       </li>
-                      <li>
-                          <a href="/admin/stats/balance" th:class="${urlPage == 'adminStatistics'} ? 'menu-active' : ''">
-                              <span class="icon-[tabler--chart-bar] size-5"></span>
-                              Statistics
-                          </a>
-                      </li>
                   </ul>
               </li>
             </ul>
@@ -158,9 +160,14 @@
 
         <!-- Main Content -->
         <div class="flex-1 lg:overlay-layout-open:ps-64 min-h-[calc(100vh-4rem)] bg-base-200 transition-all duration-300 flex flex-col">
+            <!-- Breadcrumbs -->
+            <div class="px-6 pt-6" layout:fragment="breadcrumbs">
+                <!-- Breadcrumbs go here -->
+            </div>
+            
             <!-- Main Content -->
             <main class="flex-1 p-6">
-                <div class="max-w-4xl mx-auto">
+                <div th:class="${layoutWide} ? 'max-w-full mx-auto px-4 sm:px-6 lg:px-8' : 'max-w-4xl mx-auto'">
                     <div layout:fragment="main-content">
                         <!-- Page content goes here -->
                     </div>
@@ -187,13 +194,23 @@
       </div>
 
       <script th:src="@{/js/jquery.min.js}"></script>
-      <script th:src="@{/js/dataTables.min.js}"></script>
+      <!-- DataTables scripts - only load when needed -->
+      <th:block th:if="${hasDataTable}">
+          <script th:src="@{/js/dataTables.min.js}"></script>
+      </th:block>
+      <!-- Charts scripts - only load when needed -->
+      <th:block th:if="${hasCharts}">
+          <script th:src="@{/js/apexcharts.min.js}"></script>
+          <script th:src="@{/js/lodash.min.js}"></script>
+          <script th:src="@{/js/helper-apexcharts.js}"></script>
+      </th:block>
       <script th:src="@{/js/flyonui.js}"></script>
-      <script th:src="@{/js/lodash.js}"></script>
-      <script th:src="@{/js/apexcharts.js}"></script>
     
+    <!-- Modals Fragment -->
+    <th:block layout:fragment="modals"></th:block>
+
     <!-- Notifications -->
-    <div th:replace="fragments/notifications :: notifications"></div>
+    <div th:replace="~{fragments/notifications :: notifications}"></div>
     
     <!-- Additional scripts from pages -->
     <th:block layout:fragment="script"></th:block>
