@@ -113,7 +113,10 @@ public class AuthSecConfig {
                       "/css/**",
                       "/js/**",
                       "/images/**",
-                      "/topup/status")
+                      "/topup/status",
+                      "/actuator/health/liveness",
+                      "/actuator/health/readiness",
+                      "/actuator/health")
                   .permitAll();
 
               // Only permit test endpoints when test profile is active
