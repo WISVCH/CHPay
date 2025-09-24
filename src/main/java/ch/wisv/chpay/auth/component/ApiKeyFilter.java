@@ -20,7 +20,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Order(1)
 public class ApiKeyFilter extends OncePerRequestFilter {
 
-  @Value("${chpay.api-key}")
+  @Value("${chpay.api_key}")
   private String expectedApiKey;
 
   /**

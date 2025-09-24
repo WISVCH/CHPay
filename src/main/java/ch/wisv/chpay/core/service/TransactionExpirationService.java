@@ -25,7 +25,7 @@ public class TransactionExpirationService {
     this.transactionRepository = transactionRepository;
   }
 
-  @Value("${chpay.transactions.expire-every-minutes}")
+  @Value("${chpay.transactions.expire_every_minutes}")
   private long expireEveryMinutes;
 
   /**
@@ -34,7 +34,7 @@ public class TransactionExpirationService {
    * to run the task at chpay.transactions.expire-every-minutes is the age at which a transaction is
    * considered old and should be failed. Both of these can be set in the application.yml file
    */
-  @Scheduled(fixedRateString = "#{${chpay.transactions.expiration-fixed-rate} * 60 * 1000}")
+  @Scheduled(fixedRateString = "#{${chpay.transactions.expiration_fixed_rate} * 60 * 1000}")
   @Transactional
   public void updateTransactionStatuses() {
     LocalDateTime cutoff = LocalDateTime.now().minusMinutes(expireEveryMinutes);

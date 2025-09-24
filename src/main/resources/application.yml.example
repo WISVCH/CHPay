@@ -3,7 +3,7 @@ spring:
     active: ${SPRING_ACTIVE_PROFILE:test}
   application:
     name: chpay
-    base-url: ${BASE_URL:http://localhost:8080}
+    baseUrl: ${BASE_URL:http://localhost:8080}
   mail:
     host: ${SMTP_HOST:smtp.gmail.com}
     port: ${SMTP_PORT:587}

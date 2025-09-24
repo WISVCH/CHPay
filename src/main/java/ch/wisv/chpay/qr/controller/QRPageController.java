@@ -25,7 +25,7 @@ public class QRPageController extends PageController {
   @Autowired RequestRepository requestRepository;
 
   /** Inject the `spring.application.base-url` from application.yml (or from $BASE_URL). */
-  @Value("${spring.application.base-url}")
+  @Value("${spring.application.baseurl}")
   private String baseUrl;
 
   /**

@@ -26,7 +26,7 @@ public class SettingService {
   public SettingService(
       @Lazy SettingService selfProxy,
       SystemSettingsRepository repo,
-      @Value("${chpay.settings.minTopUp}") BigDecimal defaultMinTopUp) {
+      @Value("${chpay.settings.mintopup}") BigDecimal defaultMinTopUp) {
     this.selfProxy = selfProxy;
     this.repo = repo;
     this.defaultMinTopUp = defaultMinTopUp;

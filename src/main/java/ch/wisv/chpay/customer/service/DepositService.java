@@ -34,13 +34,13 @@ public class DepositService {
   private final UserRepository userRepository;
   private final Client mollieClient;
 
-  @Value("${mollie.redirectUrl}")
+  @Value("${mollie.redirect_url}")
   private String redirectUrl;
 
-  @Value("${mollie.webhookUrl}")
+  @Value("${mollie.webhook_url}")
   private String webhookUrl;
 
-  @Value("${mollie.transactionFee}")
+  @Value("${mollie.transaction_fee}")
   private String fee;
 
   private final TransactionRepository transactionRepository;
@@ -53,7 +53,7 @@ public class DepositService {
   public DepositService(
       BalanceService balanceService,
       UserRepository userRepository,
-      @Value("${mollie.apiKey}") String apiKey,
+      @Value("${mollie.api_key}") String apiKey,
       TransactionRepository transactionRepository,
       MailService mailService) {
     this.balanceService = balanceService;

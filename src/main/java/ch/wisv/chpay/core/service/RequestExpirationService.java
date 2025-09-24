@@ -20,7 +20,7 @@ public class RequestExpirationService {
     this.requestRepository = requestRepository;
   }
 
-  @Value("${chpay.paymentrequests.expire-every-months}")
+  @Value("${chpay.paymentrequests.expire_every_months}")
   private long expirationTime;
 
   /**

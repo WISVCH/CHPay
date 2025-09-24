@@ -34,7 +34,7 @@ public class TopUpController extends CustomerController {
   private final TransactionRepository transactionRepository;
   private final SettingService settingService;
 
-  @Value("${mollie.transactionFee}")
+  @Value("${mollie.transaction_fee}")
   private String transactionFee;
 
   @Autowired

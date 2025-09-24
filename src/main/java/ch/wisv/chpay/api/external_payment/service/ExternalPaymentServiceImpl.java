@@ -28,7 +28,7 @@ public class ExternalPaymentServiceImpl implements ExternalPaymentService {
 
   private final PendingWebhookRepository webhookRepo;
 
-  @Value("${spring.application.base-url}")
+  @Value("${spring.application.baseurl}")
   private String CHPayUri;
 
   private static final Logger logger = LoggerFactory.getLogger(ExternalPaymentServiceImpl.class);
