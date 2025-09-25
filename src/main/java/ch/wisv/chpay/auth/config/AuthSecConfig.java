@@ -40,7 +40,8 @@ public class AuthSecConfig {
 
   @Autowired private NotificationService notificationService;
 
-  @Autowired private ApiKeyFilter apiKeyFilter;
+  @Value("${chpay.api_key}")
+  private String apiKey;
 
   @Bean
   public SessionRegistry sessionRegistry() {
@@ -63,6 +64,8 @@ public class AuthSecConfig {
     configureRequestAuthorization(http);
 
     // Add API key filter before OAuth2 login
+    // Create the filter directly with the configured API key
+    ApiKeyFilter apiKeyFilter = new ApiKeyFilter(apiKey);
     http.addFilterBefore(apiKeyFilter, UsernamePasswordAuthenticationFilter.class);
 
     // Create and configure the success handler
