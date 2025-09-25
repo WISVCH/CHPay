@@ -40,7 +40,7 @@ public class AuthSecConfig {
 
   @Autowired private NotificationService notificationService;
 
-  @Autowired private ApiKeyFilter apiKeyAuthFilter;
+  @Autowired private ApiKeyFilter apiKeyFilter;
 
   @Bean
   public SessionRegistry sessionRegistry() {
@@ -63,7 +63,7 @@ public class AuthSecConfig {
     configureRequestAuthorization(http);
 
     // Add API key filter before OAuth2 login
-    http.addFilterBefore(apiKeyAuthFilter, UsernamePasswordAuthenticationFilter.class);
+    http.addFilterBefore(apiKeyFilter, UsernamePasswordAuthenticationFilter.class);
 
     // Create and configure the success handler
     SavedRequestAwareAuthenticationSuccessHandler successHandler =
