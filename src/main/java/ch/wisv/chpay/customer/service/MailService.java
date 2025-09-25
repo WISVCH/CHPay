@@ -6,27 +6,38 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import java.math.BigDecimal;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MailService {
 
-  private final JavaMailSender mailSender;
+  private static final Logger logger = LoggerFactory.getLogger(MailService.class);
+
+  private JavaMailSender mailSender;
+
   private final TransactionRepository transactionRepository;
 
   @Value("${spring.mail.username}")
   private String sender;
 
+  @Value("${spring.mail.disable}")
+  private boolean disable;
+
   @Autowired
-  public MailService(JavaMailSender mailSender, TransactionRepository transactionRepository) {
-    this.mailSender = mailSender;
+  public MailService(TransactionRepository transactionRepository) {
+    if (!disable) {
+      this.mailSender = new JavaMailSenderImpl();
+    }
     this.transactionRepository = transactionRepository;
   }
 
@@ -37,6 +48,10 @@ public class MailService {
    * @param amount how much they deposited
    */
   public void sendDepositSuccessEmail(Transaction t, BigDecimal amount) throws MailSendException {
+    if (disable) {
+      logger.warn("Email has been disabled via env");
+      return;
+    }
     String to = t.getUser().getEmail();
     try {
       MimeMessage message = mailSender.createMimeMessage();
@@ -72,6 +87,10 @@ public class MailService {
    * @param amount the amount of money deposited
    */
   public void sendDepositFailEmail(Transaction t, BigDecimal amount) throws MailSendException {
+    if (disable) {
+      logger.warn("Email has been disabled via env");
+      return;
+    }
     String to = t.getUser().getEmail();
     try {
       MimeMessage message = mailSender.createMimeMessage();
@@ -106,6 +125,10 @@ public class MailService {
    * @param id transaction's id
    */
   public void sendReceiptByEmail(String id) throws MailSendException {
+    if (disable) {
+      logger.warn("Email has been disabled via env");
+      return;
+    }
     Transaction t = transactionRepository.findById(UUID.fromString(id)).get();
     String to = t.getUser().getEmail();
     try {
@@ -118,22 +141,22 @@ public class MailService {
       String htmlContent =
           String.format(
               """
-            <html>
-                <body style="font-family: Arial, sans-serif;">
-                    <div style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee;">
-                        <h2>Transaction Receipt</h2>
-                        <p><strong>Date:</strong> %s</p>
-                        <p><strong>Description:</strong> %s</p>
-                        <p><strong>Total:</strong> €%.2f</p>
-                        <p><strong>Status:</strong> %s</p>
-                        <p>---------------------------------------------------</p>
-                        <img src='cid:chpayError'/>
-                        <hr/>
-                        <p style="font-size: 12px; color: #888;">Thank you for using CHPay.</p>
-                    </div>
-                </body>
-            </html>
-        """,
+                                        <html>
+                                            <body style="font-family: Arial, sans-serif;">
+                                                <div style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee;">
+                                                    <h2>Transaction Receipt</h2>
+                                                    <p><strong>Date:</strong> %s</p>
+                                                    <p><strong>Description:</strong> %s</p>
+                                                    <p><strong>Total:</strong> €%.2f</p>
+                                                    <p><strong>Status:</strong> %s</p>
+                                                    <p>---------------------------------------------------</p>
+                                                    <img src='cid:chpayError'/>
+                                                    <hr/>
+                                                    <p style="font-size: 12px; color: #888;">Thank you for using CHPay.</p>
+                                                </div>
+                                            </body>
+                                        </html>
+                                    """,
               t.getTimestamp(), t.getDescription(), t.getAmount(), t.getStatus());
       helper.setText(htmlContent, true);
 
