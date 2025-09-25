@@ -35,7 +35,7 @@ import org.springframework.validation.annotation.Validated;
  * <p>Note: Further customization logic will be added
  */
 @Service
-@ConfigurationProperties(prefix = "wisvch.chpay")
+@ConfigurationProperties(prefix = "chpay")
 @Validated
 public class CustomOIDCUserService extends OidcUserService {
 
