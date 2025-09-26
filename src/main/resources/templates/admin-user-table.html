@@ -22,14 +22,19 @@
                         id="users-datatable"
                         class="flex flex-col"
                         data-datatable='{
-                            "pageLength": 5,
+                            "pageLength": 25,
                             "paging": true,
                             "searching": true,
                             "ordering": true,
+                            "order": [[0, "asc"]],
                             "columnDefs": [
                                 {
-                                    "targets": [0, 1, 2, 4],
+                                    "targets": [4, 5],
                                     "orderable": false
+                                },
+                                {
+                                    "targets": [5],
+                                    "visible": false
                                 }
                             ],
                             "pagingOptions": {
@@ -62,9 +67,9 @@
                                     class="hidden"
                                     data-datatable-page-entities=""
                                 >
-                                    <option value="5" selected="">5</option>
+                                    <option value="5">5</option>
                                     <option value="10">10</option>
-                                    <option value="25">25</option>
+                                    <option value="25" selected="">25</option>
                                     <option value="50">50</option>
                                     <option value="100">100</option>
                                 </select>
@@ -78,14 +83,26 @@
                                     <table class="table min-w-full">
                                         <thead>
                                             <tr>
-                                                <th scope="col" class="--exclude-from-ordering">
-                                                    Name
+                                                <th scope="col" class="group">
+                                                    <div class="flex items-center justify-between">
+                                                        Name
+                                                        <span class="icon-[tabler--chevron-up] hidden datatable-ordering-asc:block"></span>
+                                                        <span class="icon-[tabler--chevron-down] hidden datatable-ordering-desc:block"></span>
+                                                    </div>
                                                 </th>
-                                                <th scope="col" class="--exclude-from-ordering">
-                                                    Email
+                                                <th scope="col" class="group">
+                                                    <div class="flex items-center justify-between">
+                                                        Email
+                                                        <span class="icon-[tabler--chevron-up] hidden datatable-ordering-asc:block"></span>
+                                                        <span class="icon-[tabler--chevron-down] hidden datatable-ordering-desc:block"></span>
+                                                    </div>
                                                 </th>
-                                                <th scope="col" class="--exclude-from-ordering">
-                                                    OpenID
+                                                <th scope="col" class="group">
+                                                    <div class="flex items-center justify-between">
+                                                        OpenID
+                                                        <span class="icon-[tabler--chevron-up] hidden datatable-ordering-asc:block"></span>
+                                                        <span class="icon-[tabler--chevron-down] hidden datatable-ordering-desc:block"></span>
+                                                    </div>
                                                 </th>
                                                 <th scope="col" class="group">
                                                     <div class="flex items-center justify-between">
@@ -95,6 +112,7 @@
                 </div>
                                                 </th>
                                                 <th scope="col" class="--exclude-from-ordering">Actions</th>
+                                                <th scope="col" class="--exclude-from-ordering" style="display: none;">User ID</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -138,6 +156,9 @@
                                                         </button>
                 </div>
                                                 </td>
+                                                
+                                                <!-- Hidden User ID Column (for search) -->
+                                                <td style="display: none;" th:text="${user.id}">550e8400-e29b-41d4-a716-446655440000</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -249,19 +270,34 @@
                     // Initialize DataTable
                     const dataTable = $('#users-datatable table').DataTable()
 
-                    // Custom search function for name, email, and OpenID
-                    dataTable.search.fixed('users', (searchStr, data, index) => {
-                        if (!searchStr) return true
+                    // Custom search function for all columns including balance and user ID
+                    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                        // Only apply to the users table
+                        if (settings.nTable.id !== 'users-datatable') {
+                            return true;
+                        }
                         
-                        const searchTerm = searchStr.toLowerCase()
-                        const name = data[0].toLowerCase()
-                        const email = data[1].toLowerCase()
-                        const openId = data[2].toLowerCase()
+                        const searchTerm = $('#users-search').val().toLowerCase();
+                        if (!searchTerm) return true;
+                        
+                        // Search across all columns: name, email, openID, balance, user ID
+                        const name = data[0].toLowerCase();
+                        const email = data[1].toLowerCase();
+                        const openId = data[2].toLowerCase();
+                        const balance = data[3].toLowerCase();
+                        const userId = data[5] ? data[5].toLowerCase() : '';
                         
                         return name.includes(searchTerm) || 
                                email.includes(searchTerm) || 
-                               openId.includes(searchTerm)
-                    })
+                               openId.includes(searchTerm) ||
+                               balance.includes(searchTerm) ||
+                               userId.includes(searchTerm);
+                    });
+
+                    // Add event listener for search input
+                    $('#users-search').on('keyup', function() {
+                        dataTable.draw();
+                    });
 
                     // View user details function
                     function viewUserDetails(userId) {

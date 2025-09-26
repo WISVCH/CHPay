@@ -22,7 +22,7 @@
                         id="transactions-datatable"
                         class="flex flex-col"
                         data-datatable='{
-                            "pageLength": 10,
+                            "pageLength": 25,
                             "paging": true,
                             "searching": true,
                             "ordering": true,
@@ -67,8 +67,8 @@
                                     data-datatable-page-entities=""
                             >
                                 <option value="5">5</option>
-                                <option value="10" selected="">10</option>
-                                <option value="25">25</option>
+                                <option value="10">10</option>
+                                <option value="25" selected="">25</option>
                                 <option value="50">50</option>
                                 <option value="100">100</option>
                             </select>
@@ -163,13 +163,22 @@
                                     <tbody>
                                     <tr th:each="transaction : ${transactions}">
                                         <!-- Date Column -->
-                                        <td th:text="${#temporals.format(transaction.timestamp, 'dd-MM-yyyy')}">01-01-2025</td>
+                                        <td>
+                                            <div class="flex items-center">
+                                                <div>
+                                                    <div class="font-medium" th:text="${#temporals.format(transaction.timestamp, 'dd-MM-yyyy')}">01-01-2025</div>
+                                                    <div class="text-sm text-base-content/70" th:text="${#temporals.format(transaction.timestamp, 'HH:mm:ss')}">12:30:45</div>
+                                                </div>
+                                            </div>
+                                        </td>
 
                                         <!-- User Column -->
                                         <td>
                                             <div class="flex items-center">
                                                 <div>
-                                                    <div class="font-medium" th:text="${transaction.user.name}">John Doe</div>
+                                                    <a th:href="@{/admin/user/{id}(id=${transaction.user.id})}" 
+                                                       class="font-medium link" 
+                                                       th:text="${transaction.user.name}">John Doe</a>
                                                     <div class="text-sm text-base-content/70" th:text="${transaction.user.email}">john@example.com</div>
                                                 </div>
                                             </div>
@@ -179,7 +188,7 @@
                                         <td th:text="${transaction.description}">Transaction description</td>
 
                                         <!-- Amount Column -->
-                                        <td class="text-right font-mono">
+                                        <td class="font-mono">
                                         <span th:if="${transaction.amount >= 0}"
                                               class="text-success"
                                               th:text="'€' + ${#numbers.formatDecimal(transaction.amount, 1, 2)}">€0.00</span>
@@ -198,11 +207,26 @@
 
                                         <!-- Status Column -->
                                         <td>
-                                            <span th:if="${transaction.status.name() == 'SUCCESSFUL'}" class="badge badge-soft badge-success badge-sm">Successful</span>
-                                            <span th:if="${transaction.status.name() == 'PENDING'}" class="badge badge-soft badge-warning badge-sm">Pending</span>
-                                            <span th:if="${transaction.status.name() == 'FAILED'}" class="badge badge-soft badge-error badge-sm">Failed</span>
-                                            <span th:if="${transaction.status.name() == 'REFUNDED'}" class="badge badge-soft badge-info badge-sm">Refunded</span>
-                                            <span th:if="${transaction.status.name() == 'PARTIALLY_REFUNDED'}" class="badge badge-soft badge-info badge-sm">Partial Refund</span>
+                                            <div th:if="${transaction.status.name() == 'SUCCESSFUL'}" class="flex items-center gap-2">
+                                                <div aria-label="status" class="status status-success"></div>
+                                                <span class="text-success">Successful</span>
+                                            </div>
+                                            <div th:if="${transaction.status.name() == 'PENDING'}" class="flex items-center gap-2">
+                                                <div aria-label="status" class="status status-warning"></div>
+                                                <span class="text-warning">Pending</span>
+                                            </div>
+                                            <div th:if="${transaction.status.name() == 'FAILED'}" class="flex items-center gap-2">
+                                                <div aria-label="status" class="status status-error"></div>
+                                                <span class="text-error">Failed</span>
+                                            </div>
+                                            <div th:if="${transaction.status.name() == 'REFUNDED'}" class="flex items-center gap-2">
+                                                <div aria-label="status" class="status status-info"></div>
+                                                <span class="text-info">Refunded</span>
+                                            </div>
+                                            <div th:if="${transaction.status.name() == 'PARTIALLY_REFUNDED'}" class="flex items-center gap-2">
+                                                <div aria-label="status" class="status status-info"></div>
+                                                <span class="text-info">Partial Refund</span>
+                                            </div>
                                         </td>
 
                                         <!-- Actions Column -->

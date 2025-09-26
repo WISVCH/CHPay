@@ -2,210 +2,223 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout}"
-      th:with="hasDataTable=true">
+      th:with="layoutWide=true, hasDataTable=true">
 <head>
     <title>Transactions</title>
 </head>
 
 <body>
     <div layout:fragment="main-content">
-        <div class="container max-w-6xl mx-auto">
-            <!-- Header Section -->
-            <div class="mb-8">
-                <h1 class="text-3xl font-bold text-base-content mb-2">Transaction History</h1>
-                <p class="text-base-content/70 text-lg">View and manage your transaction history</p>
-            </div>
+        <!-- Header Section -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-base-content mb-2">Transaction History</h1>
+            <p class="text-base-content/70 text-lg">View and manage your transaction history</p>
+        </div>
 
-            <!-- DataTable Card -->
-            <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow">
-                <div class="card-body p-0">
-                    <div
-                        id="transactions-datatable"
-                        class="flex flex-col"
-                        data-datatable='{
-                            "pageLength": 5,
-                            "paging": true,
-                            "searching": true,
-                            "ordering": true,
-                            "columnDefs": [
-                                {
-                                    "targets": [0, 1, 3, 4, 5],
-                                    "orderable": false
-                                }
-                            ],
-                            "pagingOptions": {
-                                "pageBtnClasses": "btn btn-text btn-circle btn-sm"
-                            },
-                            "language": {
-                                "zeroRecords": "<div class=\"py-10 px-5 flex flex-col justify-center items-center text-center\"><span class=\"icon-[tabler--search] shrink-0 size-6 text-base-content\"></span><div class=\"max-w-sm mx-auto\"><p class=\"mt-2 text-sm text-base-content/80\">No transactions found</p></div></div>"
+        <!-- DataTable Card -->
+        <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow">
+            <div class="card-body p-0">
+                <div
+                    id="transactions-datatable"
+                    class="flex flex-col"
+                    data-datatable='{
+                        "pageLength": 10,
+                        "paging": true,
+                        "searching": true,
+                        "ordering": true,
+                        "columnDefs": [
+                            {
+                                "targets": [0, 1, 3, 4, 5],
+                                "orderable": false
                             }
-                        }'
-                    >
-            <!-- Search and Controls Header -->
-            <div class="border-base-content/25 flex items-center border-b px-5 py-3 gap-3">
-                <div class="input input-sm max-w-60">
-                    <span class="icon-[tabler--search] text-base-content/80 my-auto me-3 size-4 shrink-0"></span>
-                    <label class="sr-only" for="transactions-search"></label>
-                    <input type="search" class="grow" placeholder="Search transactions..." id="transactions-search" data-datatable-search="" />
-                </div>
-                <div class="flex flex-1 items-center justify-end gap-3">
-                    <!-- Select -->
-                    <select
-                        data-select='{
-                            "placeholder": "Select option...",
-                            "toggleTag": "<button type=\"button\" aria-expanded=\"false\"></button>",
-                            "toggleClasses": "advance-select-toggle advance-select-sm",
-                            "dropdownClasses": "advance-select-menu w-24 max-sm:w-16",
-                            "optionClasses": "advance-select-option selected:select-active",
-                            "optionTemplate": "<div class=\"flex justify-between items-center w-full\"><span data-title></span><span class=\"icon-[tabler--check] shrink-0 size-3 text-primary hidden selected:block \"></span></div>",
-                            "extraMarkup": "<span class=\"icon-[tabler--caret-up-down] shrink-0 size-4 text-base-content absolute top-1/2 end-2 -translate-y-1/2 \"></span>"
-                        }'
-                        class="hidden"
-                        data-datatable-page-entities=""
-                    >
-                        <option value="5" selected="">5</option>
-                        <option value="10">10</option>
-                        <option value="25">25</option>
-                        <option value="50">50</option>
-                        <option value="100">100</option>
-                    </select>
-                    <!-- End Select -->
+                        ],
+                        "pagingOptions": {
+                            "pageBtnClasses": "btn btn-text btn-circle btn-sm"
+                        },
+                        "language": {
+                            "zeroRecords": "<div class=\"py-10 px-5 flex flex-col justify-center items-center text-center\"><span class=\"icon-[tabler--search] shrink-0 size-6 text-base-content\"></span><div class=\"max-w-sm mx-auto\"><p class=\"mt-2 text-sm text-base-content/80\">No transactions found</p></div></div>"
+                        }
+                    }'
+                >
+        <!-- Search and Controls Header -->
+        <div class="border-base-content/25 flex items-center border-b px-5 py-3 gap-3">
+            <div class="input input-sm max-w-60">
+                <span class="icon-[tabler--search] text-base-content/80 my-auto me-3 size-4 shrink-0"></span>
+                <label class="sr-only" for="transactions-search"></label>
+                <input type="search" class="grow" placeholder="Search transactions..." id="transactions-search" data-datatable-search="" />
+            </div>
+            <div class="flex flex-1 items-center justify-end gap-3">
+                <!-- Select -->
+                <select
+                    data-select='{
+                        "placeholder": "Select option...",
+                        "toggleTag": "<button type=\"button\" aria-expanded=\"false\"></button>",
+                        "toggleClasses": "advance-select-toggle advance-select-sm",
+                        "dropdownClasses": "advance-select-menu w-24 max-sm:w-16",
+                        "optionClasses": "advance-select-option selected:select-active",
+                        "optionTemplate": "<div class=\"flex justify-between items-center w-full\"><span data-title></span><span class=\"icon-[tabler--check] shrink-0 size-3 text-primary hidden selected:block \"></span></div>",
+                        "extraMarkup": "<span class=\"icon-[tabler--caret-up-down] shrink-0 size-4 text-base-content absolute top-1/2 end-2 -translate-y-1/2 \"></span>"
+                    }'
+                    class="hidden"
+                    data-datatable-page-entities=""
+                >
+                        <option value="5">5</option>
+                        <option value="10" selected="">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+                <!-- End Select -->
+            </div>
+        </div>
+        
+        <div class="overflow-x-auto">
+            <div class="inline-block min-w-full align-middle">
+                <div class="overflow-hidden">
+                    <table class="table min-w-full">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="--exclude-from-ordering">
+                                    Date
+                                </th>
+                                <th scope="col" class="--exclude-from-ordering">
+                                    Description
+                                </th>
+                                <th scope="col" class="group">
+                                    <div class="flex items-center justify-between">
+                                        Amount
+                                        <span class="icon-[tabler--chevron-up] hidden datatable-ordering-asc:block"></span>
+                                        <span class="icon-[tabler--chevron-down] hidden datatable-ordering-desc:block"></span>
+                                    </div>
+                                </th>
+                                <th scope="col" class="--exclude-from-ordering">
+                                    <div class="flex items-center gap-2">
+                                        Type
+                                        <div class="dropdown relative inline-flex [--auto-close:inside]">
+                                            <button id="type-filter-btn" type="button" class="dropdown-toggle" aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
+                                                <span class="icon-[tabler--filter] size-3.5 text-base-content/50 -mb-0.5"></span>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-open:opacity-100 hidden w-auto" role="menu" aria-orientation="vertical">
+                                                <li class="dropdown-item type-filter-item active">All</li>
+                                                <li class="dropdown-item type-filter-item">Top Up</li>
+                                                <li class="dropdown-item type-filter-item">Refund</li>
+                                                <li class="dropdown-item type-filter-item">Payment</li>
+                                                <li class="dropdown-item type-filter-item">External</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th scope="col" class="--exclude-from-ordering">
+                                    <div class="flex items-center gap-2">
+                                        Status
+                                        <div class="dropdown relative inline-flex [--auto-close:inside]">
+                                            <button id="status-filter-btn" type="button" class="dropdown-toggle" aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
+                                                <span class="icon-[tabler--filter] size-3.5 text-base-content/50 -mb-0.5"></span>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-open:opacity-100 hidden w-auto" role="menu" aria-orientation="vertical">
+                                                <li class="dropdown-item status-filter-item active">All</li>
+                                                <li class="dropdown-item status-filter-item">Successful</li>
+                                                <li class="dropdown-item status-filter-item">Pending</li>
+                                                <li class="dropdown-item status-filter-item">Failed</li>
+                                                <li class="dropdown-item status-filter-item">Refunded</li>
+                                                <li class="dropdown-item status-filter-item">Partial Refund</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th scope="col" class="--exclude-from-ordering">Receipt</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="transaction : ${transactions}">
+                                <!-- Date Column -->
+                                <td th:text="${#temporals.format(transaction.timestamp, 'dd-MM-yyyy')}">01-01-2025</td>
+                                
+                                <!-- Description Column -->
+                                <td th:text="${transaction.description}">Transaction description</td>
+                                
+                                <!-- Amount Column -->
+                                <td class="text-right font-mono">
+                                    <span th:if="${transaction.amount >= 0}" 
+                                            class="text-success" 
+                                            th:text="'€' + ${#numbers.formatDecimal(transaction.amount, 1, 2)}">€0.00</span>
+                                    <span th:if="${transaction.amount < 0}" 
+                                            class="text-error" 
+                                            th:text="'€' + ${#numbers.formatDecimal(transaction.amount, 1, 2)}">€0.00</span>
+                                </td>
+                                
+                                <!-- Type Column -->
+                                <td>
+                                    <span th:if="${transaction.type.name() == 'TOP_UP'}" class="badge badge-soft badge-info badge-sm">Top Up</span>
+                                    <span th:if="${transaction.type.name() == 'REFUND'}" class="badge badge-soft badge-warning badge-sm">Refund</span>
+                                    <span th:if="${transaction.type.name() == 'PAYMENT'}" class="badge badge-soft badge-success badge-sm">Payment</span>
+                                    <span th:if="${transaction.type.name() == 'EXTERNAL_PAYMENT'}" class="badge badge-soft badge-success badge-sm">External</span>
+                                </td>
+                                
+                                <!-- Status Column -->
+                                <td>
+                                    <div th:if="${transaction.status.name() == 'SUCCESSFUL'}" class="flex items-center gap-2">
+                                        <div aria-label="status" class="status status-success"></div>
+                                        <span class="text-success">Successful</span>
+                                    </div>
+                                    <div th:if="${transaction.status.name() == 'PENDING'}" class="flex items-center gap-2">
+                                        <div aria-label="status" class="status status-warning"></div>
+                                        <span class="text-warning">Pending</span>
+                                    </div>
+                                    <div th:if="${transaction.status.name() == 'FAILED'}" class="flex items-center gap-2">
+                                        <div aria-label="status" class="status status-error"></div>
+                                        <span class="text-error">Failed</span>
+                                    </div>
+                                    <div th:if="${transaction.status.name() == 'REFUNDED'}" class="flex items-center gap-2">
+                                        <div aria-label="status" class="status status-info"></div>
+                                        <span class="text-info">Refunded</span>
+                                    </div>
+                                    <div th:if="${transaction.status.name() == 'PARTIALLY_REFUNDED'}" class="flex items-center gap-2">
+                                        <div aria-label="status" class="status status-info"></div>
+                                        <span class="text-info">Partial Refund</span>
+                                    </div>
+                                </td>
+                                
+                                <!-- Actions Column -->
+                                <td>
+                                    <button 
+                                        type="button" 
+                                        class="btn btn-circle btn-text btn-sm email-receipt-btn"
+                                        th:data-transaction-id="${transaction.id}"
+                                        title="Email Receipt">
+                                        <span class="icon-[tabler--mail] size-5"></span>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            
-            <div class="overflow-x-auto">
-                <div class="inline-block min-w-full align-middle">
-                    <div class="overflow-hidden">
-                        <table class="table min-w-full">
-                            <thead>
-                                <tr>
-                                    <th scope="col" class="--exclude-from-ordering">
-                                        Date
-                                    </th>
-                                    <th scope="col" class="--exclude-from-ordering">
-                                        Description
-                                    </th>
-                                    <th scope="col" class="group">
-                                        <div class="flex items-center justify-between">
-                                            Amount
-                                            <span class="icon-[tabler--chevron-up] hidden datatable-ordering-asc:block"></span>
-                                            <span class="icon-[tabler--chevron-down] hidden datatable-ordering-desc:block"></span>
-                                        </div>
-                                    </th>
-                                    <th scope="col" class="--exclude-from-ordering">
-                                        <div class="flex items-center gap-2">
-                                            Type
-                                            <div class="dropdown relative inline-flex [--auto-close:inside]">
-                                                <button id="type-filter-btn" type="button" class="dropdown-toggle" aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
-                                                    <span class="icon-[tabler--filter] size-3.5 text-base-content/50 -mb-0.5"></span>
-                                                </button>
-                                                <ul class="dropdown-menu dropdown-open:opacity-100 hidden w-auto" role="menu" aria-orientation="vertical">
-                                                    <li class="dropdown-item type-filter-item active">All</li>
-                                                    <li class="dropdown-item type-filter-item">Top Up</li>
-                                                    <li class="dropdown-item type-filter-item">Refund</li>
-                                                    <li class="dropdown-item type-filter-item">Payment</li>
-                                                    <li class="dropdown-item type-filter-item">External</li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </th>
-                                    <th scope="col" class="--exclude-from-ordering">
-                                        <div class="flex items-center gap-2">
-                                            Status
-                                            <div class="dropdown relative inline-flex [--auto-close:inside]">
-                                                <button id="status-filter-btn" type="button" class="dropdown-toggle" aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
-                                                    <span class="icon-[tabler--filter] size-3.5 text-base-content/50 -mb-0.5"></span>
-                                                </button>
-                                                <ul class="dropdown-menu dropdown-open:opacity-100 hidden w-auto" role="menu" aria-orientation="vertical">
-                                                    <li class="dropdown-item status-filter-item active">All</li>
-                                                    <li class="dropdown-item status-filter-item">Successful</li>
-                                                    <li class="dropdown-item status-filter-item">Pending</li>
-                                                    <li class="dropdown-item status-filter-item">Failed</li>
-                                                    <li class="dropdown-item status-filter-item">Refunded</li>
-                                                    <li class="dropdown-item status-filter-item">Partial Refund</li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </th>
-                                    <th scope="col" class="--exclude-from-ordering">Receipt</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr th:each="transaction : ${transactions}">
-                                    <!-- Date Column -->
-                                    <td th:text="${#temporals.format(transaction.timestamp, 'dd-MM-yyyy')}">01-01-2025</td>
-                                    
-                                    <!-- Description Column -->
-                                    <td th:text="${transaction.description}">Transaction description</td>
-                                    
-                                    <!-- Amount Column -->
-                                    <td class="text-right font-mono">
-                                        <span th:if="${transaction.amount >= 0}" 
-                                              class="text-success" 
-                                              th:text="'€' + ${#numbers.formatDecimal(transaction.amount, 1, 2)}">€0.00</span>
-                                        <span th:if="${transaction.amount < 0}" 
-                                              class="text-error" 
-                                              th:text="'€' + ${#numbers.formatDecimal(transaction.amount, 1, 2)}">€0.00</span>
-                                    </td>
-                                    
-                                    <!-- Type Column -->
-                                    <td>
-                                        <span th:if="${transaction.type.name() == 'TOP_UP'}" class="badge badge-soft badge-info badge-sm">Top Up</span>
-                                        <span th:if="${transaction.type.name() == 'REFUND'}" class="badge badge-soft badge-warning badge-sm">Refund</span>
-                                        <span th:if="${transaction.type.name() == 'PAYMENT'}" class="badge badge-soft badge-success badge-sm">Payment</span>
-                                        <span th:if="${transaction.type.name() == 'EXTERNAL_PAYMENT'}" class="badge badge-soft badge-success badge-sm">External</span>
-                                    </td>
-                                    
-                                    <!-- Status Column -->
-                                    <td>
-                                        <span th:if="${transaction.status.name() == 'SUCCESSFUL'}" class="badge badge-soft badge-success badge-sm">Successful</span>
-                                        <span th:if="${transaction.status.name() == 'PENDING'}" class="badge badge-soft badge-warning badge-sm">Pending</span>
-                                        <span th:if="${transaction.status.name() == 'FAILED'}" class="badge badge-soft badge-error badge-sm">Failed</span>
-                                        <span th:if="${transaction.status.name() == 'REFUNDED'}" class="badge badge-soft badge-info badge-sm">Refunded</span>
-                                        <span th:if="${transaction.status.name() == 'PARTIALLY_REFUNDED'}" class="badge badge-soft badge-info badge-sm">Partial Refund</span>
-                                    </td>
-                                    
-                                    <!-- Actions Column -->
-                                    <td>
-                                        <button 
-                                            type="button" 
-                                            class="btn btn-circle btn-text btn-sm email-receipt-btn"
-                                            th:data-transaction-id="${transaction.id}"
-                                            title="Email Receipt">
-                                            <span class="icon-[tabler--mail] size-5"></span>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+        </div>
 
-            <!-- Pagination Footer -->
-            <div class="border-base-content/25 flex items-center justify-between gap-3 border-t p-3 max-md:flex-wrap max-md:justify-center">
-                <div class="text-sm text-base-content/80" data-datatable-info="">
-                    Showing
-                    <span data-datatable-info-from=""></span>
-                    to
-                    <span data-datatable-info-to=""></span>
-                    of
-                    <span data-datatable-info-length=""></span>
-                    transactions
-                </div>
-                <div class="flex hidden items-center space-x-1" data-datatable-paging="">
-                    <button type="button" class="btn btn-text btn-circle btn-sm" data-datatable-paging-prev="">
-                        <span class="icon-[tabler--chevrons-left] size-4.5 rtl:rotate-180"></span>
-                        <span class="sr-only">Previous</span>
-                    </button>
-                    <div class="flex items-center space-x-1 [&>.active]:text-bg-soft-primary" data-datatable-paging-pages=""></div>
-                    <button type="button" class="btn btn-text btn-circle btn-sm" data-datatable-paging-next="">
-                        <span class="sr-only">Next</span>
-                        <span class="icon-[tabler--chevrons-right] size-4.5 rtl:rotate-180"></span>
-                    </button>
-                </div>
+        <!-- Pagination Footer -->
+        <div class="border-base-content/25 flex items-center justify-between gap-3 border-t p-3 max-md:flex-wrap max-md:justify-center">
+            <div class="text-sm text-base-content/80" data-datatable-info="">
+                Showing
+                <span data-datatable-info-from=""></span>
+                to
+                <span data-datatable-info-to=""></span>
+                of
+                <span data-datatable-info-length=""></span>
+                transactions
             </div>
-                    </div>
+            <div class="flex hidden items-center space-x-1" data-datatable-paging="">
+                <button type="button" class="btn btn-text btn-circle btn-sm" data-datatable-paging-prev="">
+                    <span class="icon-[tabler--chevrons-left] size-4.5 rtl:rotate-180"></span>
+                    <span class="sr-only">Previous</span>
+                </button>
+                <div class="flex items-center space-x-1 [&>.active]:text-bg-soft-primary" data-datatable-paging-pages=""></div>
+                <button type="button" class="btn btn-text btn-circle btn-sm" data-datatable-paging-next="">
+                    <span class="sr-only">Next</span>
+                    <span class="icon-[tabler--chevrons-right] size-4.5 rtl:rotate-180"></span>
+                </button>
+            </div>
+        </div>
                 </div>
             </div>
         </div>
