@@ -50,7 +50,14 @@
                             <span class="icon-[tabler--search] text-base-content/80 my-auto me-3 size-4 shrink-0"></span>
                             <label class="sr-only" for="transactions-search"></label>
                             <input type="search" class="grow" placeholder="Search transactions..." id="transactions-search" data-datatable-search="" />
+
+
                         </div>
+                        <a th:href="@{/admin/transactions/csv(yearMonth=${selectedYearMonth.toString()})}">
+                            <button type="button" class="btn btn-text  btn-sm">
+                                Export
+                            </button>
+                        </a>
                         <div class="flex flex-1 items-center justify-end gap-3">
                             <!-- Page Size Select -->
                             <select
