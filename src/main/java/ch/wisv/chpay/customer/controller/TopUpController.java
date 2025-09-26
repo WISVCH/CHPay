@@ -143,7 +143,7 @@ public class TopUpController extends CustomerController {
     model.addAttribute(MODEL_ATTR_TRANSACTION_ID, key);
     if (redirectMap.containsKey(currentUser.getId())) {
       model.addAttribute("redirect", redirectMap.get(currentUser.getId()));
-      redirectMap.remove(currentUser.getId());
+      // redirectMap.remove(currentUser.getId());
     }
     return switch (t.getStatus()) {
       case Transaction.TransactionStatus.PENDING -> "pending";
