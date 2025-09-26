@@ -27,6 +27,12 @@
         </button>
         <div class="flex flex-1 items-center">
           <a class="link text-base-content link-neutral text-xl font-semibold no-underline flex items-center gap-2" href="/">
+              <picture class="w-12">
+                  <source th:srcset="@{/images/ch_logo_indigo.svg}"  media="(prefers-color-scheme: light)"/>
+                  <source th:srcset="@{/images/ch_logo_white.svg}"  media="(prefers-color-scheme: dark)"/>
+                  <img th:src="@{/images/ch_logo_indigo.svg}" alt="CH logo"/>
+              </picture>
+
             CHPay
             <span class="badge badge-soft badge-primary ms-1 rounded-full -mb-0.5">Beta</span>
           </a>
@@ -37,13 +43,13 @@
                        <div class="status status-warning animate-pulse"></div>
                        <span class="text-warning text-sm font-medium">System Frozen</span>
                      </div>
-                     
+
                      <!-- Ban Status Indicator -->
                      <div th:if="${currentUser!=null and currentUser.getBanned()}" class="flex items-center gap-2">
                        <div class="status status-error animate-bounce"></div>
                        <span class="text-error text-sm font-medium">This user is banned</span>
                      </div>
-                     
+
                      <div class="dropdown relative inline-flex [--auto-close:inside] [--offset:8] [--placement:bottom-end]">
              <button id="dropdown-avatar" type="button" class="dropdown-toggle flex items-center" aria-haspopup="menu" aria-expanded="false" aria-label="User Menu">
                <div class="avatar avatar-placeholder">
@@ -74,7 +80,7 @@
            </div>
          </div>
       </nav>
-      
+
       <!-- Main Layout Container -->
       <div class="flex">
         <!-- Sidebar -->
@@ -88,7 +94,7 @@
                       Home
                   </a>
               </li>
-              
+
              <!-- Add Funds -->
              <li th:class="${currentUser!=null and currentUser.getBanned()} ? 'menu-disabled' : ''">
                  <a href="/topup" th:class="${urlPage == 'topup'} ? 'menu-active' : ''">
@@ -96,7 +102,7 @@
                      Add Funds
                  </a>
              </li>
-              
+
               <!-- Transactions -->
               <li>
                   <a href="/transactions" th:class="${urlPage == 'transactions'} ? 'menu-active' : ''">
@@ -104,17 +110,17 @@
                       Transactions
                   </a>
               </li>
-              
+
               <!-- Admin Section (if user is admin) -->
               <li th:if="${isAdmin}" class="space-y-0.5">
-                  <a class="collapse-toggle collapse-open:bg-warning/10 text-warning hover:bg-warning/10" 
+                  <a class="collapse-toggle collapse-open:bg-warning/10 text-warning hover:bg-warning/10"
                      th:class="${urlPage == 'admin' or urlPage == 'createPaymentRequest' or urlPage == 'adminTransactions' or urlPage == 'adminUsers' or urlPage == 'systemSettings' or urlPage == 'adminLogs'} ? 'collapse-toggle collapse-open collapse-open:bg-warning/10 text-warning hover:bg-warning/10' : 'collapse-toggle collapse-open:bg-warning/10 text-warning hover:bg-warning/10'"
                      id="menu-admin" data-collapse="#menu-admin-collapse">
                       <span class="icon-[tabler--shield] size-5"></span>
                       Admin
                       <span class="icon-[tabler--chevron-down] collapse-open:rotate-180 size-4 transition-all duration-300"></span>
                   </a>
-                  <ul id="menu-admin-collapse" 
+                  <ul id="menu-admin-collapse"
                       th:class="${urlPage == 'admin' or urlPage == 'createPaymentRequest' or urlPage == 'adminTransactions' or urlPage == 'adminUsers' or urlPage == 'systemSettings' or urlPage == 'adminLogs'} ? 'collapse collapse-open w-auto space-y-0.5 overflow-hidden transition-[height] duration-300' : 'collapse w-auto space-y-0.5 overflow-hidden transition-[height] duration-300 hidden'"
                       aria-labelledby="menu-admin">
                       <li>
@@ -165,7 +171,7 @@
             <div class="px-6 pt-6" layout:fragment="breadcrumbs">
                 <!-- Breadcrumbs go here -->
             </div>
-            
+
             <!-- Main Content -->
             <main class="flex-1 p-6">
                 <div th:class="${layoutWide} ? 'max-w-full mx-auto px-4 sm:px-6 lg:px-8' : 'max-w-4xl mx-auto'">
@@ -174,7 +180,7 @@
                     </div>
                 </div>
             </main>
-            
+
             <!-- Spacer to push footer to bottom -->
             <div class="flex-grow"></div>
 
@@ -206,13 +212,13 @@
           <script th:src="@{/js/helper-apexcharts.js}"></script>
       </th:block>
       <script th:src="@{/js/flyonui.js}"></script>
-    
+
     <!-- Modals Fragment -->
     <th:block layout:fragment="modals"></th:block>
 
     <!-- Notifications -->
     <div th:replace="~{fragments/notifications :: notifications}"></div>
-    
+
     <!-- Additional scripts from pages -->
     <th:block layout:fragment="script"></th:block>
 </body>

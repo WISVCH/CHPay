@@ -20,6 +20,11 @@
     <nav class="navbar bg-base-100 max-sm:rounded-b-box max-sm:shadow-sm sm:border-b border-base-content/25 sm:z-1 relative">
         <div class="flex flex-1 items-center">
             <a class="link text-base-content link-neutral text-xl font-semibold no-underline flex items-center gap-2" href="/">
+                <picture class="w-12">
+                    <source th:srcset="@{/images/ch_logo_indigo.svg}"  media="(prefers-color-scheme: light)"/>
+                    <source th:srcset="@{/images/ch_logo_white.svg}"  media="(prefers-color-scheme: dark)"/>
+                    <img th:src="@{/images/ch_logo_indigo.svg}" alt="CH logo"/>
+                </picture>
                 CHPay
                 <span class="badge badge-soft badge-primary ms-1 rounded-full -mb-0.5">Beta</span>
             </a>
