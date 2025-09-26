@@ -6,13 +6,13 @@ import ch.wisv.chpay.core.model.User;
 import ch.wisv.chpay.core.model.transaction.TopupTransaction;
 import ch.wisv.chpay.core.model.transaction.Transaction;
 import ch.wisv.chpay.core.repository.TransactionRepository;
-import ch.wisv.chpay.core.service.BalanceService;
 import ch.wisv.chpay.core.service.NotificationService;
 import ch.wisv.chpay.core.service.SettingService;
 import ch.wisv.chpay.core.service.TransactionService;
 import ch.wisv.chpay.customer.service.DepositService;
 import java.math.BigDecimal;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,9 +30,10 @@ public class TopUpController extends CustomerController {
   private final DepositService depositService;
   private final TransactionService transactionsService;
   private final NotificationService notificationService;
-  private final BalanceService balanceService;
   private final TransactionRepository transactionRepository;
   private final SettingService settingService;
+
+  private final ConcurrentHashMap<UUID, String> redirectMap;
 
   @Value("${mollie.transaction_fee}")
   private String transactionFee;
@@ -42,15 +43,14 @@ public class TopUpController extends CustomerController {
       DepositService depositService,
       TransactionService transactionsService,
       NotificationService notificationService,
-      BalanceService balanceService,
       TransactionRepository transactionRepository,
       SettingService settingService) {
     this.depositService = depositService;
     this.transactionsService = transactionsService;
     this.notificationService = notificationService;
-    this.balanceService = balanceService;
     this.transactionRepository = transactionRepository;
     this.settingService = settingService;
+    this.redirectMap = new ConcurrentHashMap<>();
   }
 
   /**
@@ -60,12 +60,18 @@ public class TopUpController extends CustomerController {
    */
   @PreAuthorize("hasAnyRole('USER', 'BANNED')")
   @GetMapping
-  public String showBalancePage(Model model) {
+  public String showBalancePage(
+      @ModelAttribute("currentUser") User currentUser,
+      @RequestParam(required = false) String redirect,
+      Model model) {
     // add the signature of the current page to thymeleaf context
     model.addAttribute(MODEL_ATTR_URL_PAGE, "topup");
     model.addAttribute(MODEL_ATTR_MAX_BALANCE, settingService.getMaxBalance());
     model.addAttribute(MODEL_ATTR_MIN_TOP_UP, settingService.getMinTopUp());
     model.addAttribute(MODEL_ATTR_TRANSACTION_FEE, transactionFee);
+    if (redirect != null) {
+      redirectMap.put(currentUser.getId(), redirect);
+    }
     return "topup";
   }
 
@@ -102,6 +108,7 @@ public class TopUpController extends CustomerController {
         TopupTransaction transaction =
             createTopUpTransaction(currentUser, amount, "Mollie Deposit");
         transactionRepository.save(transaction);
+
         String url = depositService.getMollieUrl(transaction);
         if (url != null) {
           transactionsService.save(transaction);
@@ -127,13 +134,17 @@ public class TopUpController extends CustomerController {
   @PreAuthorize("hasAnyRole('USER', 'BANNED')")
   @GetMapping("/complete/{key}")
   public String depositSuccess(
-      @PathVariable String key, RedirectAttributes redirectAttributes, Model model)
+      @PathVariable String key, @ModelAttribute("currentUser") User currentUser, Model model)
       throws NotFoundException {
     Transaction t =
         transactionRepository
             .findById(UUID.fromString(key))
             .orElseThrow(() -> new NotFoundException(key));
     model.addAttribute(MODEL_ATTR_TRANSACTION_ID, key);
+    if (redirectMap.containsKey(currentUser.getId())) {
+      model.addAttribute("redirect", redirectMap.get(currentUser.getId()));
+      redirectMap.remove(currentUser.getId());
+    }
     return switch (t.getStatus()) {
       case Transaction.TransactionStatus.PENDING -> "pending";
       case Transaction.TransactionStatus.SUCCESSFUL -> "successful";

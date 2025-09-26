@@ -39,7 +39,12 @@
 
                     <!-- Action Button -->
                     <div class="card-actions justify-center mb-6">
-                        <a href="/" class="btn btn-primary btn-xl">
+                        <a th:if="${redirect} != null" th:href="@{/payment/transaction/{id}(id=${redirect})}" class="btn btn-primary btn-xl"
+                        >
+                            <span class="icon-[tabler--credit-card] size-5"></span>
+                            Go back to payment
+                        </a>
+                        <a th:unless="${redirect} != null" href="/" class="btn btn-primary btn-xl">
                             <span class="icon-[tabler--home] size-5"></span>
                             Go to Homepage
                         </a>
