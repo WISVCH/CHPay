@@ -174,6 +174,7 @@ function validateTopup() {
 
     // Read raw input, normalize commas → dots immediately
     const topupRaw      = document.getElementById('topupAmount').value;
+    const acceptedTC = document.getElementById("TCAgree").checked;
     const normalizedRaw = topupRaw.replace(/,/g, '.');
 
     const topup         = parseFloat(normalizedRaw);
@@ -213,7 +214,9 @@ function validateTopup() {
         && topup > 0
         && !hasTooMuchPrecision
         && (topup + currentBalance <= maxBalance)
-        && topup >= minTopUp;
+        && topup >= minTopUp
+        && acceptedTC !== undefined
+        && acceptedTC;
 
     // Update button state with FlyonUI classes
     payBtn.disabled = !isValid;
@@ -233,6 +236,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const form        = document.getElementById('topup-form');
     const customInput = document.getElementById('customAmount');
     const topupField  = document.getElementById('topupAmount');
+    const tcCheckbox  = document.getElementById('TCAgree')
 
     if (form) {
         form.addEventListener('submit', function (e) {
@@ -263,6 +267,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (topupField) {
         topupField.addEventListener('input', validateTopup);
+    }
+
+    if (tcCheckbox) {
+        tcCheckbox.addEventListener('input', validateTopup);
     }
 
     // Run once on page load to ensure initial button state is correct
