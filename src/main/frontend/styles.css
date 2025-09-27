@@ -26,4 +26,11 @@
     --color-primary: #90B6CB;
     --color-secondary: #2AA1A9;
     --color-accent: #2AA1A9;
+    --radius-selector: 0.25rem;
+    --radius-field: 0.375rem;
+    --radius-box: 0.5rem;
+    --size-selector: 0.25rem;
+    --size-field: 0.25rem;
+    --border: 1px;
+    --depth: 0;
 }
