@@ -53,11 +53,6 @@
 
 
                         </div>
-                        <a th:href="@{/admin/transactions/csv(yearMonth=${selectedYearMonth.toString()})}">
-                            <button type="button" class="btn btn-text  btn-sm">
-                                Export
-                            </button>
-                        </a>
                         <div class="flex flex-1 items-center justify-end gap-3">
                             <!-- Page Size Select -->
                             <select
@@ -103,6 +98,12 @@
                                 </option>
                             </select>
                             <!-- End YearMonth Select -->
+                            <a th:href="@{/admin/transactions/csv(yearMonth=${selectedYearMonth.toString()})}">
+                                <button type="button" class="btn btn-soft btn-primary btn-sm">
+                                    <span class="icon-[tabler--download] size-4"></span>
+                                    Export
+                                </button>
+                            </a>
                         </div>
                     </div>
 
