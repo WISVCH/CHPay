@@ -9,23 +9,30 @@
 <div layout:fragment="main-content">
     <div class="flex items-center justify-center px-4 py-10">
         <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow w-full max-w-sm">
-            <div class="card-body items-center text-center space-y-4">
-                <!-- Welcome Message -->
-                <h1 class="text-2xl font-bold text-base-content">Welcome to CHPay!</h1>
-
-                <!-- Sign In Button -->
-                <a href="/oauth2/authorization/wisvchconnect"
-                   class="btn btn-primary btn-lg btn-block">
-                    <span class="icon-[tabler--login] size-5"></span>
-                    Sign In
-                </a>
-                <div class="mt-1">
-                    <p class="text-base-content/70 text-lg ">
-                        CHPay is a digital wallet for <a href="https://ch.tudelft.nl" target="_blank" class="link text-base-content/70 text-lg">W.I.S.V. 'Christiaan Huygens'</a>. Top up your balance and make purchases within the association to avoid transaction fees.
-                    </p>
-                </div>
+            <div class="card-body space-y-4">
+            <!-- Logo and Name Header -->
+            <div class="link text-base-content link-neutral text-xl font-semibold no-underline flex items-center">
+                <picture class="w-12">
+                    <source th:srcset="@{/images/ch_logo_indigo.svg}" media="(prefers-color-scheme: light)"/>
+                    <source th:srcset="@{/images/ch_logo_white.svg}" media="(prefers-color-scheme: dark)"/>
+                    <img th:src="@{/images/ch_logo_indigo.svg}" alt="CH logo"/>
+                </picture>
+                <span class="ms-1">CHPay</span>
             </div>
-
+            
+            <!-- Title and Description -->
+            <div>
+                <h1 class="text-2xl font-bold text-base-content mb-1.5">Sign in to CHPay</h1>
+                <p class="text-base-content/70">Your digital wallet for W.I.S.V. 'Christiaan Huygens'</p>
+            </div>
+            
+            <!-- Sign In Button -->
+            <a href="/oauth2/authorization/wisvchconnect"
+               class="btn btn-lg btn-primary btn-block">
+                <span class="icon-[tabler--login] size-5"></span>
+                Sign In
+            </a>
+            </div>
         </div>
     </div>
 </div>
