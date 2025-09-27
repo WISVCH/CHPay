@@ -53,13 +53,13 @@
                     </a>
                     
                     <div sec:authorize="isAuthenticated()">
-                        <p class="text-xs text-base-content/60 mb-2">Logged in as: <span sec:authentication="name"></span></p>
                         <form th:action="@{/logout}" method="post">
                             <button type="submit" class="btn btn-outline btn-block">
                                 <span class="icon-[tabler--logout] size-4"></span>
                                 Logout
                             </button>
                         </form>
+                        <p class="text-xs text-base-content/60 mt-2">Logged in as: <span sec:authentication="name"></span></p>
                     </div>
                 </div>
             </div>
