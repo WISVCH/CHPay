@@ -98,11 +98,10 @@
                                 </option>
                             </select>
                             <!-- End YearMonth Select -->
-                            <a th:href="@{/admin/transactions/csv(yearMonth=${selectedYearMonth.toString()})}">
-                                <button type="button" class="btn btn-soft btn-primary btn-sm">
-                                    <span class="icon-[tabler--download] size-4"></span>
-                                    Export
-                                </button>
+                            <a th:href="@{/admin/transactions/csv(yearMonth=${selectedYearMonth.toString()})}" 
+                               class="btn btn-soft btn-primary btn-sm">
+                                <span class="icon-[tabler--download] size-4"></span>
+                                Export
                             </a>
                         </div>
                     </div>
@@ -237,13 +236,11 @@
 
                                     <!-- Actions Column -->
                                     <td class="w-auto">
-                                        <button
-                                                type="button"
-                                                class="btn btn-circle btn-text btn-sm view-details-btn"
-                                                th:data-transaction-id="${transaction.id}"
-                                                title="View Details">
+                                        <a th:href="@{/admin/transaction/{id}(id=${transaction.id})}"
+                                           class="btn btn-circle btn-text btn-sm"
+                                           title="View Details">
                                             <span class="icon-[tabler--eye] size-5"></span>
-                                        </button>
+                                        </a>
                                     </td>
 
                                     <!-- Hidden User ID Column (for search) -->
@@ -364,22 +361,10 @@
                     }
                 }
 
-                // View Details Function
-                function viewTransactionDetails(transactionId) {
-                    window.location.href = `/admin/transaction/${transactionId}`;
-                }
 
                 // Event delegation for action buttons
                 if (!window.adminTransactionActionsListenerAttached) {
                     document.addEventListener('click', function(event) {
-                        // View Details button
-                        const viewButton = event.target.closest('.view-details-btn');
-                        if (viewButton) {
-                            const transactionId = viewButton.getAttribute('data-transaction-id');
-                            if (transactionId) {
-                                viewTransactionDetails(transactionId);
-                            }
-                        }
                     });
                     window.adminTransactionActionsListenerAttached = true;
                 }

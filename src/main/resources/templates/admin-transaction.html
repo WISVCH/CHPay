@@ -52,9 +52,9 @@
                 <!-- User (clickable) -->
                 <div class="py-2 border-b border-base-content/10">
                     <div class="text-base-content/70 text-sm mb-1">User</div>
-                    <button class="link link-primary view-user-btn hover:link-hover text-left" 
-                            th:data-user-id="${transaction.getUser().getId()}"
-                            th:text="${transaction.user.name}">John Doe</button>
+                    <a th:href="@{/admin/user/{id}(id=${transaction.user.id})}" 
+                       class="link" 
+                       th:text="${transaction.user.name}">John Doe</a>
                     <div class="text-sm text-base-content/70" th:text="${transaction.user.email}">john@example.com</div>
                         </div>
 
@@ -155,11 +155,11 @@
                     <h3 class="card-title text-xl">Related Transaction</h3>
                     <p class="text-base-content/70">This is a refund for another transaction</p>
                 </div>
-                <button class="btn btn-info view-original-transaction-btn" 
-                        th:data-transaction-id="${refundId}">
+                <a th:href="@{/admin/transaction/{id}(id=${refundId})}" 
+                   class="btn btn-info">
                     <span class="icon-[tabler--external-link] size-4"></span>
                     View Original Transaction
-                </button>
+                </a>
             </div>
         </div>
     </div>
@@ -307,31 +307,9 @@
             const refundAmountInput = document.getElementById('refundAmount');
             const maxRefundBtn = document.getElementById('maxRefundBtn');
             const confirmRefundBtn = document.getElementById('confirmRefundBtn');
-            const viewUserBtn = document.querySelector('.view-user-btn');
-            const viewOriginalTransactionBtn = document.querySelector('.view-original-transaction-btn');
             
             const maxValue = parseFloat([[${refundPossible ?: 0}]]);
             const transactionId = [[${transaction.getId()}]];
-
-            // View User Details functionality
-            if (viewUserBtn) {
-                viewUserBtn.addEventListener('click', function() {
-                    const userId = this.getAttribute('data-user-id');
-                    if (userId) {
-                        window.location.href = `/admin/user/${userId}`;
-                    }
-                });
-            }
-
-            // View Original Transaction functionality
-            if (viewOriginalTransactionBtn) {
-                viewOriginalTransactionBtn.addEventListener('click', function() {
-                    const originalTransactionId = this.getAttribute('data-transaction-id');
-                    if (originalTransactionId) {
-                        window.location.href = `/admin/transaction/${originalTransactionId}`;
-                    }
-                });
-            }
 
             // Max button functionality
             if (maxRefundBtn && refundAmountInput) {

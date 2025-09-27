@@ -105,16 +105,16 @@
 
                 <!-- Action Buttons -->
                 <div class="card-actions justify-end pt-4 border-base-content/10 mt-6 gap-3">
-                    <button class="btn btn-primary view-transactions-btn" 
-                            th:data-user-id="${user.getId()}">
+                    <a th:href="@{/admin/transactions(search=${user.id})}" 
+                       class="btn btn-primary">
                         <span class="icon-[tabler--receipt] size-4"></span>
                         View Transactions
-                    </button>
-                    <button class="btn btn-primary view-statistics-btn" 
-                            th:data-user-id="${user.getId()}">
+                    </a>
+                    <a th:href="@{/admin/user/{id}/stats(id=${user.id})}" 
+                       class="btn btn-primary">
                         <span class="icon-[tabler--chart-bar] size-4"></span>
                         View Statistics
-                    </button>
+                    </a>
                     <button class="btn ban-user-btn" 
                             th:data-user-id="${user.getId()}"
                             th:data-user-name="${user.name}"
@@ -197,8 +197,6 @@
     <script th:inline="javascript">
         // User management functionality
         window.addEventListener('load', () => {
-            const viewTransactionsBtn = document.querySelector('.view-transactions-btn');
-            const viewStatisticsBtn = document.querySelector('.view-statistics-btn');
             const banUserBtn = document.querySelector('.ban-user-btn');
             const changeRfidBtn = document.getElementById('change-rfid-button');
             const clearRfidBtn = document.getElementById('clear-rfid-button');
@@ -207,21 +205,6 @@
             const csrfToken = [[${_csrf.token}]];
             const userOpenId = [[${user.getOpenID()}]];
 
-            // View Transactions functionality
-            if (viewTransactionsBtn) {
-                viewTransactionsBtn.addEventListener('click', function() {
-                    const userId = this.getAttribute('data-user-id');
-                    window.location.href = `/admin/transactions?search=${encodeURIComponent(userId)}`;
-                });
-            }
-
-            // View Statistics functionality
-            if (viewStatisticsBtn) {
-                viewStatisticsBtn.addEventListener('click', function() {
-                    const userId = this.getAttribute('data-user-id');
-                    window.location.href = `/admin/user/${userId}/stats`;
-                });
-            }
 
             // Ban/unban confirmation function (same as admin-user-table.html)
             function confirmBanAction(button) {

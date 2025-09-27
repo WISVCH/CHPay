@@ -52,13 +52,12 @@
                         </div>
                     </div>
                     <div class="card-actions">
-                        <button class="btn btn-primary btn-block" 
-                                th:class="${currentUser!=null and currentUser.getBanned()} ? 'btn btn-primary btn-block btn-disabled' : 'btn btn-primary btn-block'"
-                                th:disabled="${currentUser!=null and currentUser.getBanned()}"
-                                onclick="location.href='/topup';">
+                        <a href="/topup" 
+                           th:class="${currentUser!=null and currentUser.getBanned()} ? 'btn btn-primary btn-block btn-disabled' : 'btn btn-primary btn-block'"
+                           th:attr="aria-disabled=${currentUser!=null and currentUser.getBanned()}">
                             <span class="icon-[tabler--plus] size-4"></span>
                             Add Funds
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -78,10 +77,10 @@
                         </div>
                     </div>
                     <div class="card-actions">
-                        <button class="btn btn-secondary btn-block" onclick="location.href='/transactions';">
+                        <a href="/transactions" class="btn btn-secondary btn-block">
                             <span class="icon-[tabler--receipt] size-4"></span>
                             View History
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>

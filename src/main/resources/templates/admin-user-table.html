@@ -135,13 +135,11 @@
                                         <!-- Actions Column -->
                                         <td class="w-0 whitespace-nowrap">
                                             <div class="flex items-center gap-1">
-                                                <button 
-                                                    type="button" 
-                                                    class="btn btn-circle btn-text btn-sm view-details-btn"
-                                                    th:data-user-id="${user.id}"
-                                                    title="View Details">
+                                                <a th:href="@{/admin/user/{id}(id=${user.id})}"
+                                                   class="btn btn-circle btn-text btn-sm"
+                                                   title="View Details">
                                                     <span class="icon-[tabler--eye] size-5"></span>
-                                                </button>
+                                                </a>
                                                 <button 
                                                     type="button" 
                                                     class="btn btn-circle btn-text btn-sm ban-user-btn"
@@ -295,11 +293,6 @@
                         dataTable.draw();
                     });
 
-                    // View user details function
-                    function viewUserDetails(userId) {
-                        window.location.href = `/admin/user/${userId}`
-                    }
-
                     // Ban/unban confirmation function
                     function confirmBanAction(button) {
                         const userId = button.getAttribute('data-user-id');
@@ -402,15 +395,6 @@
                     // Event delegation for action buttons
                     if (!window.userActionsListenerAttached) {
                         document.addEventListener('click', function(event) {
-                            // View Details button
-                            const viewButton = event.target.closest('.view-details-btn');
-                            if (viewButton) {
-                                const userId = viewButton.getAttribute('data-user-id');
-                                if (userId) {
-                                    viewUserDetails(userId);
-                                }
-                            }
-
                             // Ban/Unban button
                             const banButton = event.target.closest('.ban-user-btn');
                             if (banButton) {

@@ -37,25 +37,22 @@
                     <!-- Action buttons -->
                     <div class="grid grid-rows-2 sm:grid-cols-2 sm:grid-rows-1 gap-4 w-full">
                         <!-- Pay Button -->
-                        <button th:if="${transaction.amount.abs()}<=${currentUser.balance}" 
-                                th:attr="onclick=|location.href='/payment/pay?tx=${transaction.id}'|"
-                                class="btn btn-primary btn-xl sm:btn-lg">
+                        <a th:if="${transaction.amount.abs()}<=${currentUser.balance}" 
+                           th:href="@{/payment/pay(tx=${transaction.id})}"
+                           class="btn btn-primary btn-xl sm:btn-lg">
                             Pay
-                        </button>
-                        <button th:unless="${transaction.amount.abs()}<=${currentUser.balance}" 
-                                class="btn btn-primary btn-xl sm:btn-lg btn-disabled" 
-                                disabled>
+                        </a>
+                        <a th:unless="${transaction.amount.abs()}<=${currentUser.balance}" 
+                           class="btn btn-primary btn-xl sm:btn-lg btn-disabled" 
+                           aria-disabled="true">
                             <span class="icon-[tabler--check] size-5"></span>
                             Pay
-                        </button>
+                        </a>
 
                         <!-- Top-Up Button -->
-                        <a th:href="@{/topup(redirect=${transaction.id})}">
-                            <button
-                                    class="btn btn-outline btn-m sm:btn-lg">
+                        <a th:href="@{/topup(redirect=${transaction.id})}" class="btn btn-outline btn-m sm:btn-lg">
                                 <span class="icon-[tabler--plus] size-5"></span>
                                 Top-Up Balance
-                            </button>
                         </a>
                     </div>
                 </div>
