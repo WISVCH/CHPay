@@ -122,9 +122,7 @@ public class AdminTransactionsController extends AdminController {
                           + ";"
                           + t.getDescription()
                           + ";"
-                          + ((t.getStatus().equals(Transaction.TransactionStatus.REFUNDED)
-                                  || t.getStatus()
-                                      .equals(Transaction.TransactionStatus.PARTIALLY_REFUNDED))
+                          + (t.getType().equals(Transaction.TransactionType.REFUND)
                               ? t.getAmount().multiply(BigDecimal.valueOf(-1))
                               : t.getAmount())
                           + ";"
