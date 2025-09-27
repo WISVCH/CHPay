@@ -126,9 +126,11 @@ public class AdminTransactionsController extends AdminController {
                               ? t.getAmount().multiply(BigDecimal.valueOf(-1))
                               : t.getAmount())
                           + ";"
+                          + t.getStatus().name()
+                          + ";"
                           + t.getTimestamp().toString())
               .collect(Collectors.joining("\n"));
-      csvData = "Id;Type;Name;Description;Amount;Timestamp\n" + csvData;
+      csvData = "Id;Type;Name;Description;Amount;Status;Timestamp\n" + csvData;
       InputStream bufferedInputStream =
           new ByteArrayInputStream(csvData.getBytes(StandardCharsets.UTF_8));
       InputStreamResource fileInputStream = new InputStreamResource(bufferedInputStream);
