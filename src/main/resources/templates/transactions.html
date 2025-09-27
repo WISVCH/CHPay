@@ -72,128 +72,124 @@
             </div>
         </div>
         
-        <div class="overflow-x-auto">
-            <div class="inline-block min-w-full align-middle">
-                <div class="overflow-hidden">
-                    <table class="table min-w-full">
-                        <thead>
-                            <tr>
-                                <th scope="col" class="--exclude-from-ordering">
-                                    Date
-                                </th>
-                                <th scope="col" class="--exclude-from-ordering">
-                                    Description
-                                </th>
-                                <th scope="col" class="group">
-                                    <div class="flex items-center justify-between">
-                                        Amount
-                                        <span class="icon-[tabler--chevron-up] hidden datatable-ordering-asc:block"></span>
-                                        <span class="icon-[tabler--chevron-down] hidden datatable-ordering-desc:block"></span>
-                                    </div>
-                                </th>
-                                <th scope="col" class="--exclude-from-ordering">
-                                    <div class="flex items-center gap-2">
-                                        Type
-                                        <div class="dropdown relative inline-flex [--auto-close:inside]">
-                                            <button id="type-filter-btn" type="button" class="dropdown-toggle" aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
-                                                <span class="icon-[tabler--filter] size-3.5 text-base-content/50 -mb-0.5"></span>
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-open:opacity-100 hidden w-auto" role="menu" aria-orientation="vertical">
-                                                <li class="dropdown-item type-filter-item active">All</li>
-                                                <li class="dropdown-item type-filter-item">Top Up</li>
-                                                <li class="dropdown-item type-filter-item">Refund</li>
-                                                <li class="dropdown-item type-filter-item">Payment</li>
-                                                <li class="dropdown-item type-filter-item">External</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </th>
-                                <th scope="col" class="--exclude-from-ordering">
-                                    <div class="flex items-center gap-2">
-                                        Status
-                                        <div class="dropdown relative inline-flex [--auto-close:inside]">
-                                            <button id="status-filter-btn" type="button" class="dropdown-toggle" aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
-                                                <span class="icon-[tabler--filter] size-3.5 text-base-content/50 -mb-0.5"></span>
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-open:opacity-100 hidden w-auto" role="menu" aria-orientation="vertical">
-                                                <li class="dropdown-item status-filter-item active">All</li>
-                                                <li class="dropdown-item status-filter-item">Successful</li>
-                                                <li class="dropdown-item status-filter-item">Pending</li>
-                                                <li class="dropdown-item status-filter-item">Failed</li>
-                                                <li class="dropdown-item status-filter-item">Refunded</li>
-                                                <li class="dropdown-item status-filter-item">Partial Refund</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </th>
-                                <th scope="col" class="--exclude-from-ordering">Receipt</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="transaction : ${transactions}">
-                                <!-- Date Column -->
-                                <td th:text="${#temporals.format(transaction.timestamp, 'dd-MM-yyyy')}">01-01-2025</td>
-                                
-                                <!-- Description Column -->
-                                <td th:text="${transaction.description}">Transaction description</td>
-                                
-                                <!-- Amount Column -->
-                                <td class="text-right font-mono">
-                                    <span th:if="${transaction.amount >= 0}" 
-                                            class="text-success" 
-                                            th:text="'€' + ${#numbers.formatDecimal(transaction.amount, 1, 2)}">€0.00</span>
-                                    <span th:if="${transaction.amount < 0}" 
-                                            class="text-error" 
-                                            th:text="'€' + ${#numbers.formatDecimal(transaction.amount, 1, 2)}">€0.00</span>
-                                </td>
-                                
-                                <!-- Type Column -->
-                                <td>
-                                    <span th:if="${transaction.type.name() == 'TOP_UP'}" class="badge badge-soft badge-info badge-sm">Top Up</span>
-                                    <span th:if="${transaction.type.name() == 'REFUND'}" class="badge badge-soft badge-warning badge-sm">Refund</span>
-                                    <span th:if="${transaction.type.name() == 'PAYMENT'}" class="badge badge-soft badge-success badge-sm">Payment</span>
-                                    <span th:if="${transaction.type.name() == 'EXTERNAL_PAYMENT'}" class="badge badge-soft badge-success badge-sm">External</span>
-                                </td>
-                                
-                                <!-- Status Column -->
-                                <td>
-                                    <div th:if="${transaction.status.name() == 'SUCCESSFUL'}" class="flex items-center gap-2">
-                                        <div aria-label="status" class="status status-success"></div>
-                                        <span class="text-success">Successful</span>
-                                    </div>
-                                    <div th:if="${transaction.status.name() == 'PENDING'}" class="flex items-center gap-2">
-                                        <div aria-label="status" class="status status-warning"></div>
-                                        <span class="text-warning">Pending</span>
-                                    </div>
-                                    <div th:if="${transaction.status.name() == 'FAILED'}" class="flex items-center gap-2">
-                                        <div aria-label="status" class="status status-error"></div>
-                                        <span class="text-error">Failed</span>
-                                    </div>
-                                    <div th:if="${transaction.status.name() == 'REFUNDED'}" class="flex items-center gap-2">
-                                        <div aria-label="status" class="status status-info"></div>
-                                        <span class="text-info">Refunded</span>
-                                    </div>
-                                    <div th:if="${transaction.status.name() == 'PARTIALLY_REFUNDED'}" class="flex items-center gap-2">
-                                        <div aria-label="status" class="status status-info"></div>
-                                        <span class="text-info">Partial Refund</span>
-                                    </div>
-                                </td>
-                                
-                                <!-- Actions Column -->
-                                <td>
-                                    <button 
-                                        type="button" 
-                                        class="btn btn-circle btn-text btn-sm email-receipt-btn"
-                                        th:data-transaction-id="${transaction.id}"
-                                        title="Email Receipt">
-                                        <span class="icon-[tabler--mail] size-5"></span>
+        <div class="w-full overflow-x-auto h-fit">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col" class="w-auto --exclude-from-ordering">
+                            Date
+                        </th>
+                        <th scope="col" class="w-full --exclude-from-ordering">
+                            Description
+                        </th>
+                        <th scope="col" class="w-auto group">
+                            <div class="flex items-center justify-between">
+                                Amount
+                                <span class="icon-[tabler--chevron-up] hidden datatable-ordering-asc:block"></span>
+                                <span class="icon-[tabler--chevron-down] hidden datatable-ordering-desc:block"></span>
+                            </div>
+                        </th>
+                        <th scope="col" class="w-auto --exclude-from-ordering">
+                            <div class="flex items-center gap-2">
+                                Type
+                                <div class="dropdown relative inline-flex [--auto-close:inside]">
+                                    <button id="type-filter-btn" type="button" class="dropdown-toggle" aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
+                                        <span class="icon-[tabler--filter] size-3.5 text-base-content/50 -mb-0.5"></span>
                                     </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                                    <ul class="dropdown-menu dropdown-open:opacity-100 hidden w-auto" role="menu" aria-orientation="vertical">
+                                        <li class="dropdown-item type-filter-item active">All</li>
+                                        <li class="dropdown-item type-filter-item">Top Up</li>
+                                        <li class="dropdown-item type-filter-item">Refund</li>
+                                        <li class="dropdown-item type-filter-item">Payment</li>
+                                        <li class="dropdown-item type-filter-item">External</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </th>
+                        <th scope="col" class="w-auto --exclude-from-ordering">
+                            <div class="flex items-center gap-2">
+                                Status
+                                <div class="dropdown relative inline-flex [--auto-close:inside]">
+                                    <button id="status-filter-btn" type="button" class="dropdown-toggle" aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
+                                        <span class="icon-[tabler--filter] size-3.5 text-base-content/50 -mb-0.5"></span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-open:opacity-100 hidden w-auto" role="menu" aria-orientation="vertical">
+                                        <li class="dropdown-item status-filter-item active">All</li>
+                                        <li class="dropdown-item status-filter-item">Successful</li>
+                                        <li class="dropdown-item status-filter-item">Pending</li>
+                                        <li class="dropdown-item status-filter-item">Failed</li>
+                                        <li class="dropdown-item status-filter-item">Refunded</li>
+                                        <li class="dropdown-item status-filter-item">Partial Refund</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </th>
+                        <th scope="col" class="w-auto --exclude-from-ordering">Receipt</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="transaction : ${transactions}">
+                        <!-- Date Column -->
+                        <td class="w-auto" th:text="${#temporals.format(transaction.timestamp, 'dd-MM-yyyy')}">01-01-2025</td>
+                        
+                        <!-- Description Column -->
+                        <td class="w-full" th:text="${transaction.description}">Transaction description</td>
+                        
+                        <!-- Amount Column -->
+                        <td class="w-auto text-right font-mono">
+                            <span th:if="${transaction.amount >= 0}" 
+                                    class="text-success" 
+                                    th:text="'€' + ${#numbers.formatDecimal(transaction.amount, 1, 2)}">€0.00</span>
+                            <span th:if="${transaction.amount < 0}" 
+                                    class="text-error" 
+                                    th:text="'€' + ${#numbers.formatDecimal(transaction.amount, 1, 2)}">€0.00</span>
+                        </td>
+                        
+                        <!-- Type Column -->
+                        <td class="w-auto">
+                            <span th:if="${transaction.type.name() == 'TOP_UP'}" class="badge badge-soft badge-info badge-sm">Top Up</span>
+                            <span th:if="${transaction.type.name() == 'REFUND'}" class="badge badge-soft badge-warning badge-sm">Refund</span>
+                            <span th:if="${transaction.type.name() == 'PAYMENT'}" class="badge badge-soft badge-success badge-sm">Payment</span>
+                            <span th:if="${transaction.type.name() == 'EXTERNAL_PAYMENT'}" class="badge badge-soft badge-success badge-sm">External</span>
+                        </td>
+                        
+                        <!-- Status Column -->
+                        <td class="w-auto">
+                            <div th:if="${transaction.status.name() == 'SUCCESSFUL'}" class="flex items-center gap-2">
+                                <div aria-label="status" class="status status-success"></div>
+                                <span class="text-success">Successful</span>
+                            </div>
+                            <div th:if="${transaction.status.name() == 'PENDING'}" class="flex items-center gap-2">
+                                <div aria-label="status" class="status status-warning"></div>
+                                <span class="text-warning">Pending</span>
+                            </div>
+                            <div th:if="${transaction.status.name() == 'FAILED'}" class="flex items-center gap-2">
+                                <div aria-label="status" class="status status-error"></div>
+                                <span class="text-error">Failed</span>
+                            </div>
+                            <div th:if="${transaction.status.name() == 'REFUNDED'}" class="flex items-center gap-2">
+                                <div aria-label="status" class="status status-info"></div>
+                                <span class="text-info">Refunded</span>
+                            </div>
+                            <div th:if="${transaction.status.name() == 'PARTIALLY_REFUNDED'}" class="flex items-center gap-2">
+                                <div aria-label="status" class="status status-info"></div>
+                                <span class="text-info">Partial Refund</span>
+                            </div>
+                        </td>
+                        
+                        <!-- Actions Column -->
+                        <td class="w-auto">
+                            <button 
+                                type="button" 
+                                class="btn btn-circle btn-text btn-sm email-receipt-btn"
+                                th:data-transaction-id="${transaction.id}"
+                                title="Email Receipt">
+                                <span class="icon-[tabler--mail] size-5"></span>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
         <!-- Pagination Footer -->

@@ -77,94 +77,90 @@
                             </div>
             </div>
                         
-                        <div class="overflow-x-auto">
-                            <div class="inline-block min-w-full align-middle">
-                                <div class="overflow-hidden">
-                                    <table class="table min-w-full">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col" class="group">
-                                                    <div class="flex items-center justify-between">
-                                                        Name
-                                                        <span class="icon-[tabler--chevron-up] hidden datatable-ordering-asc:block"></span>
-                                                        <span class="icon-[tabler--chevron-down] hidden datatable-ordering-desc:block"></span>
-                                                    </div>
-                                                </th>
-                                                <th scope="col" class="group">
-                                                    <div class="flex items-center justify-between">
-                                                        Email
-                                                        <span class="icon-[tabler--chevron-up] hidden datatable-ordering-asc:block"></span>
-                                                        <span class="icon-[tabler--chevron-down] hidden datatable-ordering-desc:block"></span>
-                                                    </div>
-                                                </th>
-                                                <th scope="col" class="group">
-                                                    <div class="flex items-center justify-between">
-                                                        OpenID
-                                                        <span class="icon-[tabler--chevron-up] hidden datatable-ordering-asc:block"></span>
-                                                        <span class="icon-[tabler--chevron-down] hidden datatable-ordering-desc:block"></span>
-                                                    </div>
-                                                </th>
-                                                <th scope="col" class="group">
-                                                    <div class="flex items-center justify-between">
-                                                        Balance
-                                                        <span class="icon-[tabler--chevron-up] hidden datatable-ordering-asc:block"></span>
-                                                        <span class="icon-[tabler--chevron-down] hidden datatable-ordering-desc:block"></span>
-                </div>
-                                                </th>
-                                                <th scope="col" class="--exclude-from-ordering">Actions</th>
-                                                <th scope="col" class="--exclude-from-ordering" style="display: none;">User ID</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr th:each="user : ${users}">
-                                                <!-- Name Column -->
-                                                <td th:text="${user.name}">John Doe</td>
-                                                
-                                                <!-- Email Column -->
-                                                <td th:text="${user.email}">john.doe@example.com</td>
-                                                
-                                                <!-- OpenID Column -->
-                                                <td>
-                                                    <span class="font-mono text-sm" th:text="${user.openID}">user123</span>
-                                                </td>
-                                                
-                                                <!-- Balance Column -->
-                                                <td class="font-mono">
-                                                    <span class="text-success" 
-                                                        th:text="'€' + ${#numbers.formatDecimal(user.balance, 1, 2)}">€0.00</span>
-                                                </td>
-                                                
-                                                <!-- Actions Column -->
-                                                <td>
-                                                    <div class="flex items-center gap-1">
-                                                        <button 
-                                                            type="button" 
-                                                            class="btn btn-circle btn-text btn-sm view-details-btn"
-                                                            th:data-user-id="${user.id}"
-                                                            title="View Details">
-                                                            <span class="icon-[tabler--eye] size-5"></span>
-                                                        </button>
-                                                        <button 
-                                                            type="button" 
-                                                            class="btn btn-circle btn-text btn-sm ban-user-btn"
-                                                            th:data-user-id="${user.id}"
-                                                            th:data-user-name="${user.name}"
-                                                            th:data-action="${user.banned} ? 'unban' : 'ban'"
-                                                            th:class="${user.banned} ? 'btn btn-circle btn-text btn-sm text-success ban-user-btn' : 'btn btn-circle btn-text btn-sm text-error ban-user-btn'"
-                                                            th:title="${user.banned} ? 'Unban User' : 'Ban User'">
-                                                            <span th:class="${user.banned} ? 'icon-[tabler--user-check] size-5' : 'icon-[tabler--user-x] size-5'"></span>
-                                                        </button>
-                </div>
-                                                </td>
-                                                
-                                                <!-- Hidden User ID Column (for search) -->
-                                                <td style="display: none;" th:text="${user.id}">550e8400-e29b-41d4-a716-446655440000</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-            </div>
-        </div>
-                </div>
+                        <div class="w-full overflow-x-auto h-fit">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="group">
+                                            <div class="flex items-center justify-between">
+                                                Name
+                                                <span class="icon-[tabler--chevron-up] hidden datatable-ordering-asc:block"></span>
+                                                <span class="icon-[tabler--chevron-down] hidden datatable-ordering-desc:block"></span>
+                                            </div>
+                                        </th>
+                                        <th scope="col" class="group">
+                                            <div class="flex items-center justify-between">
+                                                Email
+                                                <span class="icon-[tabler--chevron-up] hidden datatable-ordering-asc:block"></span>
+                                                <span class="icon-[tabler--chevron-down] hidden datatable-ordering-desc:block"></span>
+                                            </div>
+                                        </th>
+                                        <th scope="col" class="group">
+                                            <div class="flex items-center justify-between">
+                                                OpenID
+                                                <span class="icon-[tabler--chevron-up] hidden datatable-ordering-asc:block"></span>
+                                                <span class="icon-[tabler--chevron-down] hidden datatable-ordering-desc:block"></span>
+                                            </div>
+                                        </th>
+                                        <th scope="col" class="w-0 group">
+                                            <div class="flex items-center justify-between">
+                                                Balance
+                                                <span class="icon-[tabler--chevron-up] hidden datatable-ordering-asc:block"></span>
+                                                <span class="icon-[tabler--chevron-down] hidden datatable-ordering-desc:block"></span>
+                                            </div>
+                                        </th>
+                                        <th scope="col" class="w-0 --exclude-from-ordering">Actions</th>
+                                        <th scope="col" class="w-auto --exclude-from-ordering" style="display: none;">User ID</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="user : ${users}">
+                                        <!-- Name Column -->
+                                        <td th:text="${user.name}">John Doe</td>
+                                        
+                                        <!-- Email Column -->
+                                        <td th:text="${user.email}">john.doe@example.com</td>
+                                        
+                                        <!-- OpenID Column -->
+                                        <td>
+                                            <span class="font-mono text-sm" th:text="${user.openID}">user123</span>
+                                        </td>
+                                        
+                                        <!-- Balance Column -->
+                                        <td class="w-0 text-right font-mono whitespace-nowrap">
+                                            <span class="text-success" 
+                                                th:text="'€' + ${#numbers.formatDecimal(user.balance, 1, 2)}">€0.00</span>
+                                        </td>
+                                        
+                                        <!-- Actions Column -->
+                                        <td class="w-0 whitespace-nowrap">
+                                            <div class="flex items-center gap-1">
+                                                <button 
+                                                    type="button" 
+                                                    class="btn btn-circle btn-text btn-sm view-details-btn"
+                                                    th:data-user-id="${user.id}"
+                                                    title="View Details">
+                                                    <span class="icon-[tabler--eye] size-5"></span>
+                                                </button>
+                                                <button 
+                                                    type="button" 
+                                                    class="btn btn-circle btn-text btn-sm ban-user-btn"
+                                                    th:data-user-id="${user.id}"
+                                                    th:data-user-name="${user.name}"
+                                                    th:data-action="${user.banned} ? 'unban' : 'ban'"
+                                                    th:class="${user.banned} ? 'btn btn-circle btn-text btn-sm text-success ban-user-btn' : 'btn btn-circle btn-text btn-sm text-error ban-user-btn'"
+                                                    th:title="${user.banned} ? 'Unban User' : 'Ban User'">
+                                                    <span th:class="${user.banned} ? 'icon-[tabler--user-check] size-5' : 'icon-[tabler--user-x] size-5'"></span>
+                                                </button>
+                                            </div>
+                                        </td>
+                                        
+                                        <!-- Hidden User ID Column (for search) -->
+                                        <td class="w-auto" style="display: none;" th:text="${user.id}">550e8400-e29b-41d4-a716-446655440000</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
 
                         <!-- Pagination Footer -->
                         <div class="border-base-content/25 flex items-center justify-between gap-3 border-t p-3 max-md:flex-wrap max-md:justify-center">
