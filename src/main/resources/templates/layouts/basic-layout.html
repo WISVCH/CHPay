@@ -12,12 +12,16 @@
     <meta name="apple-mobile-web-app-title" content="CHPay" />
     <link rel="manifest" href="/images/site.webmanifest" />
     <link th:href="@{/css/main.css}" rel="stylesheet" />
+    <!-- Charts styles - only load when needed -->
+    <th:block th:if="${hasCharts}">
+        <link th:href="@{/css/apexcharts.css}" rel="stylesheet" />
+    </th:block>
     <title layout:title-pattern="$CONTENT_TITLE - CHPay">CHPay</title>
     <th:block layout:fragment="css"></th:block>
 </head>
 
 <body class="bg-base-200 min-h-screen">
-    <nav class="navbar bg-base-100 max-sm:rounded-b-box max-sm:shadow-sm sm:border-b border-base-content/25 sm:z-1 relative">
+    <nav class="navbar bg-base-100 max-lg:rounded-b-box max-lg:shadow-sm lg:border-b border-base-content/25 lg:z-1 relative sticky top-0 z-50">
         <div class="flex flex-1 items-center">
             <a class="link text-base-content link-neutral text-xl font-semibold no-underline flex items-center" href="/">
                 <picture class="w-12">
@@ -47,7 +51,7 @@
        <div class="sm:overlay-layout-open:ps-64 min-h-[calc(100vh-4rem)] bg-base-200 transition-all duration-300 flex flex-col">
             <!-- Main Content -->
             <main class="flex-1 p-6">
-                <div class="max-w-4xl mx-auto">
+                <div th:class="${layoutWide} ? 'max-w-full mx-auto px-4 sm:px-6 lg:px-8' : 'max-w-4xl mx-auto'">
                     <div layout:fragment="main-content">
                         <!-- Page content goes here -->
                     </div>
@@ -73,7 +77,16 @@
        </div>
 
       <script th:src="@{/js/jquery.min.js}"></script>
-      <script th:src="@{/js/dataTables.min.js}"></script>
+      <!-- DataTables scripts - only load when needed -->
+      <th:block th:if="${hasDataTable}">
+          <script th:src="@{/js/dataTables.min.js}"></script>
+      </th:block>
+      <!-- Charts scripts - only load when needed -->
+      <th:block th:if="${hasCharts}">
+          <script th:src="@{/js/apexcharts.min.js}"></script>
+          <script th:src="@{/js/lodash.min.js}"></script>
+          <script th:src="@{/js/helper-apexcharts.js}"></script>
+      </th:block>
       <script th:src="@{/js/flyonui.js}"></script>
     
     <!-- Modals Fragment -->
