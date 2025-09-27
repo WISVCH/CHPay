@@ -46,6 +46,10 @@ public class User {
   @Setter
   private Boolean banned;
 
+  @Column(nullable = true)
+  @Setter
+  private String recentPayment;
+
   public User(String name, String email, String openID) {
     this.name = name;
     this.email = email;

@@ -9,10 +9,10 @@ import ch.wisv.chpay.core.repository.TransactionRepository;
 import ch.wisv.chpay.core.service.NotificationService;
 import ch.wisv.chpay.core.service.SettingService;
 import ch.wisv.chpay.core.service.TransactionService;
+import ch.wisv.chpay.core.service.UserService;
 import ch.wisv.chpay.customer.service.DepositService;
 import java.math.BigDecimal;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,8 +32,7 @@ public class TopUpController extends CustomerController {
   private final NotificationService notificationService;
   private final TransactionRepository transactionRepository;
   private final SettingService settingService;
-
-  private final ConcurrentHashMap<UUID, String> redirectMap;
+  private final UserService userService;
 
   @Value("${mollie.transaction_fee}")
   private String transactionFee;
@@ -44,13 +43,14 @@ public class TopUpController extends CustomerController {
       TransactionService transactionsService,
       NotificationService notificationService,
       TransactionRepository transactionRepository,
-      SettingService settingService) {
+      SettingService settingService,
+      UserService userService) {
     this.depositService = depositService;
     this.transactionsService = transactionsService;
     this.notificationService = notificationService;
     this.transactionRepository = transactionRepository;
     this.settingService = settingService;
-    this.redirectMap = new ConcurrentHashMap<>();
+    this.userService = userService;
   }
 
   /**
@@ -69,9 +69,8 @@ public class TopUpController extends CustomerController {
     model.addAttribute(MODEL_ATTR_MAX_BALANCE, settingService.getMaxBalance());
     model.addAttribute(MODEL_ATTR_MIN_TOP_UP, settingService.getMinTopUp());
     model.addAttribute(MODEL_ATTR_TRANSACTION_FEE, transactionFee);
-    if (redirect != null) {
-      redirectMap.put(currentUser.getId(), redirect);
-    }
+    currentUser.setRecentPayment(redirect); // may be null
+    userService.saveAndFlush(currentUser);
     return "topup";
   }
 
@@ -141,9 +140,8 @@ public class TopUpController extends CustomerController {
             .findById(UUID.fromString(key))
             .orElseThrow(() -> new NotFoundException(key));
     model.addAttribute(MODEL_ATTR_TRANSACTION_ID, key);
-    if (redirectMap.containsKey(currentUser.getId())) {
-      model.addAttribute("redirect", redirectMap.get(currentUser.getId()));
-      // redirectMap.remove(currentUser.getId());
+    if (currentUser.getRecentPayment() != null) {
+      model.addAttribute("redirect", currentUser.getRecentPayment());
     }
     return switch (t.getStatus()) {
       case Transaction.TransactionStatus.PENDING -> "pending";
