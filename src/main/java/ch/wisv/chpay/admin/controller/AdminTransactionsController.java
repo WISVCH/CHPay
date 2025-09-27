@@ -5,6 +5,7 @@ import ch.wisv.chpay.core.model.transaction.Transaction;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.YearMonth;
 import java.time.format.DateTimeParseException;
@@ -121,7 +122,11 @@ public class AdminTransactionsController extends AdminController {
                           + ";"
                           + t.getDescription()
                           + ";"
-                          + t.getAmount()
+                          + ((t.getStatus().equals(Transaction.TransactionStatus.REFUNDED)
+                                  || t.getStatus()
+                                      .equals(Transaction.TransactionStatus.PARTIALLY_REFUNDED))
+                              ? t.getAmount().multiply(BigDecimal.valueOf(-1))
+                              : t.getAmount())
                           + ";"
                           + t.getTimestamp().toString())
               .collect(Collectors.joining("\n"));
