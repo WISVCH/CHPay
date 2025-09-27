@@ -45,7 +45,6 @@
                         <a th:unless="${transaction.amount.abs()}<=${currentUser.balance}" 
                            class="btn btn-primary btn-xl sm:btn-lg btn-disabled" 
                            aria-disabled="true">
-                            <span class="icon-[tabler--check] size-5"></span>
                             Pay
                         </a>
 
@@ -54,6 +53,11 @@
                                 <span class="icon-[tabler--plus] size-5"></span>
                                 Top-Up Balance
                         </a>
+                    </div>
+
+                    <!-- Transaction ID -->
+                    <div class="text-xs text-base-content/50 mt-6">
+                        <span th:text="${'Transaction ID: ' + transaction.id}">Transaction ID: TX-123456</span>
                     </div>
                 </div>
             </div>
