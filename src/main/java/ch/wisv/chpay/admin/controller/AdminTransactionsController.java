@@ -122,9 +122,7 @@ public class AdminTransactionsController extends AdminController {
                           + ";"
                           + t.getDescription()
                           + ";"
-                          + (t.getType().equals(Transaction.TransactionType.REFUND)
-                              ? t.getAmount().multiply(BigDecimal.valueOf(-1))
-                              : t.getAmount())
+                          + t.getAmount()
                           + ";"
                           + t.getStatus().name()
                           + ";"
