@@ -101,7 +101,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
                 FROM Transaction t
                 JOIN t.request r
                WHERE r.request_id = :requestId
-               ORDER BY t.timestamp ASC
+               ORDER BY t.timestamp DESC
             """)
   List<Transaction> findAllByRequestId(@Param("requestId") UUID requestId);
 
