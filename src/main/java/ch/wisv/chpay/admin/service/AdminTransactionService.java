@@ -4,6 +4,7 @@ import ch.wisv.chpay.core.model.transaction.Transaction;
 import ch.wisv.chpay.core.repository.TransactionRepository;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -61,5 +62,9 @@ public class AdminTransactionService {
       return availableMonths.get(0); // First item since ordered DESC
     }
     return YearMonth.now(); // Fallback to current month
+  }
+
+  public List<Transaction> getTransactionsByRequestId(UUID requestId) {
+    return transactionRepository.findAllByRequestId(requestId);
   }
 }

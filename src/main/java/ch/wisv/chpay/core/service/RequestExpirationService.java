@@ -40,7 +40,7 @@ public class RequestExpirationService {
     List<PaymentRequest> oldRequests = requestRepository.findOldRequestsForUpdate(cutoff);
 
     for (PaymentRequest request : oldRequests) {
-      request.setFulfilled(true);
+      request.setExpired(true);
     }
 
     if (!oldRequests.isEmpty()) {

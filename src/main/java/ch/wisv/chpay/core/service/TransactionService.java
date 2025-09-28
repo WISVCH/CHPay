@@ -205,13 +205,18 @@ public class TransactionService {
 
     PaymentRequest request = lockedTransaction.getRequest();
 
-    if (request != null && request.isFulfilled() && !request.isMultiUse()) {
-      throw new IllegalStateException("Request is already fulfilled or has expired");
+    if (request != null && request.isExpired()) {
+      throw new IllegalStateException("Request has expired");
     }
+
+    if (request != null && request.getFulfilments() > 0 && !request.isMultiUse()) {
+      throw new IllegalStateException("Request has already been fulfilled");
+    }
+
     Transaction result = balanceService.pay(user, lockedTransaction);
 
-    if (request != null && !request.isMultiUse()) {
-      request.setFulfilled(true);
+    if (request != null) {
+      request.addFulfilment();
       requestRepository.save(request);
     }
 

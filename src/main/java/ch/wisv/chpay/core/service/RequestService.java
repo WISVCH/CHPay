@@ -76,8 +76,12 @@ public class RequestService {
       throw new NoSuchElementException();
     }
 
-    if (request.isFulfilled() && !request.isMultiUse()) {
-      throw new IllegalStateException("Request is already fulfilled or has expired");
+    if (request.isExpired()) {
+      throw new IllegalStateException("Request has expired");
+    }
+
+    if (request.getFulfilments() > 0 && !request.isMultiUse()) {
+      throw new IllegalStateException("Request is already fulfilled");
     }
 
     Optional<PaymentTransaction> existing =

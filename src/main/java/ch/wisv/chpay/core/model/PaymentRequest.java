@@ -30,10 +30,14 @@ public class PaymentRequest {
 
   @Setter
   @Column(nullable = false)
-  private boolean fulfilled;
+  private int fulfilments;
 
   @Column(nullable = false)
   private boolean multiUse;
+
+  @Setter
+  @Column(nullable = false)
+  private boolean expired;
 
   @Setter
   @OneToMany(mappedBy = "request", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -45,9 +49,14 @@ public class PaymentRequest {
   public PaymentRequest(BigDecimal amount, String description, boolean multiUse) {
     this.amount = amount;
     this.description = description;
-    this.fulfilled = false;
+    this.fulfilments = 0;
     this.multiUse = multiUse;
+    this.expired = false;
     this.createdAt = LocalDateTime.now();
     this.transactions = new ArrayList<>();
+  }
+
+  public void addFulfilment() {
+    this.fulfilments++;
   }
 }
