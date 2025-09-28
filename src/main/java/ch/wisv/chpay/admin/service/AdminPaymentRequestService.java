@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +29,7 @@ public class AdminPaymentRequestService {
   @Transactional(readOnly = true)
   @PreAuthorize("hasRole('ADMIN')")
   public List<PaymentRequest> getAll() {
-    return requestRepository.findAll();
+    return requestRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
   }
 
   public Optional<PaymentRequest> getById(UUID id) {
