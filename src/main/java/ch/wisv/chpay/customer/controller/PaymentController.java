@@ -71,7 +71,11 @@ public class PaymentController extends PageController {
             .getRequestById(UUID.fromString(key))
             .orElseThrow(() -> new NoSuchElementException("Request not found"));
 
-    if (paymentRequest.isFulfilled()) {
+    if (paymentRequest.isExpired()) {
+      throw new IllegalStateException("Request has expired");
+    }
+
+    if (paymentRequest.getFulfilments() > 0 && !paymentRequest.isMultiUse()) {
       throw new IllegalStateException("Request is already fulfilled!");
     }
 

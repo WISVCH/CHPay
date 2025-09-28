@@ -23,7 +23,7 @@ public interface RequestRepository extends JpaRepository<PaymentRequest, UUID> {
       value =
           """
            SELECT * FROM requests
-           WHERE fulfilled = FALSE
+           WHERE expired = FALSE
              AND created_at < :cutoff
            FOR UPDATE SKIP LOCKED
            """,
