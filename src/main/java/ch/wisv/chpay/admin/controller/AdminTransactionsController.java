@@ -5,7 +5,6 @@ import ch.wisv.chpay.core.model.transaction.Transaction;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.YearMonth;
 import java.time.format.DateTimeParseException;
