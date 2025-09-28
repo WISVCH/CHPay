@@ -91,6 +91,20 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
   List<Transaction> findAllSuccessfulForRequest(
       @Param("requestId") UUID requestId, @Param("status") TransactionStatus status);
 
+  /**
+   * Find all transactions for a given PaymentRequest ID whose status is SUCCESSFUL, ordered by
+   * timestamp ascendingly.
+   */
+  @Query(
+      """
+              SELECT t
+                FROM Transaction t
+                JOIN t.request r
+               WHERE r.request_id = :requestId
+               ORDER BY t.timestamp ASC
+            """)
+  List<Transaction> findAllByRequestId(@Param("requestId") UUID requestId);
+
   /** Find all transactions for a given year and month. */
   @Query(
       """

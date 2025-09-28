@@ -252,6 +252,13 @@
                                                     title="Go to QR code">
                                                 <span class="icon-[tabler--qrcode] size-5"></span>
                                             </button>
+                                            <button
+                                                    type="button"
+                                                    th:attr="onclick=|window.location.href ='/admin/payment-request/${paymentRequest.request_id}/transactions'|"
+                                                    class="btn btn-circle btn-text btn-sm view-qr-btn"
+                                                    title="Go to transactions">
+                                                <span class="icon-[tabler--logs] size-5"></span>
+                                            </button>
                                         </td>
                                     </tr>
                                     </tbody>
