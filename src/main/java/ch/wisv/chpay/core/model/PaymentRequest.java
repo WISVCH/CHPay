@@ -10,6 +10,7 @@ import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Table(name = "requests")
@@ -30,6 +31,7 @@ public class PaymentRequest {
 
   @Setter
   @Column(nullable = false)
+  @ColumnDefault("0")
   private int fulfilments;
 
   @Column(nullable = false)
@@ -37,6 +39,7 @@ public class PaymentRequest {
 
   @Setter
   @Column(nullable = false)
+  @ColumnDefault("false")
   private boolean expired;
 
   @Setter
