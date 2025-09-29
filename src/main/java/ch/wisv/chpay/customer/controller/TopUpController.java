@@ -69,8 +69,7 @@ public class TopUpController extends CustomerController {
     model.addAttribute(MODEL_ATTR_MAX_BALANCE, settingService.getMaxBalance());
     model.addAttribute(MODEL_ATTR_MIN_TOP_UP, settingService.getMinTopUp());
     model.addAttribute(MODEL_ATTR_TRANSACTION_FEE, transactionFee);
-    currentUser.setRecentPayment(redirect); // may be null
-    userService.saveAndFlush(currentUser);
+    userService.setRecentPayment(currentUser, redirect);
     return "topup";
   }
 
