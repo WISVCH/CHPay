@@ -67,7 +67,7 @@ public class RequestService {
         IllegalArgumentException.class
       },
       backoff = @Backoff(delay = 200, multiplier = 2))
-  @PreAuthorize("hasAnyRole('User', 'ADMIN')")
+  @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
   @Transactional
   public PaymentTransaction transactionFromRequest(UUID requestId, User payer) {
     PaymentRequest request = requestRepository.findByIdForUpdate(requestId);
