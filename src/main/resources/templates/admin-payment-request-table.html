@@ -220,11 +220,11 @@
                                             </div>
                                             <div th:if="${paymentRequest.fulfilments > 0 && !paymentRequest.isMultiUse()}" class="flex items-center gap-2">
                                                 <div aria-label="status" class="status status-success"></div>
-                                                <span class="text-warning">Fulfilled</span>
+                                                <span class="text-success">Fulfilled</span>
                                             </div>
                                             <div th:if="${paymentRequest.isExpired() && (paymentRequest.isMultiUse() || paymentRequest.fulfilments == 0)}" class="flex items-center gap-2">
                                                 <div aria-label="status" class="status status-warning"></div>
-                                                <span class="text-error">Expired</span>
+                                                <span class="text-warning">Expired</span>
                                             </div>
 <!--                                            <div th:if="${paymentRequest.status.name() == 'REFUNDED'}" class="flex items-center gap-2">-->
 <!--                                                <div aria-label="status" class="status status-info"></div>-->
