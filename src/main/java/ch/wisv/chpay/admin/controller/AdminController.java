@@ -23,4 +23,9 @@ abstract class AdminController extends PageController {
   static final String MODEL_ATTR_PAYMENT_REQUESTS = "paymentRequests";
   static final String MODEL_ATTR_SELECTED_YEAR_MONTH = "selectedYearMonth";
   static final String MODEL_ATTR_ALL_POSSIBLE_MONTHS = "allPossibleMonths";
+  static final String MODEL_ATTR_TRANSACTION_PAGE_TYPE = "transactionPageType";
+  static final String MODEL_ATTR_BREADCRUMB_USER_ID = "breadcrumbUserId";
+  static final String MODEL_ATTR_BREADCRUMB_USER_NAME = "breadcrumbUserName";
+  static final String MODEL_ATTR_BREADCRUMB_REQUEST_ID = "breadcrumbRequestId";
+  static final String MODEL_ATTR_BREADCRUMB_REQUEST_DESCRIPTION = "breadcrumbRequestDescription";
 }

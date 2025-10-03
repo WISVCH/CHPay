@@ -125,4 +125,62 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
         ORDER BY YEAR(t.timestamp) DESC, MONTH(t.timestamp) DESC
       """)
   List<Object[]> findDistinctYearMonthCombinations();
+
+  /** Find all transactions for a given user ID. */
+  @Query(
+      """
+        SELECT t
+        FROM Transaction t
+        WHERE t.user.id = :userId
+        ORDER BY t.timestamp DESC
+      """)
+  List<Transaction> findAllByUserId(@Param("userId") UUID userId);
+
+  /** Find all transactions for a given user ID and year-month. */
+  @Query(
+      """
+        SELECT t
+        FROM Transaction t
+        WHERE t.user.id = :userId
+        AND YEAR(t.timestamp) = :year
+        AND MONTH(t.timestamp) = :month
+        ORDER BY t.timestamp DESC
+      """)
+  List<Transaction> findTransactionsByUserIdAndYearMonth(
+      @Param("userId") UUID userId, @Param("year") int year, @Param("month") int month);
+
+  /** Find all transactions for a given payment request ID and year-month. */
+  @Query(
+      """
+        SELECT t
+        FROM Transaction t
+        JOIN t.request r
+        WHERE r.request_id = :requestId
+        AND YEAR(t.timestamp) = :year
+        AND MONTH(t.timestamp) = :month
+        ORDER BY t.timestamp DESC
+      """)
+  List<Transaction> findTransactionsByRequestIdAndYearMonth(
+      @Param("requestId") UUID requestId, @Param("year") int year, @Param("month") int month);
+
+  /** Get distinct year-month combinations for a specific user. */
+  @Query(
+      """
+        SELECT DISTINCT YEAR(t.timestamp), MONTH(t.timestamp)
+        FROM Transaction t
+        WHERE t.user.id = :userId
+        ORDER BY YEAR(t.timestamp) DESC, MONTH(t.timestamp) DESC
+      """)
+  List<Object[]> findDistinctYearMonthCombinationsByUserId(@Param("userId") UUID userId);
+
+  /** Get distinct year-month combinations for a specific payment request. */
+  @Query(
+      """
+        SELECT DISTINCT YEAR(t.timestamp), MONTH(t.timestamp)
+        FROM Transaction t
+        JOIN t.request r
+        WHERE r.request_id = :requestId
+        ORDER BY YEAR(t.timestamp) DESC, MONTH(t.timestamp) DESC
+      """)
+  List<Object[]> findDistinctYearMonthCombinationsByRequestId(@Param("requestId") UUID requestId);
 }

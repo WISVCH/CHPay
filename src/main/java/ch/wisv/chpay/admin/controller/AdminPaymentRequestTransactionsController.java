@@ -5,6 +5,7 @@ import ch.wisv.chpay.admin.service.AdminTransactionService;
 import ch.wisv.chpay.core.model.PaymentRequest;
 import ch.wisv.chpay.core.model.transaction.Transaction;
 import jakarta.servlet.http.HttpServletRequest;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,22 +15,21 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/admin/payment-request/{tx}/transactions")
-public class AdminPaymentRequestTransactionsController extends AdminController {
+public class AdminPaymentRequestTransactionsController extends BaseTransactionController {
 
-  private final AdminTransactionService adminTransactionService;
   private final AdminPaymentRequestService adminPaymentRequestService;
 
   @Autowired
   protected AdminPaymentRequestTransactionsController(
       AdminTransactionService adminTransactionService,
       AdminPaymentRequestService adminPaymentRequestService) {
-    super();
-    this.adminTransactionService = adminTransactionService;
+    super(adminTransactionService);
     this.adminPaymentRequestService = adminPaymentRequestService;
   }
 
@@ -37,6 +37,8 @@ public class AdminPaymentRequestTransactionsController extends AdminController {
    * Gets the page showing all transactions for a given year and month.
    *
    * @param model of type Model
+   * @param tx the payment request ID
+   * @param yearMonth the yearMonth parameter in format "YYYY-MM" (optional)
    * @return String
    */
   @GetMapping
@@ -44,24 +46,44 @@ public class AdminPaymentRequestTransactionsController extends AdminController {
       RedirectAttributes redirectAttributes,
       Model model,
       HttpServletRequest request,
-      @PathVariable String tx) {
+      @PathVariable String tx,
+      @RequestParam(required = false) String yearMonth) {
 
-    // Get all transactions for the specified month
-    List<Transaction> transactions =
-        adminTransactionService.getTransactionsByRequestId(UUID.fromString(tx));
+    UUID requestUuid = UUID.fromString(tx);
 
     PaymentRequest paymentRequest =
-        adminPaymentRequestService.getById(UUID.fromString(tx)).orElse(null);
+        adminPaymentRequestService.getById(requestUuid).orElse(null);
 
     if (paymentRequest == null) {
       throw new IllegalArgumentException("Payment request not found");
     }
-    // Add attributes to the model
-    model.addAttribute(MODEL_ATTR_TRANSACTIONS, transactions);
-    model.addAttribute(MODEL_ATTR_PAYMENT_REQUEST, paymentRequest);
 
-    model.addAttribute(MODEL_ATTR_URL_PAGE, "adminPaymentRequestTransactions");
+    try {
+      YearMonth selectedYearMonth = handleYearMonthParameter(
+          yearMonth,
+          request,
+          () -> adminTransactionService.getMostRecentYearMonthForRequest(requestUuid),
+          ym -> "/admin/payment-request/" + tx + "/transactions?yearMonth=" + ym);
 
-    return "admin-payment-request-transaction-table";
+      // Get all transactions for the specified payment request and month
+      List<Transaction> transactions =
+          adminTransactionService.getTransactionsByRequestIdAndYearMonth(requestUuid, selectedYearMonth);
+
+      // Get all possible months for the dropdown
+      List<YearMonth> allPossibleMonths = adminTransactionService.getAllPossibleMonthsForRequest(requestUuid);
+
+      // Add attributes to the model
+      addTransactionModelAttributes(model, transactions, selectedYearMonth, allPossibleMonths);
+      model.addAttribute(MODEL_ATTR_PAYMENT_REQUEST, paymentRequest);
+      model.addAttribute(MODEL_ATTR_TRANSACTION_PAGE_TYPE, "paymentRequest");
+      model.addAttribute(MODEL_ATTR_BREADCRUMB_REQUEST_ID, tx);
+      model.addAttribute(MODEL_ATTR_BREADCRUMB_REQUEST_DESCRIPTION, paymentRequest.getDescription());
+
+      model.addAttribute(MODEL_ATTR_URL_PAGE, "adminPaymentRequests");
+
+      return "admin-transaction-table";
+    } catch (BaseTransactionController.RedirectException e) {
+      return "redirect:" + e.getRedirectUrl();
+    }
   }
 }
