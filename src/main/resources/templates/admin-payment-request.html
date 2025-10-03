@@ -89,6 +89,28 @@
 
             </div>
 
+            <!-- Copy URL Section -->
+            <div class="py-4 border-b border-base-content/10">
+                <div class="text-base-content/70 text-sm mb-3">Payment URL</div>
+                <label class="input w-full flex space-x-3">
+                    <span class="icon-[tabler--link] text-base-content/80 my-auto size-5 shrink-0"></span>
+                    <input id="clipboard-input-group" 
+                           type="text" 
+                           class="grow" 
+                           th:value="${baseUrl + '/payment/request/' + paymentRequest.request_id}"
+                           readonly
+                           aria-label="Payment request URL" />
+                    <button type="button" 
+                            class="js-clipboard my-auto size-5" 
+                            aria-label="Copy text to clipboard" 
+                            data-clipboard-target="#clipboard-input-group" 
+                            data-clipboard-action="copy">
+                        <span class="js-clipboard-default icon-[tabler--clipboard] size-5 transition"></span>
+                        <span class="js-clipboard-success icon-[tabler--clipboard-check] text-primary hidden size-5"></span>
+                    </button>
+                </label>
+            </div>
+
             <!-- Action Buttons -->
             <div class="card-actions justify-end pt-4 border-base-content/10 mt-6">
                 <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">

@@ -182,6 +182,14 @@
                                                title="Go to QR code">
                                                 <span class="icon-[tabler--qrcode] size-5"></span>
                                             </a>
+                                            <button type="button"
+                                                    class="js-clipboard [--trigger:focus] btn btn-circle btn-text btn-sm"
+                                                    th:attr="data-clipboard-text=${baseUrl + '/payment/request/' + paymentRequest.request_id}"
+                                                    th:disabled="${paymentRequest.isExpired() || (!paymentRequest.isMultiUse() && paymentRequest.fulfilments > 0)}"
+                                                    title="Copy payment URL">
+                                                <span class="js-clipboard-default icon-[tabler--clipboard] size-5 transition"></span>
+                                                <span class="js-clipboard-success icon-[tabler--clipboard-check] text-primary hidden size-5"></span>
+                                            </button>
                                         </td>
                                     </tr>
                                     </tbody>
