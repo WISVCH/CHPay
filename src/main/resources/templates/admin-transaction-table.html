@@ -9,8 +9,8 @@
 
 <body>
 <!-- Conditional Breadcrumbs -->
-<div layout:fragment="breadcrumbs" th:if="${transactionPageType != null}">
-    <div class="breadcrumbs">
+<div layout:fragment="breadcrumbs">
+    <div class="breadcrumbs" th:if="${transactionPageType != null}">
         <ul>
             <!-- User Transactions Breadcrumbs -->
             <li th:if="${transactionPageType == 'user'}">
