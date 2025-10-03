@@ -21,7 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class AdminPaymentRequestController extends AdminController {
   private final AdminPaymentRequestService adminPaymentRequestService;
   private final NotificationService notificationService;
-  
+
   @Value("${spring.application.baseurl}")
   private String baseUrl;
 
@@ -63,7 +63,7 @@ public class AdminPaymentRequestController extends AdminController {
       Model model, @PathVariable String tx, RedirectAttributes redirectAttributes) {
 
     model.addAttribute(MODEL_ATTR_URL_PAGE, "adminPaymentRequests");
-    
+
     // Get payment request object
     PaymentRequest paymentRequest =
         adminPaymentRequestService
@@ -76,7 +76,7 @@ public class AdminPaymentRequestController extends AdminController {
     // Add attributes to the model
     model.addAttribute(MODEL_ATTR_PAYMENT_REQUEST, paymentRequest);
     model.addAttribute(MODEL_ATTR_BASE_URL, baseUrl);
-    
+
     return "admin-payment-request";
   }
 }

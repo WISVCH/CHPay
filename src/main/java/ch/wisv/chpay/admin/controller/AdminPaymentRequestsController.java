@@ -19,7 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class AdminPaymentRequestsController extends AdminController {
 
   private final AdminPaymentRequestService adminPaymentRequestService;
-  
+
   @Value("${spring.application.baseurl}")
   private String baseUrl;
 
