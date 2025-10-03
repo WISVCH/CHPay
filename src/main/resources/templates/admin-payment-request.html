@@ -3,7 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout}">
 <head>
-    <title>Transaction Details</title>
+    <title>Payment Request Details</title>
 </head>
 
 <body>
@@ -126,19 +126,31 @@
 <!--                </div>-->
             </div>
 
-            <!-- Refund Action Button (for refundable paymentRequests) -->
+            <!-- Action Buttons -->
             <div class="card-actions justify-end pt-4 border-base-content/10 mt-6">
-                <button type="button" 
-                        class="btn btn-warning" 
-                        th:disabled="${paymentRequest.isExpired() || (!paymentRequest.isMultiUse() && paymentRequest.fulfilments > 0)}"
-                        th:attr="onclick=|window.location.href='/admin/payment-request/${paymentRequest.request_id}/expire'|"
-                        aria-haspopup="dialog" 
-                        aria-expanded="false" 
-                        aria-controls="refund-modal" 
-                        data-overlay="#refund-modal">
-                    <span class="icon-[tabler--arrow-back] size-4"></span>
-                    <span>Expire payment request</span>
-                </button>
+                <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                    <a th:href="@{/admin/payment-request/{id}/transactions(id=${paymentRequest.request_id})}"
+                       class="btn btn-primary w-full sm:w-auto">
+                        <span class="icon-[tabler--receipt] size-4"></span>
+                        View Transactions
+                    </a>
+                    <a th:href="@{/qr/{id}(id=${paymentRequest.request_id})}"
+                       class="btn btn-primary w-full sm:w-auto">
+                        <span class="icon-[tabler--qrcode] size-4"></span>
+                        View QR Code
+                    </a>
+                    <button type="button" 
+                            class="btn btn-warning w-full sm:w-auto" 
+                            th:disabled="${paymentRequest.isExpired() || (!paymentRequest.isMultiUse() && paymentRequest.fulfilments > 0)}"
+                            th:attr="onclick=|window.location.href='/admin/payment-request/${paymentRequest.request_id}/expire'|"
+                            aria-haspopup="dialog" 
+                            aria-expanded="false" 
+                            aria-controls="refund-modal" 
+                            data-overlay="#refund-modal">
+                        <span class="icon-[tabler--clock-x] size-4"></span>
+                        <span>Expire payment request</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>

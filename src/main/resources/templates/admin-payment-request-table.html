@@ -170,15 +170,15 @@
                                                title="View Details">
                                                 <span class="icon-[tabler--eye] size-5"></span>
                                             </a>
+                                            <a th:href="@{/admin/payment-request/{id}/transactions(id=${paymentRequest.request_id})}"
+                                               class="btn btn-circle btn-text btn-sm"
+                                               title="View Transactions">
+                                                <span class="icon-[tabler--receipt] size-5"></span>
+                                            </a>
                                             <a th:href="@{/qr/{id}(id=${paymentRequest.request_id})}"
                                                class="btn btn-circle btn-text btn-sm view-qr-btn"
                                                title="Go to QR code">
                                                 <span class="icon-[tabler--qrcode] size-5"></span>
-                                            </a>
-                                            <a th:href="@{/admin/payment-request/{id}/transactions(id=${paymentRequest.request_id})}"
-                                               class="btn btn-circle btn-text btn-sm view-qr-btn"
-                                               title="Go to transactions">
-                                                <span class="icon-[tabler--receipt] size-5"></span>
                                             </a>
                                         </td>
                                     </tr>

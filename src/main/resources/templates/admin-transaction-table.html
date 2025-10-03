@@ -143,7 +143,7 @@
                                 </option>
                             </select>
                             <!-- End YearMonth Select -->
-                            <a th:if="${breadcrumbType == null}" th:href="@{/admin/transactions/csv(yearMonth=${selectedYearMonth.toString()})}" 
+                            <a th:if="${transactionPageType == null}" th:href="@{/admin/transactions/csv(yearMonth=${selectedYearMonth.toString()})}" 
                                class="btn btn-soft btn-primary btn-sm">
                                 <span class="icon-[tabler--download] size-4"></span>
                                 Export
