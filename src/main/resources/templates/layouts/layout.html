@@ -113,14 +113,14 @@
               <!-- Admin Section (if user is admin) -->
               <li th:if="${isAdmin}" class="space-y-0.5">
                   <a class="collapse-toggle collapse-open:bg-warning/10 text-warning hover:bg-warning/10"
-                     th:class="${urlPage == 'admin' or urlPage == 'createPaymentRequest' or urlPage == 'adminPaymentRequests' or urlPage == 'adminTransactions' or urlPage == 'adminUsers' or urlPage == 'systemSettings' or urlPage == 'adminLogs'} ? 'collapse-toggle collapse-open collapse-open:bg-warning/10 text-warning hover:bg-warning/10' : 'collapse-toggle collapse-open:bg-warning/10 text-warning hover:bg-warning/10'"
+                     th:class="${urlPage == 'admin' or urlPage == 'adminPaymentRequests' or urlPage == 'adminTransactions' or urlPage == 'adminUsers' or urlPage == 'systemSettings' or urlPage == 'adminLogs'} ? 'collapse-toggle collapse-open collapse-open:bg-warning/10 text-warning hover:bg-warning/10' : 'collapse-toggle collapse-open:bg-warning/10 text-warning hover:bg-warning/10'"
                      id="menu-admin" data-collapse="#menu-admin-collapse">
                       <span class="icon-[tabler--shield] size-5"></span>
                       Admin
                       <span class="icon-[tabler--chevron-down] collapse-open:rotate-180 size-4 transition-all duration-300"></span>
                   </a>
                   <ul id="menu-admin-collapse"
-                      th:class="${urlPage == 'admin' or urlPage == 'createPaymentRequest' or urlPage == 'adminPaymentRequests' or urlPage == 'adminTransactions' or urlPage == 'adminUsers' or urlPage == 'systemSettings' or urlPage == 'adminLogs'} ? 'collapse collapse-open w-auto space-y-0.5 overflow-hidden transition-[height] duration-300' : 'collapse w-auto space-y-0.5 overflow-hidden transition-[height] duration-300 hidden'"
+                      th:class="${urlPage == 'admin' or urlPage == 'adminPaymentRequests' or urlPage == 'adminTransactions' or urlPage == 'adminUsers' or urlPage == 'systemSettings' or urlPage == 'adminLogs'} ? 'collapse collapse-open w-auto space-y-0.5 overflow-hidden transition-[height] duration-300' : 'collapse w-auto space-y-0.5 overflow-hidden transition-[height] duration-300 hidden'"
                       aria-labelledby="menu-admin">
                       <li>
                           <a href="/admin" th:class="${urlPage == 'admin'} ? 'menu-active' : ''">
@@ -129,15 +129,9 @@
                           </a>
                       </li>
                       <li>
-                          <a href="/admin/createPaymentRequest" th:class="${urlPage == 'createPaymentRequest'} ? 'menu-active' : ''">
-                              <span class="icon-[tabler--qrcode] size-5"></span>
-                              Payment Request
-                          </a>
-                      </li>
-                      <li>
                           <a href="/admin/payment-requests" th:class="${urlPage == 'adminPaymentRequests'} ? 'menu-active' : ''">
-                              <span class="icon-[tabler--camera-dollar] size-5"></span>
-                              Payment Requests
+                              <span class="icon-[tabler--qrcode] size-5"></span>
+                              Requests
                           </a>
                       </li>
                       <li>

@@ -29,7 +29,7 @@ public class AdminCreatePaymentRequestController extends AdminController {
    */
   @GetMapping
   public String showNewPaymentRequestPageController(Model model) {
-    model.addAttribute(MODEL_ATTR_URL_PAGE, "createPaymentRequest");
+    model.addAttribute(MODEL_ATTR_URL_PAGE, "adminPaymentRequests");
     return "create-payment-request";
   }
 
