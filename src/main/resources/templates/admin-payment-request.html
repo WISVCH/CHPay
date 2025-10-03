@@ -91,7 +91,8 @@
             </div>
 
             <!-- Copy URL Section -->
-            <div class="py-4 border-b border-base-content/10">
+            <div class="py-4 border-b border-base-content/10" 
+                 th:if="${!paymentRequest.isExpired() && (paymentRequest.isMultiUse() || paymentRequest.fulfilments == 0)}">
                 <div class="text-base-content/70 text-sm mb-3">Payment URL</div>
                 <label class="input w-full flex space-x-3">
                     <span class="icon-[tabler--link] text-base-content/80 my-auto size-5 shrink-0"></span>
