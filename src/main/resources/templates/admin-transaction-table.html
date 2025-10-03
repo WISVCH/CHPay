@@ -4,15 +4,60 @@
       layout:decorate="~{layouts/layout}"
       th:with="layoutWide=true, hasDataTable=true">
 <head>
-    <title>All Transactions</title>
+    <title th:text="${transactionPageType == 'user'} ? 'User Transactions' : (${transactionPageType == 'paymentRequest'} ? 'Payment Request Transactions' : 'All Transactions')">All Transactions</title>
 </head>
 
 <body>
+<!-- Conditional Breadcrumbs -->
+<div layout:fragment="breadcrumbs">
+    <div class="breadcrumbs" th:if="${transactionPageType != null}">
+        <ul>
+            <!-- User Transactions Breadcrumbs -->
+            <li th:if="${transactionPageType == 'user'}">
+                <a href="/admin/users">Users</a>
+            </li>
+            <li th:if="${transactionPageType == 'user'}" class="breadcrumbs-separator rtl:rotate-180">
+                <span class="icon-[tabler--chevron-right]"></span>
+            </li>
+            <li th:if="${transactionPageType == 'user'}">
+                <a th:href="@{/admin/user/{id}(id=${breadcrumbUserId})}" th:text="${breadcrumbUserName}">User Name</a>
+            </li>
+            <li th:if="${transactionPageType == 'user'}" class="breadcrumbs-separator rtl:rotate-180">
+                <span class="icon-[tabler--chevron-right]"></span>
+            </li>
+            <li th:if="${transactionPageType == 'user'}" aria-current="page">Transactions</li>
+            
+            <!-- Payment Request Transactions Breadcrumbs -->
+            <li th:if="${transactionPageType == 'paymentRequest'}">
+                <a href="/admin/payment-requests">Payment Requests</a>
+            </li>
+            <li th:if="${transactionPageType == 'paymentRequest'}" class="breadcrumbs-separator rtl:rotate-180">
+                <span class="icon-[tabler--chevron-right]"></span>
+            </li>
+            <li th:if="${transactionPageType == 'paymentRequest'}">
+                <a th:href="@{/admin/payment-request/{id}(id=${breadcrumbRequestId})}" th:text="${breadcrumbRequestDescription}">Payment Request</a>
+            </li>
+            <li th:if="${transactionPageType == 'paymentRequest'}" class="breadcrumbs-separator rtl:rotate-180">
+                <span class="icon-[tabler--chevron-right]"></span>
+            </li>
+            <li th:if="${transactionPageType == 'paymentRequest'}" aria-current="page">Transactions</li>
+        </ul>
+    </div>
+</div>
+
 <div layout:fragment="main-content">
     <!-- Header Section -->
     <div class="mb-8">
-        <h1 class="text-3xl font-bold text-base-content mb-2">Transaction History</h1>
-        <p class="text-base-content/70 text-lg">View and manage all transactions</p>
+        <h1 class="text-3xl font-bold text-base-content mb-2">
+            <span th:if="${transactionPageType == 'user'}">User Transactions</span>
+            <span th:if="${transactionPageType == 'paymentRequest'}">Payment Request Transactions</span>
+            <span th:if="${transactionPageType == null}">Transaction History</span>
+        </h1>
+        <p class="text-base-content/70 text-lg">
+            <span th:if="${transactionPageType == 'user'}">View and manage all transactions for <span th:text="${breadcrumbUserName}">User Name</span></span>
+            <span th:if="${transactionPageType == 'paymentRequest'}">View and manage all transactions for <span th:text="${breadcrumbRequestDescription}">Payment Request</span></span>
+            <span th:if="${transactionPageType == null}">View and manage all transactions</span>
+        </p>
     </div>
 
         <!-- DataTable Card -->
@@ -76,7 +121,7 @@
                             </select>
                             <!-- End Page Size Select -->
                             
-                            <!-- YearMonth Select -->
+                            <!-- YearMonth Select (for all transaction pages) -->
                             <select
                                     data-select='{
                             "placeholder": "Select month...",
@@ -98,7 +143,7 @@
                                 </option>
                             </select>
                             <!-- End YearMonth Select -->
-                            <a th:href="@{/admin/transactions/csv(yearMonth=${selectedYearMonth.toString()})}" 
+                            <a th:if="${transactionPageType == null}" th:href="@{/admin/transactions/csv(yearMonth=${selectedYearMonth.toString()})}" 
                                class="btn btn-soft btn-primary btn-sm">
                                 <span class="icon-[tabler--download] size-4"></span>
                                 Export
@@ -344,7 +389,10 @@
                             // Preserve current search term when switching months
                             const currentSearch = document.getElementById('transactions-search').value;
                             const searchParam = currentSearch ? `&search=${encodeURIComponent(currentSearch)}` : '';
-                            window.location.href = `/admin/transactions?yearMonth=${selectedYearMonth}${searchParam}`;
+                            
+                            // Build URL based on current page type
+                            let baseUrl = window.location.pathname;
+                            window.location.href = `${baseUrl}?yearMonth=${selectedYearMonth}${searchParam}`;
                         }
                     });
                 }

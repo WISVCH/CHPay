@@ -7,7 +7,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.YearMonth;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,14 +25,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/admin/transactions")
-public class AdminTransactionsController extends AdminController {
-
-  private final AdminTransactionService adminTransactionService;
+public class AdminTransactionsController extends BaseTransactionController {
 
   @Autowired
   protected AdminTransactionsController(AdminTransactionService adminTransactionService) {
-    super();
-    this.adminTransactionService = adminTransactionService;
+    super(adminTransactionService);
   }
 
   /**
@@ -50,51 +46,30 @@ public class AdminTransactionsController extends AdminController {
       HttpServletRequest request,
       @RequestParam(required = false) String yearMonth) {
 
-    YearMonth selectedYearMonth;
-
-    // Parse yearMonth parameter or redirect to most recent
-    if (yearMonth == null || yearMonth.trim().isEmpty()) {
-      selectedYearMonth = adminTransactionService.getMostRecentYearMonth();
-      String queryString = request.getQueryString();
-      String preservedParams = "";
-      if (queryString != null && !queryString.isEmpty()) {
-        // Remove yearMonth parameter if it exists, keep others
-        preservedParams =
-            "&" + queryString.replaceAll("(&?)yearMonth=[^&]*(&?)", "").replaceAll("^&|&$", "");
-      }
-      return "redirect:/admin/transactions?yearMonth=" + selectedYearMonth + preservedParams;
-    }
-
     try {
-      selectedYearMonth = YearMonth.parse(yearMonth);
-    } catch (DateTimeParseException e) {
-      // Invalid format, redirect to most recent month
-      selectedYearMonth = adminTransactionService.getMostRecentYearMonth();
-      String queryString = request.getQueryString();
-      String preservedParams = "";
-      if (queryString != null && !queryString.isEmpty()) {
-        // Remove yearMonth parameter if it exists, keep others
-        preservedParams =
-            "&" + queryString.replaceAll("(&?)yearMonth=[^&]*(&?)", "").replaceAll("^&|&$", "");
-      }
-      return "redirect:/admin/transactions?yearMonth=" + selectedYearMonth + preservedParams;
+      YearMonth selectedYearMonth =
+          handleYearMonthParameter(
+              yearMonth,
+              request,
+              adminTransactionService::getMostRecentYearMonth,
+              ym -> "/admin/transactions?yearMonth=" + ym);
+
+      // Get all transactions for the specified month
+      List<Transaction> transactions =
+          adminTransactionService.getTransactionsByYearMonth(selectedYearMonth);
+
+      // Get all possible months for the dropdown
+      List<YearMonth> allPossibleMonths = adminTransactionService.getAllPossibleMonths();
+
+      // Add attributes to the model
+      addTransactionModelAttributes(model, transactions, selectedYearMonth, allPossibleMonths);
+
+      model.addAttribute(MODEL_ATTR_URL_PAGE, "adminTransactions");
+
+      return "admin-transaction-table";
+    } catch (BaseTransactionController.RedirectException e) {
+      return "redirect:" + e.getRedirectUrl();
     }
-
-    // Get all transactions for the specified month
-    List<Transaction> transactions =
-        adminTransactionService.getTransactionsByYearMonth(selectedYearMonth);
-
-    // Get all possible months for the dropdown
-    List<YearMonth> allPossibleMonths = adminTransactionService.getAllPossibleMonths();
-
-    // Add attributes to the model
-    model.addAttribute(MODEL_ATTR_TRANSACTIONS, transactions);
-    model.addAttribute(MODEL_ATTR_SELECTED_YEAR_MONTH, selectedYearMonth);
-    model.addAttribute(MODEL_ATTR_ALL_POSSIBLE_MONTHS, allPossibleMonths);
-
-    model.addAttribute(MODEL_ATTR_URL_PAGE, "adminTransactions");
-
-    return "admin-transaction-table";
   }
 
   @RequestMapping(value = "/csv")

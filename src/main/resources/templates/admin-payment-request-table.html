@@ -40,15 +40,10 @@
                         <div class="input input-sm max-w-60">
                             <span class="icon-[tabler--search] text-base-content/80 my-auto me-3 size-4 shrink-0"></span>
                             <label class="sr-only" for="paymentRequests-search"></label>
-                            <input type="search" class="grow" placeholder="Search paymentRequests..." id="paymentRequests-search" data-datatable-search="" />
+                            <input type="search" class="grow" placeholder="Search requests..." id="paymentRequests-search" data-datatable-search="" />
 
 
                         </div>
-<!--                        <a th:href="@{/admin/paymentRequests/csv(yearMonth=${selectedYearMonth.toString()})}">-->
-<!--                            <button type="button" class="btn btn-text  btn-sm">-->
-<!--                                Export-->
-<!--                            </button>-->
-<!--                        </a>-->
                         <div class="flex flex-1 items-center justify-end gap-3">
                             <!-- Page Size Select -->
                             <select
@@ -72,29 +67,12 @@
                             </select>
                             <!-- End Page Size Select -->
                             
-                            <!-- YearMonth Select -->
-<!--                            <select-->
-<!--                                    data-select='{-->
-<!--                            "placeholder": "Select month...",-->
-<!--                            "toggleTag": "<button type=\"button\" aria-expanded=\"false\"></button>",-->
-<!--                            "toggleClasses": "advance-select-toggle advance-select-sm max-sm:w-40 w-64",-->
-<!--                            "dropdownClasses": "advance-select-menu max-sm:w-44 w-72",-->
-<!--                            "optionClasses": "advance-select-option selected:select-active",-->
-<!--                            "optionTemplate": "<div class=\"flex justify-between items-center w-full\"><span data-title></span><span class=\"icon-[tabler&#45;&#45;check] shrink-0 size-3 text-primary hidden selected:block \"></span></div>",-->
-<!--                            "extraMarkup": "<span class=\"icon-[tabler&#45;&#45;caret-up-down] shrink-0 size-4 text-base-content absolute top-1/2 end-2 -translate-y-1/2 \"></span>"-->
-<!--                        }'-->
-<!--                                    class="hidden" -->
-<!--                                    id="yearmonth-select"-->
-<!--                                    th:data-selected-yearmonth="${selectedYearMonth}">-->
-<!--                                <option th:each="yearMonth : ${allPossibleMonths}"-->
-<!--                                        th:value="${yearMonth}"-->
-<!--                                        th:text="${#strings.capitalize(#temporals.format(yearMonth.atDay(1), 'MMMM yyyy'))}"-->
-<!--                                        th:selected="${yearMonth.equals(selectedYearMonth)}"-->
-<!--                                >-->
-<!--                                    January 2025-->
-<!--                                </option>-->
-<!--                            </select>-->
-                            <!-- End YearMonth Select -->
+                            <!-- New Button -->
+                            <a href="/admin/createPaymentRequest" class="btn btn-soft btn-primary btn-sm">
+                                <span class="icon-[tabler--plus] size-4"></span>
+                                New
+                            </a>
+                        
                         </div>
                     </div>
 
@@ -105,14 +83,11 @@
                                     <thead>
                                     <tr>
                                         <th scope="col" class="--exclude-from-ordering">
-                                            Date
+                                            Created At
                                         </th>
                                         <th scope="col" class="--exclude-from-ordering">
                                             Description
                                         </th>
-<!--                                        <th scope="col" class="&#45;&#45;exclude-from-ordering">-->
-<!--                                            Description-->
-<!--                                        </th>-->
                                         <th scope="col" class="group">
                                             <div class="flex items-center justify-between">
                                                 Amount
@@ -128,23 +103,6 @@
                                                 <span class="icon-[tabler--chevron-down] hidden datatable-ordering-desc:block"></span>
                                             </div>
                                         </th>
-<!--                                        <th scope="col" class="&#45;&#45;exclude-from-ordering">-->
-<!--                                            <div class="flex items-center gap-2">-->
-<!--                                                Type-->
-<!--                                                <div class="dropdown relative inline-flex [&#45;&#45;auto-close:inside]">-->
-<!--                                                    <button id="type-filter-btn" type="button" class="dropdown-toggle" aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">-->
-<!--                                                        <span class="icon-[tabler&#45;&#45;filter] size-3.5 text-base-content/50 -mb-0.5"></span>-->
-<!--                                                    </button>-->
-<!--                                                    <ul class="dropdown-menu dropdown-open:opacity-100 hidden w-auto" role="menu" aria-orientation="vertical">-->
-<!--                                                        <li class="dropdown-item type-filter-item active">All</li>-->
-<!--                                                        <li class="dropdown-item type-filter-item">Top Up</li>-->
-<!--                                                        <li class="dropdown-item type-filter-item">Refund</li>-->
-<!--                                                        <li class="dropdown-item type-filter-item">Payment</li>-->
-<!--                                                        <li class="dropdown-item type-filter-item">External</li>-->
-<!--                                                    </ul>-->
-<!--                                                </div>-->
-<!--                                            </div>-->
-<!--                                        </th>-->
                                         <th scope="col" class="--exclude-from-ordering">
                                             <div class="flex items-center gap-2">
                                                 Status
@@ -157,19 +115,16 @@
                                                         <li class="dropdown-item status-filter-item">Open</li>
                                                         <li class="dropdown-item status-filter-item">Fulfilled</li>
                                                         <li class="dropdown-item status-filter-item">Expired</li>
-<!--                                                        <li class="dropdown-item status-filter-item">Refunded</li>-->
-<!--                                                        <li class="dropdown-item status-filter-item">Partial Refund</li>-->
                                                     </ul>
                                                 </div>
                                             </div>
                                         </th>
                                         <th scope="col" class="--exclude-from-ordering">Actions</th>
-<!--                                        <th scope="col" class="&#45;&#45;exclude-from-ordering" style="display: none;">User ID</th>-->
                                     </tr>
                                     </thead>
                                     <tbody>
                                     <tr th:each="paymentRequest : ${paymentRequests}">
-                                        <!-- Date Column -->
+                                        <!-- Created At Column -->
                                         <td>
                                             <div class="flex items-center">
                                                 <div>
@@ -178,18 +133,6 @@
                                                 </div>
                                             </div>
                                         </td>
-
-                                        <!-- User Column -->
-<!--                                        <td>-->
-<!--                                            <div class="flex items-center">-->
-<!--                                                <div>-->
-<!--                                                    <a th:href="@{/admin/user/{id}(id=${paymentRequest.user.id})}" -->
-<!--                                                       class="font-medium link" -->
-<!--                                                       th:text="${paymentRequest.user.name}">John Doe</a>-->
-<!--                                                    <div class="text-sm text-base-content/70" th:text="${paymentRequest.user.email}">john@example.com</div>-->
-<!--                                                </div>-->
-<!--                                            </div>-->
-<!--                                        </td>-->
 
                                         <!-- Description Column -->
                                         <td th:text="${paymentRequest.description}">Payment request description</td>
@@ -203,14 +146,6 @@
                                         </td>
 
                                         <td th:text="${paymentRequest.fulfilments}">0</td>
-
-                                        <!-- Type Column -->
-<!--                                        <td>-->
-<!--                                            <span th:if="${paymentRequest.type.name() == 'TOP_UP'}" class="badge badge-soft badge-info badge-sm">Top Up</span>-->
-<!--                                            <span th:if="${paymentRequest.type.name() == 'REFUND'}" class="badge badge-soft badge-warning badge-sm">Refund</span>-->
-<!--                                            <span th:if="${paymentRequest.type.name() == 'PAYMENT'}" class="badge badge-soft badge-success badge-sm">Payment</span>-->
-<!--                                            <span th:if="${paymentRequest.type.name() == 'EXTERNAL_PAYMENT'}" class="badge badge-soft badge-success badge-sm">External</span>-->
-<!--                                        </td>-->
 
                                         <!-- Status Column -->
                                         <td>
@@ -226,39 +161,25 @@
                                                 <div aria-label="status" class="status status-warning"></div>
                                                 <span class="text-warning">Expired</span>
                                             </div>
-<!--                                            <div th:if="${paymentRequest.status.name() == 'REFUNDED'}" class="flex items-center gap-2">-->
-<!--                                                <div aria-label="status" class="status status-info"></div>-->
-<!--                                                <span class="text-info">Refunded</span>-->
-<!--                                            </div>-->
-<!--                                            <div th:if="${paymentRequest.status.name() == 'PARTIALLY_REFUNDED'}" class="flex items-center gap-2">-->
-<!--                                                <div aria-label="status" class="status status-info"></div>-->
-<!--                                                <span class="text-info">Partial Refund</span>-->
-<!--                                            </div>-->
                                         </td>
 
                                         <!-- Actions Column -->
                                         <td>
-                                            <button
-                                                    type="button"
-                                                    th:attr="onclick=|window.location.href ='/admin/payment-request/${paymentRequest.request_id}'|"
-                                                    class="btn btn-circle btn-text btn-sm view-details-btn"
-                                                    title="View Details">
+                                            <a th:href="@{/admin/payment-request/{id}(id=${paymentRequest.request_id})}"
+                                               class="btn btn-circle btn-text btn-sm view-details-btn"
+                                               title="View Details">
                                                 <span class="icon-[tabler--eye] size-5"></span>
-                                            </button>
-                                            <button
-                                                    type="button"
-                                                    th:attr="onclick=|window.location.href ='/qr/${paymentRequest.request_id}'|"
-                                                    class="btn btn-circle btn-text btn-sm view-qr-btn"
-                                                    title="Go to QR code">
+                                            </a>
+                                            <a th:href="@{/admin/payment-request/{id}/transactions(id=${paymentRequest.request_id})}"
+                                               class="btn btn-circle btn-text btn-sm"
+                                               title="View Transactions">
+                                                <span class="icon-[tabler--receipt] size-5"></span>
+                                            </a>
+                                            <a th:href="@{/qr/{id}(id=${paymentRequest.request_id})}"
+                                               class="btn btn-circle btn-text btn-sm view-qr-btn"
+                                               title="Go to QR code">
                                                 <span class="icon-[tabler--qrcode] size-5"></span>
-                                            </button>
-                                            <button
-                                                    type="button"
-                                                    th:attr="onclick=|window.location.href ='/admin/payment-request/${paymentRequest.request_id}/transactions'|"
-                                                    class="btn btn-circle btn-text btn-sm view-qr-btn"
-                                                    title="Go to transactions">
-                                                <span class="icon-[tabler--logs] size-5"></span>
-                                            </button>
+                                            </a>
                                         </td>
                                     </tr>
                                     </tbody>

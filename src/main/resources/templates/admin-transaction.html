@@ -127,16 +127,18 @@
 
             <!-- Refund Action Button (for refundable transactions) -->
             <div th:if="${transaction.getType().name().equals('PAYMENT') || transaction.getType().name().equals('EXTERNAL_PAYMENT')}" class="card-actions justify-end pt-4 border-base-content/10 mt-6">
-                <button type="button" 
-                        class="btn btn-warning" 
-                        th:disabled="${refundPossible <= 0}"
-                        aria-haspopup="dialog" 
-                        aria-expanded="false" 
-                        aria-controls="refund-modal" 
-                        data-overlay="#refund-modal">
-                    <span class="icon-[tabler--arrow-back] size-4"></span>
-                    <span th:text="${refundPossible > 0} ? 'Process Refund' : 'Fully Refunded'">Process Refund</span>
-                </button>
+                <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                    <button type="button" 
+                            class="btn btn-warning w-full sm:w-auto" 
+                            th:disabled="${refundPossible <= 0}"
+                            aria-haspopup="dialog" 
+                            aria-expanded="false" 
+                            aria-controls="refund-modal" 
+                            data-overlay="#refund-modal">
+                        <span class="icon-[tabler--arrow-back] size-4"></span>
+                        <span th:text="${refundPossible > 0} ? 'Process Refund' : 'Fully Refunded'">Process Refund</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>

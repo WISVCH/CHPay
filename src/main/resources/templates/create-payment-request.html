@@ -3,15 +3,27 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout}">
 <head>
-    <title>Create Payment Request</title>
+    <title>New Payment Request</title>
 </head>
 
 <body>
+    <div layout:fragment="breadcrumbs">
+        <div class="breadcrumbs">
+            <ul>
+                <li>
+                    <a href="/admin/payment-requests">Requests</a>
+                </li>
+                <li class="breadcrumbs-separator rtl:rotate-180"><span class="icon-[tabler--chevron-right]"></span></li>
+                <li aria-current="page">New Payment Request</li>
+            </ul>
+        </div>
+    </div>
+
     <div layout:fragment="main-content">
         <div class="container max-w-4xl mx-auto">
             <!-- Header Section -->
             <div class="mb-8">
-                <h1 class="text-3xl font-bold text-base-content mb-2">Create Payment Request</h1>
+                <h1 class="text-3xl font-bold text-base-content mb-2">New Payment Request</h1>
                 <p class="text-base-content/70 text-lg">
                     Generate a QR code for payment collection
                 </p>
