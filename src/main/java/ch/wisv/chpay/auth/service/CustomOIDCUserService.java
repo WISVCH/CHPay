@@ -66,7 +66,7 @@ public class CustomOIDCUserService extends OidcUserService {
     OidcUser oidcUser = super.loadUser(userRequest);
     OidcIdToken idToken = oidcUser.getIdToken();
     String sub = oidcUser.getSubject();
-    String name = oidcUser.getFullName();
+    String name = oidcUser.getGivenName() + " " + oidcUser.getFamilyName();
     String email = oidcUser.getEmail();
 
     User user = saveOrUpdateUser(name, email, sub);
