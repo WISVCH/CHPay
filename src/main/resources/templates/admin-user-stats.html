@@ -16,7 +16,7 @@
                 </li>
                 <li class="breadcrumbs-separator rtl:rotate-180"><span class="icon-[tabler--chevron-right]"></span></li>
                 <li>
-                    <a th:href="@{/admin/user/{id}(id=${user.getId()})}">User Details</a>
+                    <a th:href="@{/admin/user/{id}(id=${user.getId()})}" th:text="${user.name}">User Details</a>
                 </li>
                 <li class="breadcrumbs-separator rtl:rotate-180"><span class="icon-[tabler--chevron-right]"></span></li>
                 <li aria-current="page">Statistics</li>

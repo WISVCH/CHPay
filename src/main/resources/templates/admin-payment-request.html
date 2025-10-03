@@ -14,7 +14,7 @@
                 <a href="/admin/payment-requests">Payment Requests</a>
             </li>
             <li class="breadcrumbs-separator rtl:rotate-180"><span class="icon-[tabler--chevron-right]"></span></li>
-            <li aria-current="page">Payment Request Details</li>
+            <li aria-current="page" th:text="${paymentRequest.description}">Payment Request Details</li>
         </ul>
     </div>
 </div>
