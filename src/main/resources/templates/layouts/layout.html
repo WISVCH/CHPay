@@ -53,7 +53,7 @@
              <button id="dropdown-avatar" type="button" class="dropdown-toggle flex items-center" aria-haspopup="menu" aria-expanded="false" aria-label="User Menu">
                <div class="avatar avatar-placeholder">
                  <div class="bg-accent text-accent-content size-9.5 rounded-full">
-                   <span class="text-sm uppercase" th:text="${#strings.substring(currentUser.name, 0, 2)}">U</span>
+                   <span class="text-sm uppercase" th:text="${#strings.substring(currentUser.name, 0, 1)}">U</span>
                  </div>
                </div>
              </button>
@@ -61,7 +61,7 @@
                <li class="dropdown-header gap-2">
                  <div class="avatar avatar-placeholder">
                    <div class="bg-accent text-accent-content w-10 rounded-full">
-                     <span class="text-sm uppercase" th:text="${#strings.substring(currentUser.name, 0, 2)}">U</span>
+                     <span class="text-sm uppercase" th:text="${#strings.substring(currentUser.name, 0, 1)}">U</span>
                    </div>
                  </div>
                  <div>
