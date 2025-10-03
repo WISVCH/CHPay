@@ -47,11 +47,12 @@ public class AdminTransactionsController extends BaseTransactionController {
       @RequestParam(required = false) String yearMonth) {
 
     try {
-      YearMonth selectedYearMonth = handleYearMonthParameter(
-          yearMonth,
-          request,
-          adminTransactionService::getMostRecentYearMonth,
-          ym -> "/admin/transactions?yearMonth=" + ym);
+      YearMonth selectedYearMonth =
+          handleYearMonthParameter(
+              yearMonth,
+              request,
+              adminTransactionService::getMostRecentYearMonth,
+              ym -> "/admin/transactions?yearMonth=" + ym);
 
       // Get all transactions for the specified month
       List<Transaction> transactions =

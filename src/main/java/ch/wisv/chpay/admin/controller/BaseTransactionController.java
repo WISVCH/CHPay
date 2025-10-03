@@ -10,7 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 
 /**
- * Base controller for transaction-related pages that provides common year-month filtering functionality.
+ * Base controller for transaction-related pages that provides common year-month filtering
+ * functionality.
  */
 public abstract class BaseTransactionController extends AdminController {
 
@@ -26,7 +27,8 @@ public abstract class BaseTransactionController extends AdminController {
    *
    * @param yearMonth the yearMonth parameter in format "YYYY-MM" (optional)
    * @param request the HttpServletRequest for getting query parameters
-   * @param getMostRecentYearMonth function to get the most recent year-month for the specific context
+   * @param getMostRecentYearMonth function to get the most recent year-month for the specific
+   *     context
    * @param buildRedirectUrl function to build the redirect URL with the selected year-month
    * @return the selected YearMonth, or null if a redirect should be performed
    */
@@ -46,8 +48,9 @@ public abstract class BaseTransactionController extends AdminController {
         preservedParams =
             "&" + queryString.replaceAll("(&?)yearMonth=[^&]*(&?)", "").replaceAll("^&|&$", "");
       }
-      String redirectUrl = buildRedirectUrl.apply(selectedYearMonth) + 
-          (preservedParams.isEmpty() ? "" : "&" + preservedParams);
+      String redirectUrl =
+          buildRedirectUrl.apply(selectedYearMonth)
+              + (preservedParams.isEmpty() ? "" : "&" + preservedParams);
       throw new RedirectException(redirectUrl);
     }
 
@@ -63,8 +66,9 @@ public abstract class BaseTransactionController extends AdminController {
         preservedParams =
             "&" + queryString.replaceAll("(&?)yearMonth=[^&]*(&?)", "").replaceAll("^&|&$", "");
       }
-      String redirectUrl = buildRedirectUrl.apply(selectedYearMonth) + 
-          (preservedParams.isEmpty() ? "" : "&" + preservedParams);
+      String redirectUrl =
+          buildRedirectUrl.apply(selectedYearMonth)
+              + (preservedParams.isEmpty() ? "" : "&" + preservedParams);
       throw new RedirectException(redirectUrl);
     }
   }
@@ -87,9 +91,7 @@ public abstract class BaseTransactionController extends AdminController {
     model.addAttribute(MODEL_ATTR_ALL_POSSIBLE_MONTHS, allPossibleMonths);
   }
 
-  /**
-   * Custom exception for handling redirects in the base controller.
-   */
+  /** Custom exception for handling redirects in the base controller. */
   public static class RedirectException extends RuntimeException {
     private final String redirectUrl;
 

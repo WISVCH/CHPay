@@ -51,33 +51,36 @@ public class AdminPaymentRequestTransactionsController extends BaseTransactionCo
 
     UUID requestUuid = UUID.fromString(tx);
 
-    PaymentRequest paymentRequest =
-        adminPaymentRequestService.getById(requestUuid).orElse(null);
+    PaymentRequest paymentRequest = adminPaymentRequestService.getById(requestUuid).orElse(null);
 
     if (paymentRequest == null) {
       throw new IllegalArgumentException("Payment request not found");
     }
 
     try {
-      YearMonth selectedYearMonth = handleYearMonthParameter(
-          yearMonth,
-          request,
-          () -> adminTransactionService.getMostRecentYearMonthForRequest(requestUuid),
-          ym -> "/admin/payment-request/" + tx + "/transactions?yearMonth=" + ym);
+      YearMonth selectedYearMonth =
+          handleYearMonthParameter(
+              yearMonth,
+              request,
+              () -> adminTransactionService.getMostRecentYearMonthForRequest(requestUuid),
+              ym -> "/admin/payment-request/" + tx + "/transactions?yearMonth=" + ym);
 
       // Get all transactions for the specified payment request and month
       List<Transaction> transactions =
-          adminTransactionService.getTransactionsByRequestIdAndYearMonth(requestUuid, selectedYearMonth);
+          adminTransactionService.getTransactionsByRequestIdAndYearMonth(
+              requestUuid, selectedYearMonth);
 
       // Get all possible months for the dropdown
-      List<YearMonth> allPossibleMonths = adminTransactionService.getAllPossibleMonthsForRequest(requestUuid);
+      List<YearMonth> allPossibleMonths =
+          adminTransactionService.getAllPossibleMonthsForRequest(requestUuid);
 
       // Add attributes to the model
       addTransactionModelAttributes(model, transactions, selectedYearMonth, allPossibleMonths);
       model.addAttribute(MODEL_ATTR_PAYMENT_REQUEST, paymentRequest);
       model.addAttribute(MODEL_ATTR_TRANSACTION_PAGE_TYPE, "paymentRequest");
       model.addAttribute(MODEL_ATTR_BREADCRUMB_REQUEST_ID, tx);
-      model.addAttribute(MODEL_ATTR_BREADCRUMB_REQUEST_DESCRIPTION, paymentRequest.getDescription());
+      model.addAttribute(
+          MODEL_ATTR_BREADCRUMB_REQUEST_DESCRIPTION, paymentRequest.getDescription());
 
       model.addAttribute(MODEL_ATTR_URL_PAGE, "adminPaymentRequests");
 

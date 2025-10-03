@@ -58,18 +58,20 @@ public class AdminUserTransactionsController extends BaseTransactionController {
     UUID userUuid = UUID.fromString(userId);
 
     try {
-      YearMonth selectedYearMonth = handleYearMonthParameter(
-          yearMonth,
-          request,
-          () -> adminTransactionService.getMostRecentYearMonthForUser(userUuid),
-          ym -> "/admin/user/" + userId + "/transaction?yearMonth=" + ym);
+      YearMonth selectedYearMonth =
+          handleYearMonthParameter(
+              yearMonth,
+              request,
+              () -> adminTransactionService.getMostRecentYearMonthForUser(userUuid),
+              ym -> "/admin/user/" + userId + "/transaction?yearMonth=" + ym);
 
       // Get all transactions for the specified user and month
       List<Transaction> transactions =
           adminTransactionService.getTransactionsByUserIdAndYearMonth(userUuid, selectedYearMonth);
 
       // Get all possible months for the dropdown
-      List<YearMonth> allPossibleMonths = adminTransactionService.getAllPossibleMonthsForUser(userUuid);
+      List<YearMonth> allPossibleMonths =
+          adminTransactionService.getAllPossibleMonthsForUser(userUuid);
 
       // Add attributes to the model
       addTransactionModelAttributes(model, transactions, selectedYearMonth, allPossibleMonths);

@@ -103,7 +103,8 @@ public class AdminTransactionService {
    */
   @Transactional(readOnly = true)
   @PreAuthorize("hasRole('ADMIN')")
-  public List<Transaction> getTransactionsByRequestIdAndYearMonth(UUID requestId, YearMonth yearMonth) {
+  public List<Transaction> getTransactionsByRequestIdAndYearMonth(
+      UUID requestId, YearMonth yearMonth) {
     return transactionRepository.findTransactionsByRequestIdAndYearMonth(
         requestId, yearMonth.getYear(), yearMonth.getMonthValue());
   }
@@ -128,7 +129,8 @@ public class AdminTransactionService {
    * Gets all possible months that have transactions for a specific payment request.
    *
    * @param requestId the UUID of the payment request
-   * @return a list of YearMonth objects containing available year-month combinations for the payment request
+   * @return a list of YearMonth objects containing available year-month combinations for the
+   *     payment request
    */
   @Transactional(readOnly = true)
   @PreAuthorize("hasRole('ADMIN')")
@@ -144,7 +146,8 @@ public class AdminTransactionService {
    * Gets the most recent month that has transactions for a specific user.
    *
    * @param userId the UUID of the user
-   * @return the most recent YearMonth with transactions for the user, or current month if none exist
+   * @return the most recent YearMonth with transactions for the user, or current month if none
+   *     exist
    */
   @Transactional(readOnly = true)
   @PreAuthorize("hasRole('ADMIN')")
@@ -160,7 +163,8 @@ public class AdminTransactionService {
    * Gets the most recent month that has transactions for a specific payment request.
    *
    * @param requestId the UUID of the payment request
-   * @return the most recent YearMonth with transactions for the payment request, or current month if none exist
+   * @return the most recent YearMonth with transactions for the payment request, or current month
+   *     if none exist
    */
   @Transactional(readOnly = true)
   @PreAuthorize("hasRole('ADMIN')")
