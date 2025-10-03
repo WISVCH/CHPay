@@ -177,6 +177,8 @@
                                             </a>
                                             <a th:href="@{/qr/{id}(id=${paymentRequest.request_id})}"
                                                class="btn btn-circle btn-text btn-sm view-qr-btn"
+                                               th:class="${paymentRequest.isExpired() || (!paymentRequest.isMultiUse() && paymentRequest.fulfilments > 0)} ? 'btn btn-circle btn-text btn-sm view-qr-btn btn-disabled' : 'btn btn-circle btn-text btn-sm view-qr-btn'"
+                                               th:disabled="${paymentRequest.isExpired() || (!paymentRequest.isMultiUse() && paymentRequest.fulfilments > 0)}"
                                                title="Go to QR code">
                                                 <span class="icon-[tabler--qrcode] size-5"></span>
                                             </a>
