@@ -6,6 +6,7 @@ import ch.wisv.chpay.core.service.NotificationService;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +21,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class AdminPaymentRequestController extends AdminController {
   private final AdminPaymentRequestService adminPaymentRequestService;
   private final NotificationService notificationService;
+
+  @Value("${spring.application.baseurl}")
+  private String baseUrl;
 
   @Autowired
   protected AdminPaymentRequestController(
@@ -47,19 +51,20 @@ public class AdminPaymentRequestController extends AdminController {
   }
 
   /**
-   * Displays the transaction page based on its ID for the administrator user.
+   * Displays the payment request page based on its ID for the administrator user.
    *
    * @param model the Model object to add attributes for the view
-   * @param tx the unique identifier of the transaction in String format
+   * @param tx the unique identifier of the payment request in String format
    * @param redirectAttributes the RedirectAttributes object used for passing flash attributes
-   * @return the name of the view to render the user page
+   * @return the name of the view to render the payment request page
    */
   @GetMapping(value = "/{tx}")
-  public String showTransactionPage(
+  public String showPaymentRequestPage(
       Model model, @PathVariable String tx, RedirectAttributes redirectAttributes) {
 
     model.addAttribute(MODEL_ATTR_URL_PAGE, "adminPaymentRequests");
-    // get transaction object
+
+    // Get payment request object
     PaymentRequest paymentRequest =
         adminPaymentRequestService
             .getById(UUID.fromString(tx))
@@ -67,24 +72,11 @@ public class AdminPaymentRequestController extends AdminController {
     if (paymentRequest == null) {
       throw new NoSuchElementException("Payment request not found");
     }
-    // check if the transaction is refund and add the id of the refund associated for navigation
-    //    String refundId = null;
-    //    String requestId = null;
-    //    if (transaction.getClass() == RefundTransaction.class) {
-    //      refundId = ((RefundTransaction) transaction).getRefundOf().getId().toString();
-    //    }
 
-    // check for payment transaction and get the request id if present
-    //    if (transaction.getClass() == PaymentTransaction.class) {
-    //      requestId = ((PaymentTransaction) transaction).getRequest().getRequest_id().toString();
-    //    }
-
+    // Add attributes to the model
     model.addAttribute(MODEL_ATTR_PAYMENT_REQUEST, paymentRequest);
-    //    model.addAttribute(MODEL_ATTR_REFUND_ID, refundId);
-    //    model.addAttribute(MODEL_ATTR_REQUEST_ID, requestId);
-    //    model.addAttribute(
-    //        MODEL_ATTR_REFUND_POSSIBLE,
-    // transactionService.getNonRefundedAmount(transaction.getId()));
+    model.addAttribute(MODEL_ATTR_BASE_URL, baseUrl);
+
     return "admin-payment-request";
   }
 }

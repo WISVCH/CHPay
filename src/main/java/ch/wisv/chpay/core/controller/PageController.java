@@ -51,4 +51,7 @@ public abstract class PageController {
 
   /** Model attr Order. */
   public static final String MODEL_ATTR_ORDER = "order";
+
+  /** Model attr Base URL. */
+  public static final String MODEL_ATTR_BASE_URL = "baseUrl";
 }
