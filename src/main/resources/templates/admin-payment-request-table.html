@@ -76,126 +76,122 @@
                         </div>
                     </div>
 
-                    <div class="overflow-x-auto">
-                        <div class="inline-block min-w-full align-middle">
-                            <div class="overflow-hidden">
-                                <table class="table min-w-full">
-                                    <thead>
-                                    <tr>
-                                        <th scope="col" class="--exclude-from-ordering">
-                                            Created At
-                                        </th>
-                                        <th scope="col" class="--exclude-from-ordering">
-                                            Description
-                                        </th>
-                                        <th scope="col" class="group">
-                                            <div class="flex items-center justify-between">
-                                                Amount
-                                                <span class="icon-[tabler--chevron-up] hidden datatable-ordering-asc:block"></span>
-                                                <span class="icon-[tabler--chevron-down] hidden datatable-ordering-desc:block"></span>
-                                            </div>
-                                        </th>
+                    <div class="w-full overflow-x-auto h-fit">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="w-auto --exclude-from-ordering">
+                                        Created At
+                                    </th>
+                                    <th scope="col" class="w-full --exclude-from-ordering">
+                                        Description
+                                    </th>
+                                    <th scope="col" class="w-auto group">
+                                        <div class="flex items-center justify-between">
+                                            Amount
+                                            <span class="icon-[tabler--chevron-up] hidden datatable-ordering-asc:block"></span>
+                                            <span class="icon-[tabler--chevron-down] hidden datatable-ordering-desc:block"></span>
+                                        </div>
+                                    </th>
 
-                                        <th scope="col" class="group">
-                                            <div class="flex items-center justify-between">
-                                                Fulfilments
-                                                <span class="icon-[tabler--chevron-up] hidden datatable-ordering-asc:block"></span>
-                                                <span class="icon-[tabler--chevron-down] hidden datatable-ordering-desc:block"></span>
+                                    <th scope="col" class="w-auto group">
+                                        <div class="flex items-center justify-between">
+                                            Fulfilments
+                                            <span class="icon-[tabler--chevron-up] hidden datatable-ordering-asc:block"></span>
+                                            <span class="icon-[tabler--chevron-down] hidden datatable-ordering-desc:block"></span>
+                                        </div>
+                                    </th>
+                                    <th scope="col" class="w-auto --exclude-from-ordering">
+                                        <div class="flex items-center gap-2">
+                                            Status
+                                            <div class="dropdown relative inline-flex [--auto-close:inside]">
+                                                <button id="status-filter-btn" type="button" class="dropdown-toggle" aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
+                                                    <span class="icon-[tabler--filter] size-3.5 text-base-content/50 -mb-0.5"></span>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-open:opacity-100 hidden w-auto" role="menu" aria-orientation="vertical">
+                                                    <li class="dropdown-item status-filter-item active">All</li>
+                                                    <li class="dropdown-item status-filter-item">Open</li>
+                                                    <li class="dropdown-item status-filter-item">Fulfilled</li>
+                                                    <li class="dropdown-item status-filter-item">Expired</li>
+                                                </ul>
                                             </div>
-                                        </th>
-                                        <th scope="col" class="--exclude-from-ordering">
-                                            <div class="flex items-center gap-2">
-                                                Status
-                                                <div class="dropdown relative inline-flex [--auto-close:inside]">
-                                                    <button id="status-filter-btn" type="button" class="dropdown-toggle" aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
-                                                        <span class="icon-[tabler--filter] size-3.5 text-base-content/50 -mb-0.5"></span>
-                                                    </button>
-                                                    <ul class="dropdown-menu dropdown-open:opacity-100 hidden w-auto" role="menu" aria-orientation="vertical">
-                                                        <li class="dropdown-item status-filter-item active">All</li>
-                                                        <li class="dropdown-item status-filter-item">Open</li>
-                                                        <li class="dropdown-item status-filter-item">Fulfilled</li>
-                                                        <li class="dropdown-item status-filter-item">Expired</li>
-                                                    </ul>
-                                                </div>
+                                        </div>
+                                    </th>
+                                    <th scope="col" class="w-auto --exclude-from-ordering">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="paymentRequest : ${paymentRequests}">
+                                    <!-- Created At Column -->
+                                    <td class="w-auto">
+                                        <div class="flex items-center">
+                                            <div>
+                                                <div class="font-medium" th:text="${#temporals.format(paymentRequest.createdAt , 'dd-MM-yyyy')}">01-01-2025</div>
+                                                <div class="text-sm text-base-content/70" th:text="${#temporals.format(paymentRequest.createdAt, 'HH:mm:ss')}">12:30:45</div>
                                             </div>
-                                        </th>
-                                        <th scope="col" class="--exclude-from-ordering">Actions</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr th:each="paymentRequest : ${paymentRequests}">
-                                        <!-- Created At Column -->
-                                        <td>
-                                            <div class="flex items-center">
-                                                <div>
-                                                    <div class="font-medium" th:text="${#temporals.format(paymentRequest.createdAt , 'dd-MM-yyyy')}">01-01-2025</div>
-                                                    <div class="text-sm text-base-content/70" th:text="${#temporals.format(paymentRequest.createdAt, 'HH:mm:ss')}">12:30:45</div>
-                                                </div>
-                                            </div>
-                                        </td>
+                                        </div>
+                                    </td>
 
-                                        <!-- Description Column -->
-                                        <td th:text="${paymentRequest.description}">Payment request description</td>
+                                    <!-- Description Column -->
+                                    <td class="w-full" th:text="${paymentRequest.description}">Payment request description</td>
 
-                                        <!-- Amount Column -->
-                                        <td class="font-mono">
-                                        <span
-                                              class="text-success"
-                                              th:text="'€' + ${#numbers.formatDecimal(paymentRequest.amount, 1, 2)}">€0.00</span>
+                                    <!-- Amount Column -->
+                                    <td class="w-auto text-right font-mono">
+                                    <span
+                                          class="text-success"
+                                          th:text="'€' + ${#numbers.formatDecimal(paymentRequest.amount, 1, 2)}">€0.00</span>
 
-                                        </td>
+                                    </td>
 
-                                        <td th:text="${paymentRequest.fulfilments}">0</td>
+                                    <td class="w-auto text-right" th:text="${paymentRequest.fulfilments}">0</td>
 
-                                        <!-- Status Column -->
-                                        <td>
-                                            <div th:if="${!paymentRequest.isExpired() && (paymentRequest.fulfilments == 0 || paymentRequest.isMultiUse())}" class="flex items-center gap-2">
-                                                <div aria-label="status" class="status status-success"></div>
-                                                <span class="text-success">Open</span>
-                                            </div>
-                                            <div th:if="${paymentRequest.fulfilments > 0 && !paymentRequest.isMultiUse()}" class="flex items-center gap-2">
-                                                <div aria-label="status" class="status status-success"></div>
-                                                <span class="text-success">Fulfilled</span>
-                                            </div>
-                                            <div th:if="${paymentRequest.isExpired() && (paymentRequest.isMultiUse() || paymentRequest.fulfilments == 0)}" class="flex items-center gap-2">
-                                                <div aria-label="status" class="status status-warning"></div>
-                                                <span class="text-warning">Expired</span>
-                                            </div>
-                                        </td>
+                                    <!-- Status Column -->
+                                    <td class="w-auto">
+                                        <div th:if="${!paymentRequest.isExpired() && (paymentRequest.fulfilments == 0 || paymentRequest.isMultiUse())}" class="flex items-center gap-2">
+                                            <div aria-label="status" class="status status-success"></div>
+                                            <span class="text-success">Open</span>
+                                        </div>
+                                        <div th:if="${paymentRequest.fulfilments > 0 && !paymentRequest.isMultiUse()}" class="flex items-center gap-2">
+                                            <div aria-label="status" class="status status-success"></div>
+                                            <span class="text-success">Fulfilled</span>
+                                        </div>
+                                        <div th:if="${paymentRequest.isExpired() && (paymentRequest.isMultiUse() || paymentRequest.fulfilments == 0)}" class="flex items-center gap-2">
+                                            <div aria-label="status" class="status status-warning"></div>
+                                            <span class="text-warning">Expired</span>
+                                        </div>
+                                    </td>
 
-                                        <!-- Actions Column -->
-                                        <td>
-                                            <a th:href="@{/admin/payment-request/{id}(id=${paymentRequest.request_id})}"
-                                               class="btn btn-circle btn-text btn-sm view-details-btn"
-                                               title="View Details">
-                                                <span class="icon-[tabler--eye] size-5"></span>
-                                            </a>
-                                            <a th:href="@{/admin/payment-request/{id}/transactions(id=${paymentRequest.request_id})}"
-                                               class="btn btn-circle btn-text btn-sm"
-                                               title="View Transactions">
-                                                <span class="icon-[tabler--receipt] size-5"></span>
-                                            </a>
-                                            <a th:href="@{/qr/{id}(id=${paymentRequest.request_id})}"
-                                               class="btn btn-circle btn-text btn-sm view-qr-btn"
-                                               th:class="${paymentRequest.isExpired() || (!paymentRequest.isMultiUse() && paymentRequest.fulfilments > 0)} ? 'btn btn-circle btn-text btn-sm view-qr-btn btn-disabled' : 'btn btn-circle btn-text btn-sm view-qr-btn'"
-                                               th:disabled="${paymentRequest.isExpired() || (!paymentRequest.isMultiUse() && paymentRequest.fulfilments > 0)}"
-                                               title="Go to QR code">
-                                                <span class="icon-[tabler--qrcode] size-5"></span>
-                                            </a>
-                                            <button type="button"
-                                                    class="js-clipboard [--trigger:focus] btn btn-circle btn-text btn-sm"
-                                                    th:attr="data-clipboard-text=${baseUrl + '/payment/request/' + paymentRequest.request_id}"
-                                                    th:disabled="${paymentRequest.isExpired() || (!paymentRequest.isMultiUse() && paymentRequest.fulfilments > 0)}"
-                                                    title="Copy payment URL">
-                                                <span class="js-clipboard-default icon-[tabler--clipboard] size-5 transition"></span>
-                                                <span class="js-clipboard-success icon-[tabler--clipboard-check] text-primary hidden size-5"></span>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                                    <!-- Actions Column -->
+                                    <td class="w-auto">
+                                        <a th:href="@{/admin/payment-request/{id}(id=${paymentRequest.request_id})}"
+                                           class="btn btn-circle btn-text btn-sm view-details-btn"
+                                           title="View Details">
+                                            <span class="icon-[tabler--eye] size-5"></span>
+                                        </a>
+                                        <a th:href="@{/admin/payment-request/{id}/transactions(id=${paymentRequest.request_id})}"
+                                           class="btn btn-circle btn-text btn-sm"
+                                           title="View Transactions">
+                                            <span class="icon-[tabler--receipt] size-5"></span>
+                                        </a>
+                                        <a th:href="@{/qr/{id}(id=${paymentRequest.request_id})}"
+                                           class="btn btn-circle btn-text btn-sm view-qr-btn"
+                                           th:class="${paymentRequest.isExpired() || (!paymentRequest.isMultiUse() && paymentRequest.fulfilments > 0)} ? 'btn btn-circle btn-text btn-sm view-qr-btn btn-disabled' : 'btn btn-circle btn-text btn-sm view-qr-btn'"
+                                           th:disabled="${paymentRequest.isExpired() || (!paymentRequest.isMultiUse() && paymentRequest.fulfilments > 0)}"
+                                           title="Go to QR code">
+                                            <span class="icon-[tabler--qrcode] size-5"></span>
+                                        </a>
+                                        <button type="button"
+                                                class="js-clipboard [--trigger:focus] btn btn-circle btn-text btn-sm"
+                                                th:attr="data-clipboard-text=${baseUrl + '/payment/request/' + paymentRequest.request_id}"
+                                                th:disabled="${paymentRequest.isExpired() || (!paymentRequest.isMultiUse() && paymentRequest.fulfilments > 0)}"
+                                                title="Copy payment URL">
+                                            <span class="js-clipboard-default icon-[tabler--clipboard] size-5 transition"></span>
+                                            <span class="js-clipboard-success icon-[tabler--clipboard-check] text-primary hidden size-5"></span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
 
                     <!-- Pagination Footer -->
