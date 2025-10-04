@@ -2,7 +2,6 @@ package ch.wisv.chpay.auth.controller;
 
 import ch.wisv.chpay.core.controller.PageController;
 import ch.wisv.chpay.core.service.NotificationService;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
@@ -72,27 +70,18 @@ public class LoginController extends PageController {
   }
 
   @GetMapping("/logout-success")
-  public String logoutSuccess(@RequestParam(required = false) Long ts) {
+  public String logoutSuccess(Model model) {
+    // Check if user is not authenticated (which indicates successful logout)
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-    System.out.println("Logout-success accessed with ts=" + ts);
-
-    // If timestamp or token are missing, return forbidden http status
-    if (ts == null) {
-      // FORBIDDEN, redirect to error page with FORBIDDEN status
-      throw new ResponseStatusException(
-          HttpStatus.FORBIDDEN, "Tried to access logout success page without logging out");
-    }
-
-    // Validate the timestamp is recent (within last 5 seconds)
-    long currentTime = System.currentTimeMillis();
-    long maxAge = 5000; // 5 seconds
-
-    if (currentTime - ts > maxAge) {
-      // Timestamp is too old, redirect to login
+    if (authentication != null
+        && authentication.isAuthenticated()
+        && !(authentication instanceof AnonymousAuthenticationToken)) {
+      // User is still authenticated, redirect to login
       return "redirect:/login";
     }
 
-    // Valid logout-success access
+    // User is not authenticated, show logout success page
     return "logout-success";
   }
 }

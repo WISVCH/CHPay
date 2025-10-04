@@ -4,7 +4,6 @@ import ch.wisv.chpay.auth.component.ApiKeyFilter;
 import ch.wisv.chpay.auth.component.CustomAccessDeniedHandler;
 import ch.wisv.chpay.auth.component.OAuth2FailureHandler;
 import ch.wisv.chpay.auth.service.CustomOIDCUserService;
-import ch.wisv.chpay.core.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +13,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
+import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInitiatedLogoutSuccessHandler;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -38,7 +39,7 @@ public class AuthSecConfig {
 
   @Autowired private OAuth2FailureHandler OAuth2FailureHandler;
 
-  @Autowired private NotificationService notificationService;
+  @Autowired private ClientRegistrationRepository clientRegistrationRepository;
 
   @Value("${chpay.api_key}")
   private String apiKey;
@@ -150,12 +151,28 @@ public class AuthSecConfig {
   }
 
   /**
-   * Configures the logout functionality for the application.
+   * Configures the logout functionality for the application with proper OAuth2/OIDC logout.
+   *
+   * <p>This method implements secure logout using Spring Security's built-in OIDC logout handler
+   * that:
+   *
+   * <ul>
+   *   <li>Clears the local session and authentication
+   *   <li>Redirects to the OAuth2 provider's logout endpoint (WISV CH Connect)
+   *   <li>Handles the post-logout redirect back to the application
+   * </ul>
    *
    * @param http the {@link HttpSecurity} to modify the logout behavior
    * @throws Exception if an error occurs while configuring the logout settings
    */
   private void configureLogout(HttpSecurity http) throws Exception {
+    // Create OIDC logout success handler using Spring Security's built-in class
+    OidcClientInitiatedLogoutSuccessHandler oidcLogoutSuccessHandler =
+        new OidcClientInitiatedLogoutSuccessHandler(clientRegistrationRepository);
+
+    // Set the post-logout redirect URI to our logout success page
+    oidcLogoutSuccessHandler.setPostLogoutRedirectUri("{baseUrl}/logout-success");
+
     http.logout(
         logout ->
             logout
@@ -164,13 +181,6 @@ public class AuthSecConfig {
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
-                .logoutSuccessHandler(
-                    (request, response, authentication) -> {
-                      // Generate timestamp token for validation
-                      System.out.println("Logout handler triggered");
-                      long timestamp = System.currentTimeMillis();
-                      System.out.println("Redirecting to: /logout-success?ts=" + timestamp);
-                      response.sendRedirect("/logout-success?ts=" + timestamp);
-                    }));
+                .logoutSuccessHandler(oidcLogoutSuccessHandler));
   }
 }
