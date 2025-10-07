@@ -2,10 +2,8 @@ package ch.wisv.chpay.admin.controller;
 
 import ch.wisv.chpay.admin.service.AdminTransactionService;
 import ch.wisv.chpay.core.model.transaction.Transaction;
+import ch.wisv.chpay.core.service.CsvExportService;
 import jakarta.servlet.http.HttpServletRequest;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,9 +25,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/admin/transactions")
 public class AdminTransactionsController extends BaseTransactionController {
 
+  private final CsvExportService csvExportService;
+
   @Autowired
-  protected AdminTransactionsController(AdminTransactionService adminTransactionService) {
+  protected AdminTransactionsController(
+      AdminTransactionService adminTransactionService, CsvExportService csvExportService) {
     super(adminTransactionService);
+    this.csvExportService = csvExportService;
   }
 
   /**
@@ -79,33 +81,18 @@ public class AdminTransactionsController extends BaseTransactionController {
 
       List<Transaction> transactions =
           adminTransactionService.getTransactionsByYearMonth(selectedYearMonth);
-      String csvData =
+      transactions =
           transactions.stream()
               .filter(
                   t ->
                       t.getStatus().equals(Transaction.TransactionStatus.SUCCESSFUL)
                           || t.getStatus().equals(Transaction.TransactionStatus.PARTIALLY_REFUNDED)
                           || t.getStatus().equals(Transaction.TransactionStatus.REFUNDED))
-              .map(
-                  t ->
-                      t.getId().toString()
-                          + ";"
-                          + t.getType().toString()
-                          + ";"
-                          + t.getUser().getName()
-                          + ";"
-                          + t.getDescription()
-                          + ";"
-                          + t.getAmount()
-                          + ";"
-                          + t.getStatus().name()
-                          + ";"
-                          + t.getTimestamp().toString())
-              .collect(Collectors.joining("\n"));
-      csvData = "Id;Type;Name;Description;Amount;Status;Timestamp\n" + csvData;
-      InputStream bufferedInputStream =
-          new ByteArrayInputStream(csvData.getBytes(StandardCharsets.UTF_8));
-      InputStreamResource fileInputStream = new InputStreamResource(bufferedInputStream);
+              .collect(Collectors.toList());
+
+      byte[] csvBytes = csvExportService.generateCsv(transactions);
+      InputStreamResource fileInputStream =
+          new InputStreamResource(new java.io.ByteArrayInputStream(csvBytes));
 
       String filename = "chpay_" + selectedYearMonth + "_export.csv";
 

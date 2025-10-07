@@ -69,6 +69,25 @@
                     <option value="100">100</option>
                 </select>
                 <!-- End Select -->
+                <div id="dropdown-transactions-export" class="dropdown relative inline-flex">
+                    <button id="transactions-export-dropdown" type="button" class="dropdown-toggle max-sm:btn-square btn btn-soft btn-primary btn-sm" aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown" >
+                      <span class="flex items-center gap-3">
+                        <span class="icon-[tabler--download] size-4"></span>
+                        <span class="max-sm:hidden">Export</span>
+                      </span>
+                      <span class="icon-[tabler--chevron-down] max-sm:hidden dropdown-open:rotate-180 size-4"></span>
+                    </button>
+                    <div class="dropdown-menu dropdown-open:opacity-100 hidden" role="menu" aria-orientation="vertical" aria-labelledby="transactions-export-dropdown" >
+                      <a id="export-csv-link" href="/transactions/export/csv" class="dropdown-item" download>
+                        <span class="icon-[tabler--file-type-csv] size-3.5 shrink-0"></span>
+                        CSV
+                      </a>
+                      <a id="export-ofx-link" href="/transactions/export/ofx" class="dropdown-item" download>
+                        <span class="icon-[tabler--file-type-xml] size-3.5 shrink-0"></span>
+                        OFX
+                      </a>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -254,6 +273,7 @@
                         statusFilterItems.forEach(el => el.classList.remove('active'))
                         event.target.classList.add('active')
                         dataTable.draw()
+                        updateExportLink()
                     }
 
                     // Custom search function for column filtering
@@ -276,6 +296,33 @@
 
                         return typeMatch && statusMatch
                     })
+
+                    function updateExportLink() {
+                        const activeStatusFilter = document.querySelector('.status-filter-item.active')
+                        const selectedStatusText = activeStatusFilter?.textContent.trim().toLowerCase() || 'all'
+                        const statusMap = {
+                            'all': null,
+                            'successful': 'SUCCESSFUL',
+                            'pending': 'PENDING',
+                            'failed': 'FAILED',
+                            'refunded': 'REFUNDED',
+                            'partial refund': 'PARTIALLY_REFUNDED'
+                        }
+                        const statusParam = statusMap[selectedStatusText]
+                        const ofxLink = document.getElementById('export-ofx-link')
+                        const csvLink = document.getElementById('export-csv-link')
+                        if (ofxLink) {
+                            const ofxBase = '/transactions/export/ofx'
+                            ofxLink.href = statusParam ? `${ofxBase}?status=${encodeURIComponent(statusParam)}` : ofxBase
+                        }
+                        if (csvLink) {
+                            const csvBase = '/transactions/export/csv'
+                            csvLink.href = statusParam ? `${csvBase}?status=${encodeURIComponent(statusParam)}` : csvBase
+                        }
+                    }
+
+                    // Initialize export link based on default active status
+                    updateExportLink()
 
                     // Email Receipt Function
                     function emailReceipt(transactionId) {
