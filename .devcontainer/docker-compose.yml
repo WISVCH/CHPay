@@ -1,12 +1,15 @@
 services:
   app:
     build:
-      context: ..
       dockerfile: Dockerfile.dev
     container_name: chpay-app
     working_dir: /workspace
+    command: sleep infinity
+    init: true
     volumes:
-      - ..:/workspace:cached
+      - .:/workspace:cached
+      - gradle-cache:/home/dev/.gradle
+      - m2-cache:/home/dev/.m2
     environment:
       SPRING_PROFILES_ACTIVE: devcontainer
     depends_on:
@@ -15,3 +18,7 @@ services:
       - oidc
     ports:
       - "8080:8080"
+
+volumes:
+  gradle-cache:
+  m2-cache:

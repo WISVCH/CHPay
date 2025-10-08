@@ -6,6 +6,7 @@
   ],
   "service": "app",
   "workspaceFolder": "/workspace",
+  "overrideCommand": true,
   "customizations": {
     "vscode": {
       "extensions": [
@@ -14,13 +15,18 @@
         "vscjava.vscode-gradle"
       ],
       "settings": {
+        // Temurin base sets JAVA_HOME to /opt/java/openjdk
         "java.configuration.runtimes": [
-          { "name": "JavaSE-21", "path": "/usr/lib/jvm" }
-        ]
+          { "name": "JavaSE-21", "path": "/opt/java/openjdk" }
+        ],
+        "java.jdt.ls.java.home": "/opt/java/openjdk"
       }
     }
   },
+
   "forwardPorts": [8080, 5434, 5050, 1080, 4011],
+
   "postCreateCommand": "git config --global --add safe.directory /workspace || true",
+
   "remoteUser": "dev"
 }
