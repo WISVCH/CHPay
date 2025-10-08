@@ -1,0 +1,26 @@
+{
+  "name": "chpay-dev",
+  "dockerComposeFile": [
+    "../docker-compose.yml",
+    "docker-compose.yml"
+  ],
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscjava.vscode-java-pack",
+        "redhat.java",
+        "vscjava.vscode-gradle"
+      ],
+      "settings": {
+        "java.configuration.runtimes": [
+          { "name": "JavaSE-21", "path": "/usr/lib/jvm" }
+        ]
+      }
+    }
+  },
+  "forwardPorts": [8080, 5434, 5050, 1080, 4011],
+  "postCreateCommand": "git config --global --add safe.directory /workspace || true",
+  "remoteUser": "dev"
+}

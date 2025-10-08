@@ -1,0 +1,17 @@
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: Dockerfile.dev
+    container_name: chpay-app
+    working_dir: /workspace
+    volumes:
+      - ..:/workspace:cached
+    environment:
+      SPRING_PROFILES_ACTIVE: devcontainer
+    depends_on:
+      - db
+      - mailcatcher
+      - oidc
+    ports:
+      - "8080:8080"

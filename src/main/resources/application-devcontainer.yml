@@ -1,0 +1,94 @@
+spring:
+  application:
+    name: chpay
+    baseurl: ${BASE_URL:http://localhost:8080}
+
+  datasource:
+    url: jdbc:postgresql://db:5432/chpay
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maxLifetime: 600000
+      idleTimeout: 300000
+      keepaliveTime: 300000
+      connectionTimeout: 30000
+      minimumIdle: 5
+      maximumPoolSize: 10
+
+  jpa:
+    show-sql: false
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  thymeleaf:
+    prefix: file:src/main/resources/templates/
+    cache: false
+  web:
+    resources:
+      static-locations: file:src/main/resources/static/
+      cache:
+        cachecontrol:
+          max-age: 0
+          no-cache: true
+          no-store: true
+
+  mail:
+    host: mailcatcher
+    port: 1025
+    properties:
+      mail.smtp.auth: false
+      mail.smtp.starttls.enable: false
+      mail.smtp.starttls.required: false
+    disable: false
+
+  cache:
+    cache-names: systemFrozen, maxBalance, minTopUp
+    caffeine:
+      spec: recordStats,maximumSize=10,expireAfterWrite=5m
+
+  security:
+    oauth2:
+      client:
+        registration:
+          wisvchconnect:
+            client-id: chpay.devcontainer
+            client-secret:
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/wisvchlogin"
+            scope: [openid, profile, email, student, auth]
+        provider:
+          wisvchconnect:
+            issuer-uri: http://oidc
+
+mollie:
+  api_key: dummy_mollie_key
+  redirect_url: ${spring.application.baseurl}/topup/complete/
+  webhook_url:  ${spring.application.baseurl}/topup/status
+  transaction_fee: ${TRANSACTION_FEE:0.32}
+
+chpay:
+  admin_groups: [beheer, bestuur, vc]
+  claim_name: google_groups
+  transactions:
+    expire_every_minutes: 20
+    expiration_fixed_rate: 1
+  paymentrequests:
+    expire_every_months: 1
+  settings:
+    mintopup: 2
+  api_key: "devcontainer-api-key"
+
+logging:
+  level:
+    org.hibernate.loader.Loader: WARN
+    org.hibernate.sql.results.jdbc.internal.DeferredResultSetAccess: WARN
+
+server:
+  forward-headers-strategy: native
