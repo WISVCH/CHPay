@@ -32,6 +32,13 @@ While the container is running:
 | Mock Keycloak (OIDC) | http://localhost:3083 | Login flow, seeded users |
 | Front-end watcher | runs inside Compose | Executes `npm run watch` automatically |
 
+The mock Keycloak instance includes two ready-made accounts:
+
+| Username | Password | Roles |
+| --- | --- | --- |
+| `constantijn` | `pwd` | Admin (beheer) |
+| `christiaan` | `pwd` | Standard user |
+
 ### Option 2 – Docker Compose Dependencies (Local IDE)
 
 1. Install JDK 21, Node.js 20, Docker Desktop/Compose, and your preferred editor.
