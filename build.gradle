@@ -1,10 +1,10 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.4.5'
+	id 'org.springframework.boot' version '3.5.7'
 	id 'io.spring.dependency-management' version '1.1.7'
 	id 'jacoco'
 	id 'pmd'
-	id 'com.diffplug.spotless' version '7.0.3'
+	id 'com.diffplug.spotless' version '8.0.0'
 	id 'com.github.node-gradle.node' version '7.1.0'
 }
 
@@ -37,27 +37,27 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.thymeleaf:thymeleaf-spring6'
 	implementation 'org.thymeleaf:thymeleaf'
-	implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
-	implementation 'com.fasterxml.jackson.core:jackson-core:2.15.2'
-	implementation 'com.fasterxml.jackson.core:jackson-annotations:2.15.2'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.20.1'
+	implementation 'com.fasterxml.jackson.core:jackson-core:2.20.1'
+	implementation 'com.fasterxml.jackson.core:jackson-annotations:3.0-rc5'
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	runtimeOnly 'com.h2database:h2'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-	implementation 'org.springframework.retry:spring-retry:2.0.5'
+	implementation 'org.springframework.retry:spring-retry:2.0.12'
 	implementation 'org.springframework.boot:spring-boot-starter-aop'
 	implementation("org.springframework.boot:spring-boot-starter-cache")
 	implementation("com.github.ben-manes.caffeine:caffeine")
-	implementation 'be.woutschoovaerts:mollie:4.6.0'
-	implementation 'com.microsoft.playwright:playwright:1.51.0'
+	implementation 'be.woutschoovaerts:mollie:4.6.4'
+	implementation 'com.microsoft.playwright:playwright:1.56.0'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
-	testImplementation 'org.mockito:mockito-junit-jupiter:5.10.0'
+	testImplementation 'org.mockito:mockito-junit-jupiter:5.20.0'
 	testImplementation 'org.mockito:mockito-inline:5.2.0'
 
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -66,13 +66,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
-	implementation 'org.webjars:webjars-locator-core'
-	implementation 'org.webjars.npm:vanillajs-datepicker:1.3.4'
-	implementation 'org.webjars.npm:chart.js:4.4.9'
 
 	implementation 'com.google.zxing:core:3.5.3'
 	implementation 'com.google.zxing:javase:3.5.3'
-
 }
 
 test {
