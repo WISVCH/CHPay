@@ -42,6 +42,8 @@ spring:
   mail:
     host: localhost
     port: 3587
+    username: chpay.devcontainer@mailcatcher.local
+    password: ""
     properties:
       mail.smtp.auth: false
       mail.smtp.starttls.enable: false
@@ -66,11 +68,6 @@ spring:
         provider:
           wisvchconnect:
             issuer-uri: http://localhost:3083
-            authorization-uri: http://localhost:3083/connect/authorize
-            token-uri: http://localhost:3083/connect/token
-            user-info-uri: http://localhost:3083/connect/userinfo
-            jwk-set-uri: http://localhost:3083/.well-known/openid-configuration/jwks
-            end-session-uri: http://localhost:3083/connect/endsession
 
 mollie:
   api_key: dummy_mollie_key
