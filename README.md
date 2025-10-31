@@ -1,223 +1,121 @@
-![ch-logo.png](src/main/resources/static/images/ch-logo.png)
 # CHPay
 
-A wallet system for W.I.S.V. 'Christiaan Huygens'.
+CHPay is the digital wallet platform for W.I.S.V. ‘Christiaan Huygens’. It combines a Spring Boot back-end, a Tailwind/FlyonUI based front-end, and integrations with Keycloak and Mollie to support secure payments and administration.
 
-# Getting started
+## Development
 
-## Built with
+You can work on CHPay in three different ways. All options share the same service topology and expose identical ports, so switching between them is straightforward.
 
-* ![Thymeleaf](https://img.shields.io/badge/Thymeleaf-%23005C0F.svg?style=for-the-badge&logo=Thymeleaf&logoColor=white)
-* ![Spring](https://img.shields.io/badge/spring-%236DB33F.svg?style=for-the-badge&logo=spring&logoColor=white)
-* ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=white)
+### Option 1 – Dev Container (VS Code or IntelliJ)
 
-## Installation
+1. **Prerequisites**
+   - Docker Desktop 4.31+ (Linux users: Docker Engine + Docker Compose v2).
+   - For VS Code: install the *Dev Containers* extension.  
+     For IntelliJ IDEA: install JetBrains Gateway with the *Dev Containers* plugin.
+2. **Open the workspace**
+   - VS Code: `Dev Containers: Rebuild and Reopen in Container`.
+   - IntelliJ: `File ▸ Open… ▸ .devcontainer/devcontainer.json` via Gateway.
+3. The dev container boots the project plus all dependencies using the included Compose files. No local tooling besides Docker is required.
+4. **Run the application** with the supplied run configurations:
+   - IntelliJ: `Run ▸ Run 'Application [dev]'`.
+   - VS Code: `Run and Debug ▸ Application`.
 
-This project uses Gradle for dependency management and building.
+While the container is running:
 
-#### Prerequisites
+| Service | Host URL / Port | Purpose |
+| --- | --- | --- |
+| Spring Boot app | http://localhost:3080 | CHPay web UI & API |
+| PostgreSQL 18 | localhost:35432 | Primary database (`postgres/postgres`) |
+| pgAdmin | http://localhost:3081 | Database administration (admin/admin) |
+| Mailcatcher UI | http://localhost:3082 | Test inbox |
+| Mailcatcher SMTP | localhost:3587 | SMTP endpoint for dev mail |
+| Mock Keycloak (OIDC) | http://localhost:3083 | Login flow, seeded users |
+| Front-end watcher | runs inside Compose | Executes `npm run watch` automatically |
 
-Before you begin, ensure you have the following installed:
+The mock Keycloak instance includes two ready-made accounts:
 
-- **[Java Development Kit (JDK) 21](https://www.oracle.com/java/technologies/downloads/) or higher**
-- **[Node.js](https://nodejs.org/) (for frontend development)**
-- **[Git (optional, but recommended for cloning)](https://git-scm.com/downloads)**
-- **[PostgresSQL](https://www.postgresql.org/)**
+| Username | Password | Roles |
+| --- | --- | --- |
+| `constantijn` | `pwd` | Admin (beheer) |
+| `christiaan` | `pwd` | Standard user |
 
+### Option 2 – Docker Compose Dependencies (Local IDE)
 
-Required external services:
-- **[Mollie api connection](https://docs.mollie.com/reference/overview)**
-- **[CH Connect service registration](https://connect.ch.tudelft.nl/)**
+1. Install JDK 21, Node.js 20, Docker Desktop/Compose, and your preferred editor.
+2. Start the shared services:
 
-## Setting up external service connections:
+   ```bash
+   docker compose up -d db pgadmin mailcatcher oidc frontend-watch
+   ```
 
+   (Stop them with `docker compose down` when you are done.)
+3. Open the project in VS Code or IntelliJ. The project is already Gradle based, so it will import automatically.
+4. Use the same run configurations as above (`Application` in VS Code, `Application [dev]` in IntelliJ) to launch the Spring Boot application.
 
-### **[Mollie:](https://mollie.com/)**
-1. After logging in, begin by creating a new organization
-![createOrg.png](images/createOrg.png)
-2. Go to the payments tab from the navbar on top of the screen, you should setup the account so you can get ready with processing payments 
-![paymentsTab.png](images/paymentsTab.png)
-3. Now you can go to the API keys section and include them in your application.yml 
-![apiKeyOrg.png](images/apiKeyOrg.png)
-4. Below are the environmental variables you need to set
-```
-spring:
-  application:
-    base-url: ${BASE_URL:XXX}
+All services listen on the same host ports listed in the table above. The `frontend-watch` container keeps Tailwind output up to date; if you prefer to run it manually, stop that service and execute `npm run watch` in `src/main/frontend`.
 
-mollie:
-  apiKey: ${MOLLIE_API_KEY:xxx}
-  redirectUrl: ${spring.application.base-url}/XXX
-  webhookUrl:  ${spring.application.base-url}/XXX
-  transactionFee: ${TRANSACTION_FEE:0.32}
-```
-BASE-URL: The url the application is served on 
+### Option 3 – Manual Setup
 
-MOLLIE_API_KEY: Mollie's API key, either test or live 
+Configure everything yourself only if you cannot run Docker:
 
-TRANSACTION_FEE: A fee that gets added on top of every topup transaction
+1. **PostgreSQL** – create a database named `chpay`, reachable at `localhost:3080` for the app and `localhost:35432` for manual access (or update the connection in `application-dev.yml`).
+2. **Mail** – run a local SMTP server or update `spring.mail.*` in `application-dev.yml` with your provider.
+3. **OIDC provider** – register a Keycloak or other OIDC issuer and update:
 
-Note: For Mollie to work, the base URL must be reachable from an external network, otherwise Mollie will not be able to communicate.
+   ```yaml
+   spring:
+     security:
+       oauth2:
+         client:
+           registration:
+             wisvchconnect:
+               client-id: <client id>
+               client-secret: <client secret>
+               redirect-uri: "{baseUrl}/login/oauth2/code/wisvchlogin"
+           provider:
+             wisvchconnect:
+               issuer-uri: https://login.ch.tudelft.nl/realms/wisvch
+   ```
 
+4. **Mollie** – set `mollie.api_key`, `redirect_url`, and `webhook_url`.
+5. **Base URL** – match `spring.application.baseurl` (usually `http://localhost:3080`) and `server.port`.
+6. Once the configuration is in place, build and run with:
 
-### **[CH Connect:](https://connect.ch.tudelft.nl/)**
-1. Visit the [CH Connect website](https://connect.ch.tudelft.nl/) and log in
-2. Click Self-service client registration
-![CHConnectIndex.jpg](images/CHConnectIndex.jpg)
+   ```bash
+   ./gradlew bootRun --args='--spring.profiles.active=dev'
+   ```
 
-3. Click "New Client"
-![ChConnectNewClientButton.jpg](images/ChConnectNewClientButton.jpg)
+   or reuse the IDE run configurations.
 
-4. Scroll down to 'Redirect URI(s)', and add a new entry of your base application URL, adding "/login/oauth2/code/wisvchconnect". eg. https://[example.com]/login/oauth2/code/wisvchconnect
-![CHConnectRedirectURI.jpg](images/CHConnectRedirectURI.jpg)
+## Deployment
 
-5. Go to the 'Access' tab, and under scope, in addition to the default options also make sure 'student' is checked.
-![CHConnectScope.jpg](images/CHConnectScope.jpg)
+Production deployments require a publicly reachable base URL and hardened configuration:
 
-6. Leave everything else as the default option and click 'Save'
-7. Take note of the underlined newly generated tokens 
-![CHConnectGeneratedTokens.jpg](images/CHConnectGeneratedTokens.jpg)
-8. Add the following environmental variables:
-```  security:
-    oauth2:
-      client:
-        registration:
-          wisvchconnect:
-            client-id: ${CHCONNECT_CLIENT_ID:xxxx}
-            client-secret: ${CHCONNECT_CLIENT_SECRET:xxxx}
-```
-CHCONNECT_CLIENT_ID: the Client ID as generated in step 7.
+- **Keycloak** – CHPay authenticates against Keycloak at `https://login.ch.tudelft.nl`. Create a client for the production domain and copy the `issuer-uri`, `client-id`, and `client-secret` into your production `application.yml`.
+- **Mollie** – enable a live Mollie account, configure the webhook to point to `${spring.application.baseurl}/topup/status`, and store the live API key in `mollie.api_key`.
+- **Persistence** – point `spring.datasource.*` to the production PostgreSQL instance and tighten credentials.
+- **Mail** – configure a real SMTP provider so receipts and admin notices are delivered.
+- **Security** – disable the mock services, review allowed origins, and ensure TLS termination in front of the application.
 
-CHCONNECT_CLIENT_SECRET: the Client Secret as generated in step 7.
+Deployments typically use the same Gradle build (`./gradlew bootJar`) and run the fat jar with an environment-specific `application.yml`.
 
+## Frontend Stack
 
+The UI uses FlyonUI components on top of Tailwind CSS, supplemented by DataTables, ApexCharts, lodash, jQuery, Clipboard.js, and Canvas Confetti.
 
+- **Templates** – HTML views live in `src/main/resources/templates`.
+- **Static assets** – JavaScript and compiled CSS are served from `src/main/resources/static`.
+- **Source styles** – Tailwind input and helper scripts are managed in `src/main/frontend`.
 
-### To get a local copy of the project: 
-1. Clone the repository using Git:
-
-```bash
-git clone https://gitlab.ewi.tudelft.nl/cse2000-software-project/2024-2025/cluster-e/06b/06b.git
-
-cd 06b
-```
-2. Create a PostgresSQL database.
-3. Set the following required environmental variables in **application.yml**:
-
-```
-datasource:  
-  transactiondb:  
-    url: ${TRANSACTION_DB_URL:xxx }  
-    username: ${TRANSACTION_DB_USER:xxx}  
-    password: ${TRANSACTION_DB_PASS:xxx}  
-    driverClassName: org.postgresql.Driver
-spring:
-  profiles:
-    active: ${SPRING_ACTIVE_PROFILE:xxx}
-  application:
-    name: 06b
-    base-url: ${BASE_URL:xxx}
-  mail:
-    host: ${SMTP_HOST:xxx}
-    port: ${SMTP_PORT:xxx}
-    username: ${MAIL_USERNAME:xxx}
-    password: ${MAIL_PASSWORD:xxx}
-```
-TRANSACTION_DB_URL: The URL of the PostgreSQL database used by the application
-
-TRANSACTION_DB_USER: Username for the database
-
-TRANSACTION_DB_PASS: Password for the database
-
-SPRING_ACTIVE_PROFILE: either 'test' or 'default'. When set to 'test', the application is **NOT** safe to run in a live instance. It exposes a test authentication controller required for the included playwright end-to-end tests, which gives full admin access without checking credentials.
-
-BASE_URL: The base URL the application will be visited through, eg. https://example.com
-
-SMTP_HOST: The URL of the SMTP host used to send emails
-
-SMTP_PORT: The port used with the SMTP host
-
-MAIL_USERNAME: Username used to log in to the SMTP host
-
-MAIL_PASSWORD: Password used to log in to the SMTP host
-
-4. If desired, set the following **optional** environmental variables:
-```chpay:
-  transactions:
-    expire-every-minutes: ${EXPIRE_EVERY_MINUTE:20}
-    expiration-fixed-rate: ${EXPIRATION_FIXED_RATE:1}
-  paymentrequests:
-    expire-every-months: ${REQUEST_EXPIRATION_CUTOFF:1}
-  settings:
-    minTopUp: ${MIN_TOPUP:2}
-  api-key: ${EVENTS_API_KEY:xxx}
-```
-EXPIRE_EVERY_MINUTE: The number of minutes after a transaction was created it should count as expired. DEFAULT: 20
-
-EXPIRATION_FIXED_RATE: The backend will check every x minutes for expired transactions and adjust their status.
-The lower it is, the more frequently it checks, which results in increased resource usage. DEFAULT: 1
-
-REQUEST_EXPIRATION_CUTOFF: The number of months after a payment request was created it should be invalidated and set as expired. DEFAULT: 1
-
-MIN_TOPUP: The lowest amount of euros the system allows to be topped up. DEFAULT: 2
-
-EVENTS_API_KEY: If the system is to be integrated into the CH Events system, an api key of both has to be matched, set it here.
-
-Once you have cloned the repository and navigated into the project directory:
-
-5. Build the project using Gradle.
+### Building Assets
 
 ```bash
-./gradlew build
+cd src/main/frontend
+npm install          # first run
+npm run build        # one-off build
+npm run watch        # continuous rebuild outside the dev container
 ```
 
-## Frontend Development
+Inside the dev container the `frontend-watch` service runs `npm run watch` automatically, so edits to `styles.css` or imported components immediately rebuild `main.css`.
 
-The frontend development happens in the `src/main/resources/templates/` directory where the HTML files are located. The styling is done using **FlyonUI**, **Tailwind CSS**, and other frontend libraries.
-
-### Setting up the frontend build tools:
-
-1. Navigate to the frontend build directory:
-```bash
-cd src/main/frontend/
-```
-
-2. Install Node.js dependencies:
-```bash
-npm install
-```
-
-### Frontend Commands:
-
-- **Build CSS and copy JavaScript files:**
-```bash
-npm run build
-```
-
-- **Watch for changes and rebuild automatically:**
-```bash
-npm run watch
-```
-
-The build process will:
-- Copy JavaScript libraries (jQuery, DataTables, FlyonUI) to the static resources
-- Compile Tailwind CSS from `styles.css` to `../resources/static/css/main.css`
-
-### Frontend Development Workflow:
-
-1. **Edit HTML templates** in `src/main/resources/templates/`
-2. **Edit CSS styles** in `src/main/frontend/styles.css` (Tailwind CSS)
-3. **Run the watch command** to automatically rebuild styles when you make changes:
-```bash
-cd src/main/frontend/
-npm run watch
-```
-4. **Use FlyonUI components** and other frontend libraries in your HTML templates
-
-## Usage
-
-For a detailed account on the usage of the app, please refer to [usage.md](usage.md)
-
-## Miscellaneous
-
-Class and Entity Relationship diagrams of the system can be found in [misc.md](misc.md)
+Use the IDE run configurations to start the Spring Boot server; the compiled assets are served directly from the `static` directory.

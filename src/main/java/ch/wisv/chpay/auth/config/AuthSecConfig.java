@@ -4,6 +4,9 @@ import ch.wisv.chpay.auth.component.ApiKeyFilter;
 import ch.wisv.chpay.auth.component.CustomAccessDeniedHandler;
 import ch.wisv.chpay.auth.component.OAuth2FailureHandler;
 import ch.wisv.chpay.auth.service.CustomOIDCUserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.net.URI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -11,14 +14,17 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInitiatedLogoutSuccessHandler;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * AuthSecConfig is a Spring configuration class that sets up the security configuration for the
@@ -167,8 +173,7 @@ public class AuthSecConfig {
    */
   private void configureLogout(HttpSecurity http) throws Exception {
     // Create OIDC logout success handler using Spring Security's built-in class
-    OidcClientInitiatedLogoutSuccessHandler oidcLogoutSuccessHandler =
-        new OidcClientInitiatedLogoutSuccessHandler(clientRegistrationRepository);
+    OidcClientInitiatedLogoutSuccessHandler oidcLogoutSuccessHandler = createLogoutSuccessHandler();
 
     // Set the post-logout redirect URI to our logout success page
     oidcLogoutSuccessHandler.setPostLogoutRedirectUri("{baseUrl}/logout-success");
@@ -182,5 +187,61 @@ public class AuthSecConfig {
                 .deleteCookies("JSESSIONID")
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
                 .logoutSuccessHandler(oidcLogoutSuccessHandler));
+  }
+
+  private OidcClientInitiatedLogoutSuccessHandler createLogoutSuccessHandler() {
+    if (activeProfiles.contains("devcontainer")) {
+      ClientRegistration registration =
+          clientRegistrationRepository.findByRegistrationId("wisvchconnect");
+      if (registration != null) {
+        URI authorizationUri = URI.create(registration.getProviderDetails().getAuthorizationUri());
+        URI hostAccessible =
+            UriComponentsBuilder.newInstance()
+                .scheme(authorizationUri.getScheme())
+                .host(authorizationUri.getHost())
+                .port(authorizationUri.getPort())
+                .build(true)
+                .toUri();
+        return new HostAwareOidcLogoutSuccessHandler(clientRegistrationRepository, hostAccessible);
+      }
+    }
+    return new OidcClientInitiatedLogoutSuccessHandler(clientRegistrationRepository);
+  }
+
+  private static class HostAwareOidcLogoutSuccessHandler
+      extends OidcClientInitiatedLogoutSuccessHandler {
+
+    private final URI overrideBase;
+
+    HostAwareOidcLogoutSuccessHandler(
+        ClientRegistrationRepository clientRegistrationRepository, URI overrideBase) {
+      super(clientRegistrationRepository);
+      this.overrideBase = overrideBase;
+    }
+
+    @Override
+    protected String determineTargetUrl(
+        HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+      String targetUrl = super.determineTargetUrl(request, response, authentication);
+      if (targetUrl == null || overrideBase == null) {
+        return targetUrl;
+      }
+      try {
+        URI original = URI.create(targetUrl);
+        if ("oidc".equalsIgnoreCase(original.getHost())) {
+          URI adjusted =
+              UriComponentsBuilder.fromUri(original)
+                  .scheme(overrideBase.getScheme())
+                  .host(overrideBase.getHost())
+                  .port(overrideBase.getPort())
+                  .build(true)
+                  .toUri();
+          return adjusted.toString();
+        }
+      } catch (IllegalArgumentException ignored) {
+        // Fall back to original target URL if parsing fails.
+      }
+      return targetUrl;
+    }
   }
 }

@@ -1,0 +1,32 @@
+{
+  "name": "chpay-dev",
+  "dockerComposeFile": [
+    "../docker-compose.yml",
+    "docker-compose.yml"
+  ],
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "overrideCommand": true,
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscjava.vscode-java-pack",
+        "redhat.java",
+        "vscjava.vscode-gradle"
+      ],
+      "settings": {
+        // Temurin base sets JAVA_HOME to /opt/java/openjdk
+        "java.configuration.runtimes": [
+          { "name": "JavaSE-21", "path": "/opt/java/openjdk" }
+        ],
+        "java.jdt.ls.java.home": "/opt/java/openjdk"
+      }
+    }
+  },
+
+  "forwardPorts": [3080],
+
+  "postCreateCommand": "git config --global --add safe.directory /workspace || true",
+
+  "remoteUser": "dev"
+}

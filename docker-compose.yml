@@ -1,14 +1,155 @@
 services:
-  postgres:
-    image: 'docker.io/postgres:17'
+  db:
+    image: postgres:18
+    container_name: chpay-db
     environment:
-      - 'POSTGRES_DB=chpay'
-      - 'POSTGRES_PASSWORD=secret'
-      - 'POSTGRES_USER=chpay'
-    ports:
-      - "5432:5432"
+      POSTGRES_DB: chpay
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     volumes:
-      - postgres-storage:/home/postgres/pgdata/data
+      - db-data:/var/lib/postgresql
+    ports:
+      - "35432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d chpay" ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: chpay-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_SERVER_JSON_FILE: /pgadmin4/servers.json
+      PGADMIN_REPLACE_SERVERS_ON_STARTUP: "True"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    depends_on:
+      - db
+    ports:
+      - "3081:80"
+    volumes:
+      - ./pgadmin/servers.json:/pgadmin4/servers.json:ro
+      - ./pgadmin/pgpassfile:/pgpassfile:ro
+
+
+  mailcatcher:
+    image: dockage/mailcatcher:latest
+    container_name: chpay-mailcatcher
+    hostname: mailcatcher
+    ports:
+      - "3082:1080"
+      - "3587:1025"
+
+  frontend-watch:
+    image: node:20
+    container_name: chpay-frontend-watch
+    working_dir: /workspace/src/main/frontend
+    command: bash -lc "if [ ! -d node_modules ] || [ -z \"$(ls -A node_modules 2>/dev/null)\" ]; then npm install; fi && npm run watch"
+    init: true
+    tty: true
+    stdin_open: true
+    volumes:
+      - .:/workspace:cached
+      - frontend-node-modules:/workspace/src/main/frontend/node_modules
+    restart: unless-stopped
+
+  oidc:
+    image: ghcr.io/soluto/oidc-server-mock:0.12.1
+    container_name: chpay-oidc
+    ports:
+      - "3083:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+
+      SERVER_OPTIONS_INLINE: |
+        {
+          "AccessTokenJwtType": "JWT",
+          "Discovery": { "ShowKeySet": true },
+          "Authentication": { "CookieSameSiteMode": "Lax", "CheckSessionCookieSameSiteMode": "Lax" }
+        }
+
+      IDENTITY_RESOURCES_INLINE: |
+        - Name: student
+          ClaimTypes:
+            - netid
+            - study
+            - student_number
+        - Name: auth
+          ClaimTypes:
+            - google_groups
+            - google_username
+        - Name: organization
+          ClaimTypes:
+            - organization
+        - Name: roles
+          ClaimTypes:
+            - role
+            - groups
+
+      USERS_CONFIGURATION_INLINE: |
+        [
+          {
+            "SubjectId": "WISVCH.0001",
+            "Username": "christiaan",
+            "Password": "pwd",
+            "Claims": [
+              { "Type": "name",               "Value": "Christiaan Huygens",       "ValueType": "string" },
+              { "Type": "given_name",         "Value": "Christiaan",               "ValueType": "string" },
+              { "Type": "family_name",        "Value": "Huygens",                  "ValueType": "string" },
+              { "Type": "preferred_username", "Value": "christiaanh",              "ValueType": "string" },
+              { "Type": "google_username",    "Value": "christiaanh",              "ValueType": "string" },
+              { "Type": "email",              "Value": "christiaan@example.com",   "ValueType": "string" },
+              { "Type": "email_verified",     "Value": "true",                     "ValueType": "boolean" },
+              { "Type": "google_groups",      "Value": "[\"sjaarcie\"]",           "ValueType": "json" },
+              { "Type": "netid",              "Value": "c123456",                  "ValueType": "string" },
+              { "Type": "study",              "Value": "CE",                       "ValueType": "string" },
+              { "Type": "student_number",     "Value": "S000001",                  "ValueType": "string" },
+              { "Type": "organization",       "Value": "W.I.S.V. 'Christiaan Huygens'", "ValueType": "string" }
+            ]
+          },
+          {
+            "SubjectId": "WISVCH.0002",
+            "Username": "constantijn",
+            "Password": "pwd",
+            "Claims": [
+              { "Type": "name",               "Value": "Constantijn Huygens",      "ValueType": "string" },
+              { "Type": "given_name",         "Value": "Constantijn",              "ValueType": "string" },
+              { "Type": "family_name",        "Value": "Huygens",                  "ValueType": "string" },
+              { "Type": "preferred_username", "Value": "constantijnh",             "ValueType": "string" },
+              { "Type": "google_username",    "Value": "constantijnh",             "ValueType": "string" },
+              { "Type": "email",              "Value": "constantijn@example.com",  "ValueType": "string" },
+              { "Type": "email_verified",     "Value": "true",                     "ValueType": "boolean" },
+              { "Type": "google_groups",      "Value": "[\"sjaarcie\", \"beheer\"]", "ValueType": "json" },
+              { "Type": "netid",              "Value": "c654321",                  "ValueType": "string" },
+              { "Type": "study",              "Value": "CE",                       "ValueType": "string" },
+              { "Type": "student_number",     "Value": "S000002",                  "ValueType": "string" },
+              { "Type": "organization",       "Value": "W.I.S.V. 'Christiaan Huygens'", "ValueType": "string" }
+            ]
+          }
+        ]
+
+      CLIENTS_CONFIGURATION_INLINE: |
+        [
+          {
+            "ClientId": "chpay.devcontainer",
+            "Description": "CHPay Spring Boot devcontainer client",
+            "AllowedGrantTypes": ["authorization_code"],
+            "RequirePkce": false,
+            "RequireClientSecret": false,
+            "AllowAccessTokensViaBrowser": true,
+            "RedirectUris": ["http://localhost:3080/login/oauth2/code/wisvchlogin","http://127.0.0.1:3080/login/oauth2/code/wisvchlogin"],
+            "PostLogoutRedirectUris": ["http://localhost:3080/logout-success","http://127.0.0.1:3080/logout-success"],
+            "AllowedScopes": ["openid","profile","email","phone","address","student","auth","organization","roles"],
+            "IdentityTokenLifetime": 600,
+            "AccessTokenLifetime": 3600,
+            "AlwaysIncludeUserClaimsInIdToken": true
+          }
+        ]
+
 
 volumes:
-  postgres-storage:
+  db-data:
+  frontend-node-modules:
