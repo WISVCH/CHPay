@@ -69,10 +69,6 @@ spring:
           wisvchconnect:
             issuer-uri: http://oidc:8080
             authorization-uri: http://localhost:3083/connect/authorize
-            token-uri: http://oidc:8080/connect/token
-            user-info-uri: http://oidc:8080/connect/userinfo
-            jwk-set-uri: http://oidc:8080/.well-known/openid-configuration/jwks
-            end-session-uri: http://oidc:8080/connect/endsession
 
 mollie:
   api_key: dummy_mollie_key
