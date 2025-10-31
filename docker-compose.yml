@@ -1,15 +1,15 @@
 services:
   db:
-    image: postgres:16
+    image: postgres:18
     container_name: chpay-db
     environment:
       POSTGRES_DB: chpay
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql
     ports:
-      - "5434:5432"
+      - "35432:5432"
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres -d chpay" ]
       interval: 5s
@@ -29,7 +29,7 @@ services:
     depends_on:
       - db
     ports:
-      - "5050:80"
+      - "3081:80"
     volumes:
       - ./pgadmin/servers.json:/pgadmin4/servers.json:ro
       - ./pgadmin/pgpassfile:/pgpassfile:ro
@@ -38,15 +38,29 @@ services:
   mailcatcher:
     image: dockage/mailcatcher:latest
     container_name: chpay-mailcatcher
+    hostname: mailcatcher
     ports:
-      - "1080:1080"
-      - "1025:1025"
+      - "3082:1080"
+      - "3587:1025"
+
+  frontend-watch:
+    image: node:20
+    container_name: chpay-frontend-watch
+    working_dir: /workspace/src/main/frontend
+    command: bash -lc "if [ ! -d node_modules ] || [ -z \"$(ls -A node_modules 2>/dev/null)\" ]; then npm install; fi && npm run watch"
+    init: true
+    tty: true
+    stdin_open: true
+    volumes:
+      - .:/workspace:cached
+      - frontend-node-modules:/workspace/src/main/frontend/node_modules
+    restart: unless-stopped
 
   oidc:
     image: ghcr.io/soluto/oidc-server-mock:0.12.1
     container_name: chpay-oidc
     ports:
-      - "4011:8080"
+      - "3083:8080"
     environment:
       ASPNETCORE_ENVIRONMENT: Development
 
@@ -79,7 +93,7 @@ services:
         [
           {
             "SubjectId": "WISVCH.0001",
-            "Username": "Christiaan",
+            "Username": "christiaan",
             "Password": "pwd",
             "Claims": [
               { "Type": "name",               "Value": "Christiaan Huygens",       "ValueType": "string" },
@@ -98,7 +112,7 @@ services:
           },
           {
             "SubjectId": "WISVCH.0002",
-            "Username": "Constantijn",
+            "Username": "constantijn",
             "Password": "pwd",
             "Claims": [
               { "Type": "name",               "Value": "Constantijn Huygens",      "ValueType": "string" },
@@ -126,7 +140,8 @@ services:
             "RequirePkce": false,
             "RequireClientSecret": false,
             "AllowAccessTokensViaBrowser": true,
-            "RedirectUris": ["http://localhost:8080/login/oauth2/code/wisvchlogin"],
+            "RedirectUris": ["http://localhost:3080/login/oauth2/code/wisvchlogin","http://127.0.0.1:3080/login/oauth2/code/wisvchlogin"],
+            "PostLogoutRedirectUris": ["http://localhost:3080/logout-success","http://127.0.0.1:3080/logout-success"],
             "AllowedScopes": ["openid","profile","email","phone","address","student","auth","organization","roles"],
             "IdentityTokenLifetime": 600,
             "AccessTokenLifetime": 3600,
@@ -137,3 +152,4 @@ services:
 
 volumes:
   db-data:
+  frontend-node-modules:

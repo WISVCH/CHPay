@@ -1,10 +1,10 @@
 spring:
   application:
     name: chpay
-    baseurl: ${BASE_URL:http://localhost:8080}
+    baseurl: http://localhost:3080
 
   datasource:
-    url: jdbc:postgresql://localhost:5434/chpay
+    url: jdbc:postgresql://localhost:35432/chpay
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
@@ -41,7 +41,7 @@ spring:
 
   mail:
     host: localhost
-    port: 1025
+    port: 3587
     properties:
       mail.smtp.auth: false
       mail.smtp.starttls.enable: false
@@ -65,7 +65,12 @@ spring:
             scope: [openid, profile, email, student, auth]
         provider:
           wisvchconnect:
-            issuer-uri: http://localhost:4011
+            issuer-uri: http://localhost:3083
+            authorization-uri: http://localhost:3083/connect/authorize
+            token-uri: http://localhost:3083/connect/token
+            user-info-uri: http://localhost:3083/connect/userinfo
+            jwk-set-uri: http://localhost:3083/.well-known/openid-configuration/jwks
+            end-session-uri: http://localhost:3083/connect/endsession
 
 mollie:
   api_key: dummy_mollie_key
@@ -91,4 +96,5 @@ logging:
     org.hibernate.sql.results.jdbc.internal.DeferredResultSetAccess: WARN
 
 server:
+  port: 3080
   forward-headers-strategy: native

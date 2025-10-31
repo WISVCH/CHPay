@@ -1,7 +1,7 @@
 spring:
   application:
     name: chpay
-    baseurl: ${BASE_URL:http://localhost:8080}
+    baseurl: http://localhost:3080
 
   datasource:
     url: jdbc:postgresql://db:5432/chpay
@@ -42,6 +42,8 @@ spring:
   mail:
     host: mailcatcher
     port: 1025
+    username: chpay.devcontainer@mailcatcher.local
+    password: ""
     properties:
       mail.smtp.auth: false
       mail.smtp.starttls.enable: false
@@ -65,7 +67,12 @@ spring:
             scope: [openid, profile, email, student, auth]
         provider:
           wisvchconnect:
-            issuer-uri: http://oidc
+            issuer-uri: http://oidc:8080
+            authorization-uri: http://localhost:3083/connect/authorize
+            token-uri: http://oidc:8080/connect/token
+            user-info-uri: http://oidc:8080/connect/userinfo
+            jwk-set-uri: http://oidc:8080/.well-known/openid-configuration/jwks
+            end-session-uri: http://oidc:8080/connect/endsession
 
 mollie:
   api_key: dummy_mollie_key
@@ -91,4 +98,5 @@ logging:
     org.hibernate.sql.results.jdbc.internal.DeferredResultSetAccess: WARN
 
 server:
+  port: 3080
   forward-headers-strategy: native

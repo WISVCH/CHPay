@@ -24,7 +24,7 @@
     }
   },
 
-  "forwardPorts": [8080, 5434, 5050, 1080, 4011],
+  "forwardPorts": [3080],
 
   "postCreateCommand": "git config --global --add safe.directory /workspace || true",
 
