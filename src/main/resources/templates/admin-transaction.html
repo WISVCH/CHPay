@@ -118,10 +118,34 @@
                     <div class="font-mono text-sm" th:text="${transaction.getMollieId()}">mol_abc123</div>
                 </div>
 
+                <!-- Redirect Payment (for top-ups with redirect target) -->
+                <div th:if="${transaction.getType().name().equals('TOP_UP') and transaction.redirectPayment != null}" class="py-2 border-b border-base-content/10">
+                    <div class="text-base-content/70 text-sm mb-1">Redirect Payment</div>
+                    <a th:href="@{/admin/transaction/{id}(id=${transaction.redirectPayment.id})}"
+                       class="link font-mono text-sm inline-flex items-center gap-1">
+                        <span class="icon-[tabler--external-link] size-4"></span>
+                        <span th:text="${transaction.redirectPayment.id}">redirect-id</span>
+                    </a>
+                </div>
+
                 <!-- Request ID (for payments) -->
                 <div th:if="${requestId != null}" class="py-2 border-b border-base-content/10">
                     <div class="text-base-content/70 text-sm mb-1">Request ID</div>
-                    <div class="font-mono text-sm" th:text="${requestId}">req-123</div>
+                    <a th:href="@{/admin/payment-request/{id}(id=${requestId})}"
+                       class="link font-mono text-sm inline-flex items-center gap-1">
+                        <span class="icon-[tabler--external-link] size-4"></span>
+                        <span th:text="${requestId}">req-123</span>
+                    </a>
+                </div>
+
+                <!-- Original Transaction (for refunds) -->
+                <div th:if="${transaction.getType().name().equals('REFUND') and refundId != null}" class="py-2 border-b border-base-content/10">
+                    <div class="text-base-content/70 text-sm mb-1">Original Transaction</div>
+                    <a th:href="@{/admin/transaction/{id}(id=${refundId})}"
+                       class="link font-mono text-sm inline-flex items-center gap-1">
+                        <span class="icon-[tabler--external-link] size-4"></span>
+                        <span th:text="${refundId}">orig-tx</span>
+                    </a>
                 </div>
             </div>
 
@@ -139,29 +163,6 @@
                         <span th:text="${refundPossible > 0} ? 'Process Refund' : 'Fully Refunded'">Process Refund</span>
                     </button>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Original Transaction Link (for refunds) -->
-    <div th:if="${transaction.getType().name().equals('REFUND') && refundId != null}" 
-         class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow mb-8">
-        <div class="card-body">
-            <div class="flex items-center gap-4">
-                <div class="avatar avatar-placeholder">
-                    <div class="bg-info/20 text-info size-12 rounded-full">
-                        <span class="icon-[tabler--link] size-6"></span>
-            </div>
-                </div>
-                <div class="flex-1">
-                    <h3 class="card-title text-xl">Related Transaction</h3>
-                    <p class="text-base-content/70">This is a refund for another transaction</p>
-                </div>
-                <a th:href="@{/admin/transaction/{id}(id=${refundId})}" 
-                   class="btn btn-info">
-                    <span class="icon-[tabler--external-link] size-4"></span>
-                    View Original Transaction
-                </a>
             </div>
         </div>
     </div>
