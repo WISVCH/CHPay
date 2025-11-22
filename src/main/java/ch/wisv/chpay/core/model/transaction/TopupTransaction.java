@@ -4,7 +4,6 @@ import ch.wisv.chpay.core.model.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.math.BigDecimal;
@@ -16,7 +15,7 @@ public class TopupTransaction extends Transaction {
 
   @Column @Setter private String mollieId;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne
   @JoinColumn(name = "redirect_payment_id", referencedColumnName = "id")
   @Setter
   private Transaction redirectPayment;

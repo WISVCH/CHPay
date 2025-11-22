@@ -161,7 +161,11 @@ public class TopUpController extends CustomerController {
     model.addAttribute(MODEL_ATTR_TRANSACTION_ID, key);
     model.addAttribute("isTopup", t.getType().equals(Transaction.TransactionType.TOP_UP));
     if (t instanceof TopupTransaction topupTransaction
-        && topupTransaction.getRedirectPayment() != null) {
+        && topupTransaction.getRedirectPayment() != null
+        && topupTransaction
+            .getRedirectPayment()
+            .getStatus()
+            .equals(Transaction.TransactionStatus.PENDING)) {
       model.addAttribute("redirect", topupTransaction.getRedirectPayment().getId().toString());
     }
     return switch (t.getStatus()) {
