@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:18
+    image: postgres:15
     container_name: chpay-db
     environment:
       POSTGRES_DB: chpay
@@ -140,8 +140,8 @@ services:
             "RequirePkce": false,
             "RequireClientSecret": false,
             "AllowAccessTokensViaBrowser": true,
-            "RedirectUris": ["http://localhost:3080/login/oauth2/code/wisvchlogin","http://127.0.0.1:3080/login/oauth2/code/wisvchlogin"],
-            "PostLogoutRedirectUris": ["http://localhost:3080/logout-success","http://127.0.0.1:3080/logout-success"],
+            "RedirectUris": ["*"],
+            "PostLogoutRedirectUris": ["*"],
             "AllowedScopes": ["openid","profile","email","phone","address","student","auth","organization","roles"],
             "IdentityTokenLifetime": 600,
             "AccessTokenLifetime": 3600,
