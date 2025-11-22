@@ -157,6 +157,9 @@ public class PaymentController extends PageController {
             .findById(UUID.fromString(key))
             .orElseThrow(() -> new NotFoundException(key));
     model.addAttribute(MODEL_ATTR_TRANSACTION_ID, key);
+    if (t.supportsRequest() && t.getRequest() != null) {
+      model.addAttribute("paymentRequest", t.getRequest());
+    }
     return switch (t.getStatus()) {
       case Transaction.TransactionStatus.PENDING -> "pending";
       case Transaction.TransactionStatus.SUCCESSFUL -> "successful";
