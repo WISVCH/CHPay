@@ -3,16 +3,19 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout}">
 <head>
-    <title>Payment Successful</title>
+    <title th:text="${isTopup} ? 'Top-up Successful' : 'Payment Successful'">Payment Successful</title>
     <th:block layout:fragment="script">
         <script th:src="@{/js/canvas-confetti.browser.js}"></script>
         <script th:src="@{/js/confetti.js}"></script>
+        <script th:if="${redirect} != null" th:inline="javascript">
+            const redirectUrl = [[@{/payment/transaction/{id}(id=${redirect})}]];
+            setTimeout(() => window.location.href = redirectUrl, 1500);
+        </script>
     </th:block>
 </head>
 <body>
     <div layout:fragment="main-content" onclick="triggerConfettiAtClick(event)">
         <div class="container max-w-2xl mx-auto py-8">
-            <!-- Success Card -->
             <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow">
                 <div class="card-body text-center p-8">
                     <!-- Success Icon -->
@@ -25,7 +28,7 @@
                     </div>
                     
                     <!-- Title -->
-                    <h1 class="text-3xl font-bold text-base-content mb-4">Payment Successful!</h1>
+                    <h1 class="text-3xl font-bold text-base-content mb-4" th:text="${isTopup} ? 'Top-up Successful!' : 'Payment Successful!'">Payment Successful!</h1>
                     
                     <!-- Balance Update -->
                     <div class="mb-8">
@@ -37,13 +40,15 @@
                         </div>
                     </div>
 
-                    <!-- Action Button -->
-                    <div class="card-actions justify-center mb-6">
-                        <a th:if="${redirect} != null" th:href="@{/payment/transaction/{id}(id=${redirect})}" class="btn btn-primary btn-xl btn-block sm:btn-inline-block"
-                        >
-                            <span class="icon-[tabler--credit-card] size-5"></span>
-                            Go back to payment
-                        </a>
+                    <!-- Redirect Notice -->
+                    <div class="card-actions justify-center mb-6 text-center">
+                        <div th:if="${redirect} != null">
+                            <p class="text-base-content">
+                                We’ll redirect you to your payment in a moment.<br>
+                                If nothing happens,
+                                <a class="link" th:href="@{/payment/transaction/{id}(id=${redirect})}">click here</a>.
+                            </p>
+                        </div>
                         <a th:unless="${redirect} != null" href="/" class="btn btn-primary btn-xl btn-block sm:btn-inline-block">
                             <span class="icon-[tabler--home] size-5"></span>
                             Go to Homepage
