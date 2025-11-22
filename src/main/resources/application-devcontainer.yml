@@ -55,6 +55,9 @@ spring:
     caffeine:
       spec: recordStats,maximumSize=10,expireAfterWrite=5m
 
+  flyway:
+    enabled: false
+
   security:
     oauth2:
       client:
