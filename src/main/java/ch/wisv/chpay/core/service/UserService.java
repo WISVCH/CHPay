@@ -60,13 +60,6 @@ public class UserService {
   }
 
   @Transactional
-  @PreAuthorize("hasRole('USER')")
-  public void setRecentPayment(User currentUser, String recentPayment) {
-    currentUser.setRecentPayment(recentPayment); // may be null
-    saveAndFlush(currentUser);
-  }
-
-  @Transactional
   @PreAuthorize("hasRole('ADMIN')")
   public User getUserByIdForUpdate(UUID openID) {
     return userRepository.findByIdForUpdate(openID);
