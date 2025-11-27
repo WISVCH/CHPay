@@ -3,7 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout}">
 <head>
-    <title>Payment Pending</title>
+    <title th:text="${isTopup} ? 'Top-up Pending' : 'Payment Pending'">Payment Pending</title>
 </head>
 <body>
     <div layout:fragment="main-content">
@@ -19,10 +19,10 @@
                     </div>
                     
                     <!-- Title -->
-                    <h1 class="text-3xl font-bold text-base-content mb-4">Payment Pending</h1>
+                    <h1 class="text-3xl font-bold text-base-content mb-4" th:text="${isTopup} ? 'Top-up Pending' : 'Payment Pending'">Payment Pending</h1>
                     
                     <!-- Description -->
-                    <p class="text-base-content/70 text-lg mb-8">
+                        <p class="text-base-content/70 text-lg mb-8" th:text="${isTopup} ? 'Your top-up is being processed. Please wait while we confirm your transaction.' : 'Your payment is being processed. Please wait while we confirm your transaction.'">
                         Your payment is being processed. Please wait while we confirm your transaction.
                     </p>
 

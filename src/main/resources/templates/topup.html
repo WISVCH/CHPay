@@ -67,6 +67,7 @@
 
         <form th:action="@{/topup}" method="post" id="topup-form">
           <input type="hidden" id="topupAmount" name="topupAmount"/>
+          <input type="hidden" name="redirect" th:value="${redirect}">
           
           <!-- Amount Selection -->
           <div class="mb-6">

@@ -20,6 +20,8 @@ spring:
     cache-names: systemFrozen, maxBalance, minTopUp
     caffeine:
       spec: recordStats,maximumSize=10,expireAfterWrite=5m
+  flyway:
+    enabled: false
   jpa:
     show-sql: false
     generate-ddl: true

@@ -9,7 +9,6 @@ import ch.wisv.chpay.core.repository.TransactionRepository;
 import ch.wisv.chpay.core.service.NotificationService;
 import ch.wisv.chpay.core.service.SettingService;
 import ch.wisv.chpay.core.service.TransactionService;
-import ch.wisv.chpay.core.service.UserService;
 import ch.wisv.chpay.customer.service.DepositService;
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -21,7 +20,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -32,7 +36,6 @@ public class TopUpController extends CustomerController {
   private final NotificationService notificationService;
   private final TransactionRepository transactionRepository;
   private final SettingService settingService;
-  private final UserService userService;
 
   @Value("${mollie.transaction_fee}")
   private String transactionFee;
@@ -43,14 +46,12 @@ public class TopUpController extends CustomerController {
       TransactionService transactionsService,
       NotificationService notificationService,
       TransactionRepository transactionRepository,
-      SettingService settingService,
-      UserService userService) {
+      SettingService settingService) {
     this.depositService = depositService;
     this.transactionsService = transactionsService;
     this.notificationService = notificationService;
     this.transactionRepository = transactionRepository;
     this.settingService = settingService;
-    this.userService = userService;
   }
 
   /**
@@ -69,7 +70,9 @@ public class TopUpController extends CustomerController {
     model.addAttribute(MODEL_ATTR_MAX_BALANCE, settingService.getMaxBalance());
     model.addAttribute(MODEL_ATTR_MIN_TOP_UP, settingService.getMinTopUp());
     model.addAttribute(MODEL_ATTR_TRANSACTION_FEE, transactionFee);
-    userService.setRecentPayment(currentUser, redirect);
+    if (redirect != null) {
+      model.addAttribute("redirect", redirect);
+    }
     return "topup";
   }
 
@@ -85,6 +88,7 @@ public class TopUpController extends CustomerController {
   @PostMapping
   public String handleTopup(
       @RequestParam("topupAmount") String topupAmount,
+      @RequestParam(value = "redirect", required = false) String redirect,
       @ModelAttribute("currentUser") User currentUser,
       RedirectAttributes redirectAttributes) {
     try {
@@ -105,6 +109,22 @@ public class TopUpController extends CustomerController {
       } else {
         TopupTransaction transaction =
             createTopUpTransaction(currentUser, amount, "Mollie Deposit");
+        Transaction redirectTx = null;
+        if (redirect != null && !redirect.isBlank()) {
+          try {
+            UUID redirectId = UUID.fromString(redirect);
+            redirectTx = transactionRepository.findById(redirectId).orElse(null);
+          } catch (IllegalArgumentException ex) {
+            redirectTx = null; // invalid UUID format
+          }
+
+          if (redirectTx == null) {
+            notificationService.addErrorMessage(
+                redirectAttributes, "Invalid redirect payment reference.");
+            return "redirect:/topup";
+          }
+        }
+        transaction.setRedirectPayment(redirectTx);
         transactionRepository.save(transaction);
 
         String url = depositService.getMollieUrl(transaction);
@@ -139,8 +159,14 @@ public class TopUpController extends CustomerController {
             .findById(UUID.fromString(key))
             .orElseThrow(() -> new NotFoundException(key));
     model.addAttribute(MODEL_ATTR_TRANSACTION_ID, key);
-    if (currentUser.getRecentPayment() != null) {
-      model.addAttribute("redirect", currentUser.getRecentPayment());
+    model.addAttribute("isTopup", t.getType().equals(Transaction.TransactionType.TOP_UP));
+    if (t instanceof TopupTransaction topupTransaction
+        && topupTransaction.getRedirectPayment() != null
+        && topupTransaction
+            .getRedirectPayment()
+            .getStatus()
+            .equals(Transaction.TransactionStatus.PENDING)) {
+      model.addAttribute("redirect", topupTransaction.getRedirectPayment().getId().toString());
     }
     return switch (t.getStatus()) {
       case Transaction.TransactionStatus.PENDING -> "pending";
