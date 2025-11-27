@@ -158,6 +158,9 @@ public class PaymentController extends PageController {
             .orElseThrow(() -> new NotFoundException(key));
     model.addAttribute(MODEL_ATTR_TRANSACTION_ID, key);
     model.addAttribute("isTopup", t.getType().equals(Transaction.TransactionType.TOP_UP));
+    if (t.supportsRequest() && t.getRequest() != null) {
+      model.addAttribute("paymentRequest", t.getRequest());
+    }
     return switch (t.getStatus()) {
       case Transaction.TransactionStatus.PENDING -> "pending";
       case Transaction.TransactionStatus.SUCCESSFUL -> "successful";

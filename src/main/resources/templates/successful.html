@@ -41,7 +41,7 @@
                     </div>
 
                     <!-- Redirect Notice -->
-                    <div class="card-actions justify-center mb-6 text-center">
+                    <div class="grid grid-rows-2 sm:grid-cols-2 sm:grid-rows-1 gap-4 w-full mb-6">
                         <div th:if="${redirect} != null">
                             <p class="text-base-content">
                                 We’ll redirect you to your payment in a moment.<br>
@@ -49,9 +49,17 @@
                                 <a class="link" th:href="@{/payment/transaction/{id}(id=${redirect})}">click here</a>.
                             </p>
                         </div>
-                        <a th:unless="${redirect} != null" href="/" class="btn btn-primary btn-xl btn-block sm:btn-inline-block">
+
+                        <a th:unless="${redirect} != null" href="/" class="btn btn-primary btn-xl sm:btn-lg">
                             <span class="icon-[tabler--home] size-5"></span>
                             Go to Homepage
+                        </a>
+
+                        <a th:if="${redirect == null and paymentRequest != null and paymentRequest.multiUse}"
+                           th:href="@{/payment/request/{id}(id=${paymentRequest.request_id})}"
+                           class="btn btn-outline btn-m sm:btn-lg">
+                            <span class="icon-[tabler--repeat] size-5"></span>
+                            Return to Request
                         </a>
                     </div>
 
