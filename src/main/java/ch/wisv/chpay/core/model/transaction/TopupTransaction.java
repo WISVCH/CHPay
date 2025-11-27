@@ -4,6 +4,8 @@ import ch.wisv.chpay.core.model.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import java.math.BigDecimal;
 import lombok.Setter;
 
@@ -12,6 +14,11 @@ import lombok.Setter;
 public class TopupTransaction extends Transaction {
 
   @Column @Setter private String mollieId;
+
+  @ManyToOne
+  @JoinColumn(name = "redirect_payment_id", referencedColumnName = "id")
+  @Setter
+  private Transaction redirectPayment;
 
   private TopupTransaction(User user, BigDecimal amount, String description) {
     super(user, amount, description, TransactionStatus.PENDING, TransactionType.TOP_UP);
@@ -25,6 +32,10 @@ public class TopupTransaction extends Transaction {
   @Override
   public String getMollieId() {
     return this.mollieId;
+  }
+
+  public Transaction getRedirectPayment() {
+    return redirectPayment;
   }
 
   /**

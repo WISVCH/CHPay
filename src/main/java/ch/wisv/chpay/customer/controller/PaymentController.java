@@ -157,6 +157,7 @@ public class PaymentController extends PageController {
             .findById(UUID.fromString(key))
             .orElseThrow(() -> new NotFoundException(key));
     model.addAttribute(MODEL_ATTR_TRANSACTION_ID, key);
+    model.addAttribute("isTopup", t.getType().equals(Transaction.TransactionType.TOP_UP));
     if (t.supportsRequest() && t.getRequest() != null) {
       model.addAttribute("paymentRequest", t.getRequest());
     }

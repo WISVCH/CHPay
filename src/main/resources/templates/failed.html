@@ -3,7 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout}">
 <head>
-    <title>Payment Failed</title>
+    <title th:text="${isTopup} ? 'Top-up Failed' : 'Payment Failed'">Payment Failed</title>
 </head>
 <body>
     <div layout:fragment="main-content">
@@ -21,7 +21,7 @@
                     </div>
                     
                     <!-- Title -->
-                    <h1 class="text-3xl font-bold text-base-content mb-4">Payment Failed</h1>
+                    <h1 class="text-3xl font-bold text-base-content mb-4" th:text="${isTopup} ? 'Top-up Failed' : 'Payment Failed'">Payment Failed</h1>
                     
                     <!-- Balance Status -->
                     <div class="mb-8">
