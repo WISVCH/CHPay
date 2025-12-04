@@ -52,10 +52,13 @@
                 <!-- User (clickable) -->
                 <div class="py-2 border-b border-base-content/10">
                     <div class="text-base-content/70 text-sm mb-1">User</div>
-                    <a th:href="@{/admin/user/{id}(id=${transaction.user.id})}" 
-                       class="link" 
-                       th:text="${transaction.user.name}">John Doe</a>
-                    <div class="text-sm text-base-content/70" th:text="${transaction.user.email}">john@example.com</div>
+                    <div th:if="${transaction.user != null}">
+                        <a th:href="@{/admin/user/{id}(id=${transaction.user.id})}" 
+                           class="link" 
+                           th:text="${transaction.user.name}">John Doe</a>
+                        <div class="text-sm text-base-content/70" th:text="${transaction.user.email}">john@example.com</div>
+                    </div>
+                    <div th:if="${transaction.user == null}">Anonymous</div>
                         </div>
 
                 <!-- Amount -->
@@ -273,7 +276,7 @@
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-base-content/70">User:</span>
-                                <span th:text="${transaction.user.name}">John Doe</span>
+                                <span th:text="${transaction.user != null ? transaction.user.name : 'Anonymous'}">John Doe</span>
                             </div>
                             <div class="flex justify-between font-semibold">
                                 <span>Refund Amount:</span>
