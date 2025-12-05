@@ -227,12 +227,12 @@
                                         <div class="flex items-center">
                                             <div th:if="${transaction.user != null}">
                                                 <a th:href="@{/admin/user/{id}(id=${transaction.user.id})}" 
-                                                   class="font-medium link" 
+                                                   class="link"
                                                    th:text="${transaction.user.name}">John Doe</a>
-                                                <div class="text-sm text-base-content/70" th:text="${transaction.user.email}">john@example.com</div>
+                                                <div class="text-sm" th:text="${transaction.user.email}">john@example.com</div>
                                             </div>
-                                            <div th:if="${transaction.user == null}" class="text-base-content/70">
-                                                Anonymous
+                                            <div th:if="${transaction.user == null}">
+                                                <span>Anonymous</span>
                                             </div>
                                         </div>
                                     </td>

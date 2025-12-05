@@ -54,11 +54,21 @@
                     <div class="text-base-content/70 text-sm mb-1">User</div>
                     <div th:if="${transaction.user != null}">
                         <a th:href="@{/admin/user/{id}(id=${transaction.user.id})}" 
-                           class="link" 
+                           class="link"
                            th:text="${transaction.user.name}">John Doe</a>
-                        <div class="text-sm text-base-content/70" th:text="${transaction.user.email}">john@example.com</div>
+                        <div class="text-sm" th:text="${transaction.user.email}">john@example.com</div>
                     </div>
-                    <div th:if="${transaction.user == null}">Anonymous</div>
+                    <div th:if="${transaction.user == null}" class="flex items-center gap-1">
+                        <span>Anonymous</span>
+                        <div class="tooltip [--placement:bottom]">
+                            <span class="tooltip-toggle icon-[tabler--help] size-4 hover:text-primary align-middle" aria-label="Anonymous tooltip"></span>
+                            <span class="tooltip-content tooltip-shown:opacity-100 tooltip-shown:visible" role="tooltip">
+                                <span class="tooltip-body bg-base-100 text-base-content/80 rounded-lg px-3 py-2 text-xs text-start">
+                                    This external transaction is not linked to a user account yet.
+                                </span>
+                            </span>
+                        </div>
+                    </div>
                         </div>
 
                 <!-- Amount -->
@@ -276,7 +286,18 @@
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-base-content/70">User:</span>
-                                <span th:text="${transaction.user != null ? transaction.user.name : 'Anonymous'}">John Doe</span>
+                                <span th:if="${transaction.user != null}" th:text="${transaction.user.name}">John Doe</span>
+                                <span th:if="${transaction.user == null}" class="inline-flex items-center gap-1 text-base-content/70">
+                                    <span>Anonymous</span>
+                                    <div class="tooltip [--placement:bottom]">
+                                        <span class="tooltip-toggle icon-[tabler--help] size-4 hover:text-primary align-middle" aria-label="Anonymous tooltip"></span>
+                                        <span class="tooltip-content tooltip-shown:opacity-100 tooltip-shown:visible" role="tooltip">
+                                            <span class="tooltip-body bg-base-100 text-base-content/80 rounded-lg px-3 py-2 text-xs text-start">
+                                                This external transaction is not linked to a user account yet.
+                                            </span>
+                                        </span>
+                                    </div>
+                                </span>
                             </div>
                             <div class="flex justify-between font-semibold">
                                 <span>Refund Amount:</span>
