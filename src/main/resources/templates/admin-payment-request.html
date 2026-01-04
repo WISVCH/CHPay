@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout}"
-      th:with="hasClipboard=true">
+      th:with="hasClipboard=true, hasDatePicker=true">
 <head>
     <title>Payment Request Details</title>
 </head>
@@ -61,8 +61,36 @@
 
                 <!-- Expire Date -->
                 <div class="py-2 border-b border-base-content/10">
-                    <div class="text-base-content/70 text-sm mb-1">Expire date</div>
-                    <div th:text="${#temporals.format(paymentRequest.expireAt, 'dd-MM-yyyy')}">01-02-2025</div>
+                    <div class="text-base-content/70 text-sm mb-2">Expire date</div>
+                    <form id="expire-date-form"
+                          th:action="@{/admin/payment-request/{id}/expire-date(id=${paymentRequest.request_id})}"
+                          method="post"
+                          class="needs-validation"
+                          novalidate>
+                        <div class="flex items-center justify-between gap-3">
+                            <span id="expireDateDisplay" class="flex-1" th:text="${#temporals.format(paymentRequest.expireAt, 'dd-MM-yyyy')}">01-02-2025</span>
+                            <input
+                                type="text"
+                                id="expireDateUpdate"
+                                name="expireDate"
+                                class="input flex-1 flatpickr-expire-update hidden"
+                                placeholder="DD-MM-YYYY"
+                                th:value="${#temporals.format(paymentRequest.expireAt, 'yyyy-MM-dd')}"
+                                th:disabled="${paymentRequest.isExpired()}"
+                                disabled
+                                readonly
+                                required
+                            />
+                            <button id="expire-date-action-btn"
+                                    type="button"
+                                    class="btn btn-text btn-circle btn-sm"
+                                    th:disabled="${paymentRequest.isExpired()}">
+                                <span id="expire-date-action-icon" class="icon-[tabler--pencil] size-4"></span>
+                                <span id="expire-date-action-text" class="hidden">Save</span>
+                            </button>
+                        </div>
+                        <span class="error-message">Please select a future expire date</span>
+                    </form>
                 </div>
 
                 <!-- Amount -->
@@ -214,6 +242,13 @@
         window.addEventListener('load', () => {
             const expireBtn = document.getElementById('expire-payment-request-btn');
             const confirmExpireBtn = document.getElementById('confirmExpireBtn');
+            const expireDateForm = document.getElementById('expire-date-form');
+            const expireDateInput = document.getElementById('expireDateUpdate');
+            const expireDateDisplay = document.getElementById('expireDateDisplay');
+            const expireDateActionBtn = document.getElementById('expire-date-action-btn');
+            const expireDateActionIcon = document.getElementById('expire-date-action-icon');
+            const expireDateActionText = document.getElementById('expire-date-action-text');
+            let expireDatePicker = null;
             
             const paymentRequestId = [[${paymentRequest.getRequest_id()}]];
 
@@ -243,6 +278,91 @@
                     }, 500);
                 });
             }
+
+            // Expire date validation
+            const validateExpireDate = () => {
+                if (!expireDateInput || expireDateInput.disabled) return true;
+                const validationTarget = expireDatePicker?.altInput ?? expireDateInput;
+                const value = expireDateInput.value.trim();
+                if (!value) {
+                    validationTarget.setCustomValidity('Expire date is required');
+                    return false;
+                }
+
+                const parts = value.split('-').map(Number);
+                if (parts.length !== 3 || parts.some(Number.isNaN)) {
+                    validationTarget.setCustomValidity('Please select a valid date');
+                    return false;
+                }
+
+                const [year, month, day] = parts;
+                const selectedDate = new Date(year, month - 1, day);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                const isFuture = selectedDate > today;
+                validationTarget.setCustomValidity(
+                    isFuture ? '' : 'Expire date must be in the future');
+                return isFuture;
+            };
+
+            const enableExpireDateEdit = () => {
+                if (!expireDateInput || !expireDateDisplay) return;
+                expireDateForm?.classList.remove('validate');
+                expireDateDisplay.classList.add('hidden');
+                expireDateInput.classList.remove('hidden');
+                expireDateInput.disabled = false;
+                expireDateInput.focus();
+                if (expireDateActionBtn) {
+                    expireDateActionBtn.type = 'submit';
+                    expireDateActionBtn.classList.remove('btn-text', 'btn-circle', 'btn-sm');
+                    expireDateActionBtn.classList.add('btn', 'btn-primary');
+                }
+                if (expireDateActionIcon) {
+                    expireDateActionIcon.className = 'icon-[tabler--device-floppy] size-4';
+                }
+                if (expireDateActionText) {
+                    expireDateActionText.classList.remove('hidden');
+                }
+                if (expireDateInput && window.flatpickr && !expireDatePicker) {
+                    expireDatePicker = flatpickr(expireDateInput, {
+                        dateFormat: 'Y-m-d',
+                        altInput: true,
+                        altFormat: 'd-m-Y',
+                        altInputClass: 'input',
+                        allowInput: true,
+                        monthSelectorType: 'static',
+                        minDate: new Date().fp_incr(1),
+                        onChange: validateExpireDate,
+                        onReady: function(_, __, fp) {
+                            if (fp.altInput) {
+                                fp.altInput.required = true;
+                            }
+                        },
+                        locale: {
+                            firstDayOfWeek: 1
+                        }
+                    });
+                }
+            };
+
+            expireDateActionBtn?.addEventListener('click', event => {
+                if (expireDateInput?.disabled) return;
+                if (expireDateActionBtn.type === 'button') {
+                    event.preventDefault();
+                    enableExpireDateEdit();
+                }
+            });
+
+            expireDateForm?.addEventListener('submit', event => {
+                const isValid = validateExpireDate();
+                if (!isValid) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    expireDatePicker?.altInput?.focus() || expireDateInput?.focus();
+                }
+                expireDateForm.classList.add('validate');
+            });
         });
     </script>
 </th:block>

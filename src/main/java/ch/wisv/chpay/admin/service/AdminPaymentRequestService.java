@@ -41,4 +41,9 @@ public class AdminPaymentRequestService {
     paymentRequest.setExpireAt(LocalDate.now());
     return requestRepository.save(paymentRequest);
   }
+
+  public PaymentRequest updateExpireDate(PaymentRequest paymentRequest, LocalDate expireAt) {
+    paymentRequest.setExpireAt(expireAt);
+    return requestRepository.save(paymentRequest);
+  }
 }

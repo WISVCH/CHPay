@@ -87,7 +87,7 @@
                                     class="input flatpickr-expire"
                                     id="expireDate"
                                     name="expireDate"
-                                    placeholder="YYYY-MM-DD"
+                                    placeholder="DD-MM-YYYY"
                                     required
                                     type="text"
                             />
@@ -124,6 +124,7 @@
                 const amountInput = document.getElementById('amount');
                 const expireDateInput = document.getElementById('expireDate');
                 const form = document.getElementById('descForm');
+                let expireDatePicker = null;
                 
                 // Description validation
                 const validateDescription = () => {
@@ -146,16 +147,16 @@
                 // Expire date validation
                 const validateExpireDate = () => {
                     if (!expireDateInput) return true;
-
+                    const validationTarget = expireDatePicker?.altInput ?? expireDateInput;
                     const value = expireDateInput.value.trim();
                     if (!value) {
-                        expireDateInput.setCustomValidity('Expire date is required');
+                        validationTarget.setCustomValidity('Expire date is required');
                         return false;
                     }
 
                     const parts = value.split('-').map(Number);
                     if (parts.length !== 3 || parts.some(Number.isNaN)) {
-                        expireDateInput.setCustomValidity('Please select a valid date');
+                        validationTarget.setCustomValidity('Please select a valid date');
                         return false;
                     }
 
@@ -165,7 +166,8 @@
                     today.setHours(0, 0, 0, 0);
 
                     const isFuture = selectedDate > today;
-                    expireDateInput.setCustomValidity(isFuture ? '' : 'Expire date must be in the future');
+                    validationTarget.setCustomValidity(
+                        isFuture ? '' : 'Expire date must be in the future');
                     return isFuture;
                 };
 
@@ -177,11 +179,20 @@
 
                 // Date picker
                 if (expireDateInput && window.flatpickr) {
-                    flatpickr(expireDateInput, {
+                    expireDatePicker = flatpickr(expireDateInput, {
                         dateFormat: 'Y-m-d',
+                        altInput: true,
+                        altFormat: 'd-m-Y',
+                        altInputClass: 'input',
+                        allowInput: true,
                         monthSelectorType: 'static',
                         minDate: new Date().fp_incr(1),
                         onChange: validateExpireDate,
+                        onReady: function(_, __, fp) {
+                            if (fp.altInput) {
+                                fp.altInput.required = true;
+                            }
+                        },
                         locale: {
                             firstDayOfWeek: 1
                         }
@@ -202,7 +213,7 @@
                         } else if (!amountValid) {
                             amountInput.focus();
                         } else {
-                            expireDateInput?.focus();
+                            expireDatePicker?.altInput?.focus() || expireDateInput?.focus();
                         }
                     }
                     form.classList.add('validate');
