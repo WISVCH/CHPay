@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21-jdk-jammy
+FROM eclipse-temurin:25-jdk-jammy
 
 # Tools for VS Code server & Node 20
 RUN apt-get update -y \
