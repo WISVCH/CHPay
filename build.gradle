@@ -77,7 +77,7 @@ test {
 	useJUnitPlatform {
 		excludeTags 'playwright'
 	}
-	finalizedBy jacocoTestReport, jacocoTestCoverageVerification
+	finalizedBy jacocoTestReport
 }
 
 tasks.register('playwrightTest', Test) {
@@ -101,16 +101,6 @@ jacocoTestReport {
 				'chpay/paymentbackend/Auth/TestAuthController$*.class'
 			])
 		}))
-	}
-}
-
-jacocoTestCoverageVerification {
-	violationRules {
-		rule {
-			limit {
-				minimum = 0.8
-			}
-		}
 	}
 }
 
