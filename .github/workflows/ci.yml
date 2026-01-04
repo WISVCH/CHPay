@@ -104,8 +104,8 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  docker-push:
-    name: Docker Push
+  docker-build-push:
+    name: Docker Build + Push
     runs-on: ubuntu-latest
     needs: [build, test]
     if: github.ref == 'refs/heads/main'
