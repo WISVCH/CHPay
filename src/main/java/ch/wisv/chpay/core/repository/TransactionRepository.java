@@ -5,15 +5,16 @@ import ch.wisv.chpay.core.model.User;
 import ch.wisv.chpay.core.model.transaction.*;
 import ch.wisv.chpay.core.model.transaction.Transaction.TransactionStatus;
 import jakarta.persistence.LockModeType;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
   List<Transaction> findByUser(User user);
@@ -183,4 +184,22 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
         ORDER BY YEAR(t.timestamp) DESC, MONTH(t.timestamp) DESC
       """)
   List<Object[]> findDistinctYearMonthCombinationsByRequestId(@Param("requestId") UUID requestId);
+
+    /**
+     * Count fulfilments per month for a specific payment request.
+     */
+    @Query(
+            """
+                      SELECT YEAR(t.timestamp), MONTH(t.timestamp), COUNT(t)
+                      FROM Transaction t
+                      JOIN t.request r
+                      WHERE r.request_id = :requestId
+                        AND t.type = 'PAYMENT'
+                        AND (t.status = 'SUCCESSFUL'
+                             OR t.status = 'REFUNDED'
+                             OR t.status = 'PARTIALLY_REFUNDED')
+                      GROUP BY YEAR(t.timestamp), MONTH(t.timestamp)
+                      ORDER BY YEAR(t.timestamp) DESC, MONTH(t.timestamp) DESC
+                    """)
+    List<Object[]> countFulfilmentsByRequestIdPerMonth(@Param("requestId") UUID requestId);
 }

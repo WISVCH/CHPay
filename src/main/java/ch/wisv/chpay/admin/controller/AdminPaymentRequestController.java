@@ -1,10 +1,9 @@
 package ch.wisv.chpay.admin.controller;
 
+import ch.wisv.chpay.admin.model.PaymentRequestMonthlyStats;
 import ch.wisv.chpay.admin.service.AdminPaymentRequestService;
 import ch.wisv.chpay.core.model.PaymentRequest;
 import ch.wisv.chpay.core.service.NotificationService;
-import java.util.NoSuchElementException;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,6 +13,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.UUID;
 
 @Controller
 @PreAuthorize("hasRole('ADMIN')")
@@ -79,4 +82,30 @@ public class AdminPaymentRequestController extends AdminController {
 
     return "admin-payment-request";
   }
+
+    @GetMapping(value = "/{tx}/stats")
+    public String showPaymentRequestStatsPage(
+            Model model, @PathVariable String tx, RedirectAttributes redirectAttributes) {
+
+        model.addAttribute(MODEL_ATTR_URL_PAGE, "adminPaymentRequests");
+
+        PaymentRequest paymentRequest =
+                adminPaymentRequestService
+                        .getById(UUID.fromString(tx))
+                        .orElseThrow(() -> new NoSuchElementException("Payment request not found"));
+        if (paymentRequest == null) {
+            throw new NoSuchElementException("Payment request not found");
+        }
+
+        List<PaymentRequestMonthlyStats> monthlyStats =
+                adminPaymentRequestService.getFulfilmentsByMonth(paymentRequest.getRequest_id());
+        long monthlyStatsTotal =
+                monthlyStats.stream().mapToLong(PaymentRequestMonthlyStats::fulfilments).sum();
+
+        model.addAttribute(MODEL_ATTR_PAYMENT_REQUEST, paymentRequest);
+        model.addAttribute("monthlyStats", monthlyStats);
+        model.addAttribute("monthlyStatsTotal", monthlyStatsTotal);
+
+        return "admin-payment-request-stats";
+    }
 }
