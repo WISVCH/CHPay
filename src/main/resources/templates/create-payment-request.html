@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/layout}">
+      layout:decorate="~{layouts/layout}"
+      th:with="hasDatePicker=true">
 <head>
     <title>New Payment Request</title>
 </head>
@@ -79,6 +80,21 @@
                             <span class="error-message">Please enter a valid amount (max 2 decimal places)</span>
                         </div>
 
+                        <!-- Expire Date Field -->
+                        <div>
+                            <label class="label-text" for="expireDate">Expire date</label>
+                            <input
+                                    class="input flatpickr-expire"
+                                    id="expireDate"
+                                    name="expireDate"
+                                    placeholder="DD-MM-YYYY"
+                                    required
+                                    type="text"
+                            />
+                            <span class="error-message">Please select an expire date in the future</span>
+                            <span class="text-sm text-base-content/70 mt-1">Select the date when this request should expire</span>
+                        </div>
+
                         <!-- Multi-use Toggle -->
                         <div>
                             <div class="flex items-center gap-3">
@@ -106,7 +122,9 @@
             document.addEventListener('DOMContentLoaded', function () {
                 const descriptionInput = document.getElementById('description');
                 const amountInput = document.getElementById('amount');
+                const expireDateInput = document.getElementById('expireDate');
                 const form = document.getElementById('descForm');
+                let expireDatePicker = null;
                 
                 // Description validation
                 const validateDescription = () => {
@@ -126,19 +144,77 @@
                     return isValid;
                 };
 
+                // Expire date validation
+                const validateExpireDate = () => {
+                    if (!expireDateInput) return true;
+                    const validationTarget = expireDatePicker?.altInput ?? expireDateInput;
+                    const value = expireDateInput.value.trim();
+                    if (!value) {
+                        validationTarget.setCustomValidity('Expire date is required');
+                        return false;
+                    }
+
+                    const parts = value.split('-').map(Number);
+                    if (parts.length !== 3 || parts.some(Number.isNaN)) {
+                        validationTarget.setCustomValidity('Please select a valid date');
+                        return false;
+                    }
+
+                    const [year, month, day] = parts;
+                    const selectedDate = new Date(year, month - 1, day);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+
+                    const isFuture = selectedDate > today;
+                    validationTarget.setCustomValidity(
+                        isFuture ? '' : 'Expire date must be in the future');
+                    return isFuture;
+                };
+
                 // Add event listeners
                 descriptionInput?.addEventListener('input', validateDescription);
                 amountInput?.addEventListener('input', validateAmount);
+                expireDateInput?.addEventListener('input', validateExpireDate);
+                expireDateInput?.addEventListener('change', validateExpireDate);
+
+                // Date picker
+                if (expireDateInput && window.flatpickr) {
+                    expireDatePicker = flatpickr(expireDateInput, {
+                        dateFormat: 'Y-m-d',
+                        altInput: true,
+                        altFormat: 'd-m-Y',
+                        altInputClass: 'input',
+                        allowInput: true,
+                        monthSelectorType: 'static',
+                        minDate: new Date().fp_incr(1),
+                        onChange: validateExpireDate,
+                        onReady: function(_, __, fp) {
+                            if (fp.altInput) {
+                                fp.altInput.required = true;
+                            }
+                        },
+                        locale: {
+                            firstDayOfWeek: 1
+                        }
+                    });
+                }
 
                 // Form validation
                 form?.addEventListener('submit', event => {
                     const descValid = validateDescription();
                     const amountValid = validateAmount();
-                    
-                    if (!descValid || !amountValid) {
+                    const expireDateValid = validateExpireDate();
+
+                    if (!descValid || !amountValid || !expireDateValid) {
                         event.preventDefault();
                         event.stopPropagation();
-                        (descValid ? amountInput : descriptionInput).focus();
+                        if (!descValid) {
+                            descriptionInput.focus();
+                        } else if (!amountValid) {
+                            amountInput.focus();
+                        } else {
+                            expireDatePicker?.altInput?.focus() || expireDateInput?.focus();
+                        }
                     }
                     form.classList.add('validate');
                 });

@@ -85,8 +85,6 @@ chpay:
   transactions:
     expire_every_minutes: 20
     expiration_fixed_rate: 1
-  paymentrequests:
-    expire_every_months: 1
   settings:
     mintopup: 2
   api_key: "devcontainer-api-key"
