@@ -4,7 +4,7 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.7'
 	id 'jacoco'
 	id 'pmd'
-	id 'com.diffplug.spotless' version '8.0.0'
+	id 'com.diffplug.spotless' version '8.1.0'
 	id 'com.github.node-gradle.node' version '7.1.0'
 }
 
@@ -49,16 +49,16 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-cache'
 	implementation 'com.github.ben-manes.caffeine:caffeine'
 	implementation 'be.woutschoovaerts:mollie:4.6.4'
-	implementation 'com.microsoft.playwright:playwright:1.56.0'
+	implementation 'com.microsoft.playwright:playwright:1.57.0'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
-	implementation 'org.flywaydb:flyway-core:11.17.1'
-	implementation 'org.flywaydb:flyway-database-postgresql:11.17.1'
+	implementation 'org.flywaydb:flyway-core:11.20.0'
+	implementation 'org.flywaydb:flyway-database-postgresql:11.20.0'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
-	testImplementation 'org.mockito:mockito-junit-jupiter:5.20.0'
+	testImplementation 'org.mockito:mockito-junit-jupiter:5.21.0'
 	testImplementation 'org.mockito:mockito-inline:5.2.0'
 
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -68,8 +68,8 @@ dependencies {
 	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 
-	implementation 'com.google.zxing:core:3.5.3'
-	implementation 'com.google.zxing:javase:3.5.3'
+	implementation 'com.google.zxing:core:3.5.4'
+	implementation 'com.google.zxing:javase:3.5.4'
 }
 
 test {
