@@ -173,6 +173,11 @@
                                            title="View Transactions">
                                             <span class="icon-[tabler--receipt] size-5"></span>
                                         </a>
+                                        <a class="btn btn-circle btn-text btn-sm"
+                                           th:href="@{/admin/payment-request/{id}/stats(id=${paymentRequest.request_id})}"
+                                           title="View Statistics">
+                                            <span class="icon-[tabler--chart-line] size-5"></span>
+                                        </a>
                                         <a th:href="@{/qr/{id}(id=${paymentRequest.request_id})}"
                                            class="btn btn-circle btn-text btn-sm view-qr-btn"
                                            th:class="${paymentRequest.isExpired() || (!paymentRequest.isMultiUse() && paymentRequest.fulfilments > 0)} ? 'btn btn-circle btn-text btn-sm view-qr-btn btn-disabled' : 'btn btn-circle btn-text btn-sm view-qr-btn'"

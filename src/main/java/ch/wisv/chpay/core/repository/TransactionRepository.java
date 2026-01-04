@@ -183,4 +183,20 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
         ORDER BY YEAR(t.timestamp) DESC, MONTH(t.timestamp) DESC
       """)
   List<Object[]> findDistinctYearMonthCombinationsByRequestId(@Param("requestId") UUID requestId);
+
+  /** Count fulfilments per month for a specific payment request. */
+  @Query(
+      """
+                      SELECT YEAR(t.timestamp), MONTH(t.timestamp), COUNT(t)
+                      FROM Transaction t
+                      JOIN t.request r
+                      WHERE r.request_id = :requestId
+                        AND t.type = 'PAYMENT'
+                        AND (t.status = 'SUCCESSFUL'
+                             OR t.status = 'REFUNDED'
+                             OR t.status = 'PARTIALLY_REFUNDED')
+                      GROUP BY YEAR(t.timestamp), MONTH(t.timestamp)
+                      ORDER BY YEAR(t.timestamp) DESC, MONTH(t.timestamp) DESC
+                    """)
+  List<Object[]> countFulfilmentsByRequestIdPerMonth(@Param("requestId") UUID requestId);
 }

@@ -1,8 +1,10 @@
 package ch.wisv.chpay.admin.controller;
 
+import ch.wisv.chpay.admin.model.PaymentRequestMonthlyStats;
 import ch.wisv.chpay.admin.service.AdminPaymentRequestService;
 import ch.wisv.chpay.core.model.PaymentRequest;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,5 +108,31 @@ public class AdminPaymentRequestController extends AdminController {
     model.addAttribute(MODEL_ATTR_BASE_URL, baseUrl);
 
     return "admin-payment-request";
+  }
+
+  @GetMapping(value = "/{tx}/stats")
+  public String showPaymentRequestStatsPage(
+      Model model, @PathVariable String tx, RedirectAttributes redirectAttributes) {
+
+    model.addAttribute(MODEL_ATTR_URL_PAGE, "adminPaymentRequests");
+
+    PaymentRequest paymentRequest =
+        adminPaymentRequestService
+            .getById(UUID.fromString(tx))
+            .orElseThrow(() -> new NoSuchElementException("Payment request not found"));
+    if (paymentRequest == null) {
+      throw new NoSuchElementException("Payment request not found");
+    }
+
+    List<PaymentRequestMonthlyStats> monthlyStats =
+        adminPaymentRequestService.getFulfilmentsByMonth(paymentRequest.getRequest_id());
+    long monthlyStatsTotal =
+        monthlyStats.stream().mapToLong(PaymentRequestMonthlyStats::fulfilments).sum();
+
+    model.addAttribute(MODEL_ATTR_PAYMENT_REQUEST, paymentRequest);
+    model.addAttribute("monthlyStats", monthlyStats);
+    model.addAttribute("monthlyStatsTotal", monthlyStatsTotal);
+
+    return "admin-payment-request-stats";
   }
 }

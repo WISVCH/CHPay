@@ -162,6 +162,11 @@
                         <span class="icon-[tabler--receipt] size-4"></span>
                         View Transactions
                     </a>
+                    <a class="btn btn-primary w-full sm:w-auto"
+                       th:href="@{/admin/payment-request/{id}/stats(id=${paymentRequest.request_id})}">
+                        <span class="icon-[tabler--chart-line] size-4"></span>
+                        View Statistics
+                    </a>
                     <a th:href="@{/qr/{id}(id=${paymentRequest.request_id})}"
                        class="btn btn-primary w-full sm:w-auto"
                        th:class="${paymentRequest.isExpired() || (!paymentRequest.isMultiUse() && paymentRequest.fulfilments > 0)} ? 'btn btn-primary w-full sm:w-auto btn-disabled' : 'btn btn-primary w-full sm:w-auto'"

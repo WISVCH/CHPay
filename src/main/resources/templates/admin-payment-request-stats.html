@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" layout:decorate="~{layouts/layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Payment Request Statistics</title>
+</head>
+
+<body>
+<div layout:fragment="breadcrumbs">
+    <div class="breadcrumbs">
+        <ul>
+            <li>
+                <a href="/admin/payment-requests">Payment Requests</a>
+            </li>
+            <li class="breadcrumbs-separator rtl:rotate-180"><span class="icon-[tabler--chevron-right]"></span></li>
+            <li>
+                <a th:href="@{/admin/payment-request/{id}(id=${paymentRequest.request_id})}"
+                   th:text="${paymentRequest.description}">Payment Request</a>
+            </li>
+            <li class="breadcrumbs-separator rtl:rotate-180"><span class="icon-[tabler--chevron-right]"></span></li>
+            <li aria-current="page">Statistics</li>
+        </ul>
+    </div>
+</div>
+
+<div layout:fragment="main-content">
+    <div class="container max-w-4xl mx-auto">
+        <!-- Header Section -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-base-content mb-2">Payment Request Statistics</h1>
+            <p class="text-base-content/70 text-lg">
+                Monthly successful payment counts for <span class="font-medium" th:text="${paymentRequest.description}">Payment Request</span>
+            </p>
+        </div>
+
+        <!-- Stats Table Card -->
+        <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow">
+            <div class="card-body">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="avatar avatar-placeholder">
+                        <div class="bg-primary/20 text-primary size-12 rounded-full">
+                            <span class="icon-[tabler--chart-bar] size-6"></span>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="card-title text-xl">Successful Payments per Month</h3>
+                        <p class="text-base-content/70">Counts include successful, refunded, and partially refunded
+                            payments</p>
+                    </div>
+                </div>
+
+                <div class="text-center py-12" th:if="${monthlyStats.empty}">
+                    <div class="avatar avatar-placeholder mx-auto mb-4">
+                        <div class="bg-primary/20 text-primary size-16 rounded-full">
+                            <span class="icon-[tabler--chart-bar] size-8"></span>
+                        </div>
+                    </div>
+                    <h4 class="text-lg font-medium text-base-content/70 mb-2">No Payment Data</h4>
+                    <p class="text-base-content/50">No successful payments found for this request.</p>
+                </div>
+
+                <div class="w-full overflow-x-auto h-fit border-t border-base-content/10"
+                     th:unless="${monthlyStats.empty}">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th class="w-auto" scope="col">Month</th>
+                            <th class="w-full" scope="col">Fulfilments</th>
+                            <th class="w-auto" scope="col">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="stat : ${monthlyStats}">
+                            <td class="w-auto"
+                                th:text="${#strings.capitalize(#temporals.format(stat.yearMonth.atDay(1), 'MMMM yyyy'))}">
+                                January 2025
+                            </td>
+                            <td class="w-full font-mono" th:text="${stat.fulfilments}">0</td>
+                            <td class="w-auto">
+                                <a class="btn btn-circle btn-text btn-sm"
+                                   th:href="@{/admin/payment-request/{id}/transactions(id=${paymentRequest.request_id}, yearMonth=${stat.yearMonth})}"
+                                   title="View Transactions">
+                                    <span class="icon-[tabler--receipt] size-5"></span>
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr class="border-t border-base-content/10">
+                            <th class="w-auto">Total</th>
+                            <th class="w-full font-mono" scope="row" th:text="${monthlyStatsTotal}">0</th>
+                            <th class="w-auto"></th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
