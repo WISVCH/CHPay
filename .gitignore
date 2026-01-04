@@ -53,3 +53,5 @@ src/main/resources/static/js/helper-apexcharts.js
 src/main/resources/static/js/canvas-confetti.browser.js
 src/main/resources/static/js/clipboard.min.js
 src/main/resources/static/js/helper-clipboard.js
+src/main/resources/static/css/flatpickr.min.css
+src/main/resources/static/js/flatpickr.min.js
