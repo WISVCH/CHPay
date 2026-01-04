@@ -192,7 +192,8 @@
                  <div class="px-6 py-4">
                      <div class="flex flex-col sm:flex-row justify-between items-center gap-2">
                          <p class="text-sm text-base-content/60">
-                             Copyright © W.I.S.V. 'Christiaan Huygens' 2025
+                             Copyright © W.I.S.V. 'Christiaan Huygens'
+                             <span th:text="${#temporals.format(#temporals.createNow(), 'yyyy')}">2025</span>
                          </p>
                          <div class="flex items-center gap-4 text-sm text-base-content/60">
                              <a href="https://ch.tudelft.nl/privacy-statement/" class="hover:text-primary" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
