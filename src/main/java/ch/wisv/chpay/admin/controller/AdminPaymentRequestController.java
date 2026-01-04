@@ -2,7 +2,6 @@ package ch.wisv.chpay.admin.controller;
 
 import ch.wisv.chpay.admin.service.AdminPaymentRequestService;
 import ch.wisv.chpay.core.model.PaymentRequest;
-import ch.wisv.chpay.core.service.NotificationService;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,18 +19,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping(value = "/admin/payment-request")
 public class AdminPaymentRequestController extends AdminController {
   private final AdminPaymentRequestService adminPaymentRequestService;
-  private final NotificationService notificationService;
 
   @Value("${spring.application.baseurl}")
   private String baseUrl;
 
   @Autowired
-  protected AdminPaymentRequestController(
-      AdminPaymentRequestService adminPaymentRequestService,
-      NotificationService notificationService) {
+  protected AdminPaymentRequestController(AdminPaymentRequestService adminPaymentRequestService) {
     super();
     this.adminPaymentRequestService = adminPaymentRequestService;
-    this.notificationService = notificationService;
   }
 
   @GetMapping(value = "/{tx}/expire")
@@ -45,7 +40,7 @@ public class AdminPaymentRequestController extends AdminController {
       throw new NoSuchElementException("Payment request not found");
     }
 
-    adminPaymentRequestService.expireAndSave(paymentRequest);
+    adminPaymentRequestService.expireNow(paymentRequest);
 
     return "redirect:/admin/payment-request/" + paymentRequest.getRequest_id().toString();
   }

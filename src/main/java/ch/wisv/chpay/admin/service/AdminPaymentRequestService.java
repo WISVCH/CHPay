@@ -2,6 +2,7 @@ package ch.wisv.chpay.admin.service;
 
 import ch.wisv.chpay.core.model.PaymentRequest;
 import ch.wisv.chpay.core.repository.RequestRepository;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -36,8 +37,8 @@ public class AdminPaymentRequestService {
     return requestRepository.findById(id);
   }
 
-  public PaymentRequest expireAndSave(PaymentRequest paymentRequest) {
-    paymentRequest.setExpired(true);
+  public PaymentRequest expireNow(PaymentRequest paymentRequest) {
+    paymentRequest.setExpireAt(LocalDate.now());
     return requestRepository.save(paymentRequest);
   }
 }

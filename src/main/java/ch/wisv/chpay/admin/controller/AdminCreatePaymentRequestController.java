@@ -3,7 +3,9 @@ package ch.wisv.chpay.admin.controller;
 import ch.wisv.chpay.core.model.PaymentRequest;
 import ch.wisv.chpay.core.service.RequestService;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -46,10 +48,12 @@ public class AdminCreatePaymentRequestController extends AdminController {
   public String createPaymentRequest(
       @RequestParam("description") String description,
       @RequestParam("amount") BigDecimal amount,
-      @RequestParam(value = "multiUse", required = false, defaultValue = "false")
-          boolean multiUse) {
+      @RequestParam(value = "multiUse", required = false, defaultValue = "false") boolean multiUse,
+      @RequestParam("expireDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+          LocalDate expireDate) {
 
-    PaymentRequest paymentRequest = requestService.createRequest(amount, description, multiUse);
+    PaymentRequest paymentRequest =
+        requestService.createRequest(amount, description, multiUse, expireDate);
 
     return "redirect:/qr/" + paymentRequest.getRequest_id();
   }

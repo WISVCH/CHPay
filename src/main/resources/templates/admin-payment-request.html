@@ -54,9 +54,16 @@
                 <!-- Date -->
                 <div class="py-2 border-b border-base-content/10">
                     <div class="text-base-content/70 text-sm mb-1">Creation date</div>
-                    <div th:text="${#temporals.format(paymentRequest.createdAt, 'dd MMM yyyy, HH:mm:ss')}">01 Jan 2025, 12:00:00</div>
+                    <div th:text="${#temporals.format(paymentRequest.createdAt, 'dd-MM-yyyy, HH:mm:ss')}">01-01-2025,
+                        12:00:00
                     </div>
+                </div>
 
+                <!-- Expire Date -->
+                <div class="py-2 border-b border-base-content/10">
+                    <div class="text-base-content/70 text-sm mb-1">Expire date</div>
+                    <div th:text="${#temporals.format(paymentRequest.expireAt, 'dd-MM-yyyy')}">01-02-2025</div>
+                </div>
 
                 <!-- Amount -->
                 <div class="py-2 border-b border-base-content/10">

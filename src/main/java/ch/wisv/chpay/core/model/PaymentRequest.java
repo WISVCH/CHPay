@@ -3,6 +3,7 @@ package ch.wisv.chpay.core.model;
 import ch.wisv.chpay.core.model.transaction.PaymentTransaction;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,9 +39,8 @@ public class PaymentRequest {
   private boolean multiUse;
 
   @Setter
-  @Column(nullable = false)
-  @ColumnDefault("false")
-  private boolean expired;
+  @Column(name = "expire_at", nullable = false)
+  private LocalDate expireAt;
 
   @Setter
   @OneToMany(mappedBy = "request", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -49,17 +49,22 @@ public class PaymentRequest {
   @Column(nullable = false)
   private LocalDateTime createdAt;
 
-  public PaymentRequest(BigDecimal amount, String description, boolean multiUse) {
+  public PaymentRequest(
+      BigDecimal amount, String description, boolean multiUse, LocalDate expireAt) {
     this.amount = amount;
     this.description = description;
     this.fulfilments = 0;
     this.multiUse = multiUse;
-    this.expired = false;
+    this.expireAt = expireAt;
     this.createdAt = LocalDateTime.now();
     this.transactions = new ArrayList<>();
   }
 
   public void addFulfilment() {
     this.fulfilments++;
+  }
+
+  public boolean isExpired() {
+    return !expireAt.isAfter(LocalDate.now());
   }
 }

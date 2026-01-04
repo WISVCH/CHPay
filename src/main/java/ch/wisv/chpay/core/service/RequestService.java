@@ -9,6 +9,7 @@ import ch.wisv.chpay.core.repository.RequestRepository;
 import ch.wisv.chpay.core.repository.TransactionRepository;
 import jakarta.persistence.LockTimeoutException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
@@ -39,16 +40,24 @@ public class RequestService {
    * @param amount The amount to pay.
    * @param description A description of the payment request.
    * @param multiuse Whether the request is multiuse or not.
+   * @param expireAt The date this request should expire on (defaults to config if null).
    * @return The created payment request.
    */
   @CheckSystemNotFrozen
   @Transactional
   @PreAuthorize("hasRole('ADMIN')")
-  public PaymentRequest createRequest(BigDecimal amount, String description, boolean multiuse) {
+  public PaymentRequest createRequest(
+      BigDecimal amount, String description, boolean multiuse, LocalDate expireAt) {
     if (amount.compareTo(BigDecimal.ZERO) <= 0) {
       throw new IllegalArgumentException("Amount for request must be positive.");
     }
-    return requestRepository.save(new PaymentRequest(amount, description, multiuse));
+    if (expireAt == null) {
+      throw new IllegalArgumentException("Expire date is required.");
+    }
+    if (!expireAt.isAfter(LocalDate.now())) {
+      throw new IllegalArgumentException("Expire date must be in the future.");
+    }
+    return requestRepository.save(new PaymentRequest(amount, description, multiuse, expireAt));
   }
 
   /**
