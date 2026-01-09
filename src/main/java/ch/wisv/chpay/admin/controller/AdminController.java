@@ -21,6 +21,8 @@ abstract class AdminController extends PageController {
   static final String MODEL_ATTR_ERROR_LOG = "errorLog";
   static final String MODEL_ATTR_TRANSACTIONS = "transactions";
   static final String MODEL_ATTR_PAYMENT_REQUESTS = "paymentRequests";
+  static final String MODEL_ATTR_CONFETTIS = "confettis";
+  static final String MODEL_ATTR_CONFETTI = "confetti";
   static final String MODEL_ATTR_SELECTED_YEAR_MONTH = "selectedYearMonth";
   static final String MODEL_ATTR_ALL_POSSIBLE_MONTHS = "allPossibleMonths";
   static final String MODEL_ATTR_TRANSACTION_PAGE_TYPE = "transactionPageType";

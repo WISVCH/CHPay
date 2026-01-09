@@ -1,0 +1,181 @@
+<div th:fragment="fields(confettiName, colorsCsv, scalarValue, minTransactionsValue, groupValue, hiddenValue, defaultValue, shapeTypes, shapeValues)" class="grid gap-y-4">
+    <!-- Name Field -->
+    <div>
+        <label class="label-text" for="name">Name</label>
+        <input
+            type="text"
+            id="name"
+            name="name"
+            class="input"
+            placeholder="Enter a name"
+            th:value="${confettiName}"
+            required
+        />
+        <span class="error-message">Please provide a name</span>
+    </div>
+
+    <!-- Eligibility Fields -->
+    <div>
+        <label class="label-text" for="minTransactions">Minimum transactions</label>
+        <input
+            type="number"
+            id="minTransactions"
+            name="minTransactions"
+            class="input"
+            min="0"
+            step="1"
+            placeholder="0"
+            th:value="${minTransactionsValue}"
+            required
+        />
+        <span class="error-message">Enter 0 or a positive whole number</span>
+    </div>
+
+    <div>
+        <label class="label-text" for="group">Group</label>
+        <input
+            type="text"
+            id="group"
+            name="group"
+            class="input"
+            placeholder="Group name"
+            th:value="${groupValue}"
+        />
+    </div>
+
+    <div>
+        <div class="flex items-center gap-3">
+            <input
+                type="checkbox"
+                id="hidden"
+                name="hidden"
+                class="switch switch-primary"
+                th:checked="${hiddenValue}"
+            />
+            <label class="label-text text-base" for="hidden">Hidden</label>
+        </div>
+        <span class="text-sm text-base-content/70 mt-1">Hidden for users who haven't unlocked this confetti.</span>
+    </div>
+
+    <div>
+        <div class="flex items-center gap-3">
+            <input
+                type="checkbox"
+                id="isDefault"
+                name="isDefault"
+                class="switch switch-primary"
+                th:checked="${defaultValue}"
+            />
+            <label class="label-text text-base" for="isDefault">Default</label>
+        </div>
+    </div>
+
+    <div class="divider my-4"></div>
+
+    <!-- Colors Field -->
+    <div>
+        <label class="label-text" for="colors">Colors</label>
+        <input
+            type="text"
+            id="colors"
+            name="colors"
+            class="input"
+            placeholder="#FF0000, #00FF00, #0000FF"
+            th:value="${colorsCsv}"
+            required
+        />
+        <span class="error-message">Enter at least one valid hex color</span>
+    </div>
+
+    <!-- Scalar Field -->
+    <div>
+        <label class="label-text" for="scalar">Scalar</label>
+        <input
+            type="number"
+            id="scalar"
+            name="scalar"
+            class="input"
+            min="0.1"
+            step="0.1"
+            placeholder="1.0"
+            th:value="${scalarValue}"
+            required
+        />
+        <span class="error-message">Enter a scalar greater than 0</span>
+    </div>
+
+    <!-- Shapes Field -->
+    <div>
+        <div class="flex items-center justify-between gap-3">
+            <label class="label-text">Shapes</label>
+        </div>
+        <div class="space-y-3 mt-2" id="confetti-shape-wrapper" data-confetti-shape-list>
+            <div th:if="${shapeTypes == null or #lists.isEmpty(shapeTypes)}" class="flex items-end gap-3 max-sm:flex-col" data-confetti-shape-row>
+                <select name="shapeType" class="select w-full sm:w-1/4" data-confetti-shape-type>
+                    <option value="SQUARE">Square</option>
+                    <option value="CIRCLE">Circle</option>
+                    <option value="STAR">Star</option>
+                    <option value="PATH">Path</option>
+                    <option value="TEXT">Text</option>
+                </select>
+                <input type="text"
+                       name="shapeValue"
+                       class="input w-full sm:w-3/4 hidden"
+                       placeholder="Value"
+                       data-confetti-shape-value />
+                <button type="button" class="btn btn-text btn-circle btn-sm max-sm:self-start" data-confetti-remove-shape data-copy-markup-delete-item>
+                    <span class="icon-[tabler--trash] size-4"></span>
+                </button>
+            </div>
+            <div th:each="shapeType, iter : ${shapeTypes}" class="flex items-end gap-3 max-sm:flex-col" data-confetti-shape-row>
+                <select name="shapeType" class="select w-full sm:w-1/4" data-confetti-shape-type>
+                    <option value="SQUARE" th:selected="${shapeType == 'SQUARE'}">Square</option>
+                    <option value="CIRCLE" th:selected="${shapeType == 'CIRCLE'}">Circle</option>
+                    <option value="STAR" th:selected="${shapeType == 'STAR'}">Star</option>
+                    <option value="PATH" th:selected="${shapeType == 'PATH'}">Path</option>
+                    <option value="TEXT" th:selected="${shapeType == 'TEXT'}">Text</option>
+                </select>
+                <input type="text"
+                       name="shapeValue"
+                       class="input w-full sm:w-3/4"
+                       th:classappend="${shapeType == 'PATH' or shapeType == 'TEXT'} ? '' : ' hidden'"
+                       th:placeholder="${shapeType == 'PATH' ? 'SVG path data (e.g. M10 10H90V90H10Z)' : (shapeType == 'TEXT' ? 'Text for confetti shape' : 'Value')}"
+                       th:value="${shapeValues != null and shapeValues.size() > iter.index ? shapeValues[iter.index] : ''}"
+                       data-confetti-shape-value />
+                <button type="button" class="btn btn-text btn-circle btn-sm max-sm:self-start" data-confetti-remove-shape data-copy-markup-delete-item>
+                    <span class="icon-[tabler--trash] size-4"></span>
+                </button>
+            </div>
+        </div>
+        <div id="confetti-shape-template" class="flex items-end gap-3 max-sm:flex-col hidden" data-confetti-shape-row data-confetti-template>
+            <select name="shapeType" class="select w-full sm:w-1/4" data-confetti-shape-type disabled>
+                <option value="SQUARE">Square</option>
+                <option value="CIRCLE">Circle</option>
+                <option value="STAR">Star</option>
+                <option value="PATH">Path</option>
+                <option value="TEXT">Text</option>
+            </select>
+            <input type="text"
+                   name="shapeValue"
+                   class="input w-full sm:w-3/4 hidden"
+                   placeholder="Value"
+                   data-confetti-shape-value
+                   disabled />
+            <button type="button" class="btn btn-text btn-circle btn-sm max-sm:self-start" data-confetti-remove-shape data-copy-markup-delete-item>
+                <span class="icon-[tabler--trash] size-4"></span>
+            </button>
+        </div>
+        <p class="mt-3 text-end">
+            <button
+                type="button"
+                data-copy-markup='{"targetSelector": "#confetti-shape-template", "wrapperSelector": "#confetti-shape-wrapper"}'
+                data-confetti-add-shape
+                class="btn btn-sm btn-primary"
+            >
+                Add shape
+            </button>
+        </p>
+        <input type="text" id="shapeSelection" class="sr-only" required />
+        <span class="error-message">Add at least one shape and provide values for Path/Text shapes</span>
+    </div>
+</div>

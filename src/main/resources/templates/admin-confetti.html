@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}">
+<head>
+    <title>Confetti Details</title>
+</head>
+
+<body>
+<div layout:fragment="breadcrumbs">
+    <div class="breadcrumbs">
+        <ul>
+            <li>
+                <a href="/admin/confetti">Confetti</a>
+            </li>
+            <li class="breadcrumbs-separator rtl:rotate-180"><span class="icon-[tabler--chevron-right]"></span></li>
+            <li aria-current="page" th:text="${confetti.name}">Confetti Details</li>
+        </ul>
+    </div>
+</div>
+
+<div layout:fragment="main-content">
+    <div class="container max-w-4xl mx-auto">
+        <!-- Header Section -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-base-content mb-2">Confetti Details</h1>
+            <p class="text-base-content/70 text-lg">Update the confetti preset configuration</p>
+        </div>
+
+        <!-- Confetti Form Card -->
+        <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow">
+            <div class="card-body">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="avatar avatar-placeholder">
+                        <div class="bg-accent/20 text-accent size-12 rounded-full">
+                            <span class="icon-[tabler--sparkles] size-6"></span>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="card-title text-xl">Confetti Configuration</h3>
+                        <p class="text-base-content/70">Name, colors, and shapes for this preset</p>
+                    </div>
+                </div>
+
+                <form th:action="@{/admin/confetti/{id}(id=${confetti.id})}" method="post" class="needs-validation peer grid gap-y-4" novalidate data-confetti-form>
+                    <div th:replace="~{fragments/confetti-form :: fields(${confetti.name}, ${colorsCsv}, ${scalarValue}, ${minTransactionsValue}, ${groupValue}, ${hiddenValue}, ${defaultValue}, ${shapeTypes}, ${shapeValues})}"></div>
+
+                    <!-- Metadata -->
+                    <div class="bg-base-200/50 rounded-lg p-4">
+                        <div class="grid gap-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-base-content/70">Confetti ID</span>
+                                <span class="font-mono" th:text="${confetti.id}">confetti-id</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-base-content/70">Created</span>
+                                <span th:text="${#temporals.format(confetti.createdAt, 'dd-MM-yyyy HH:mm:ss')}">01-01-2026 12:00:00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="card-actions justify-end pt-4 border-base-content/10 mt-2">
+                        <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                            <button type="submit" class="btn btn-primary w-full sm:w-auto">
+                                <span class="icon-[tabler--device-floppy] size-4"></span>
+                                Save Changes
+                            </button>
+                            <button type="button" class="btn btn-error w-full sm:w-auto" id="delete-confetti-btn" th:if="${!confetti.defaultConfetti}">
+                                <span class="icon-[tabler--trash] size-4"></span>
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals -->
+<th:block layout:fragment="modals">
+    <button type="button"
+            class="hidden"
+            id="delete-confetti-trigger"
+            aria-haspopup="dialog"
+            aria-expanded="false"
+            aria-controls="delete-confetti-modal"
+            data-overlay="#delete-confetti-modal"
+            th:if="${!confetti.defaultConfetti}">
+    </button>
+
+    <div id="delete-confetti-modal"
+         class="overlay modal overlay-open:opacity-100 overlay-open:duration-300 hidden"
+         role="dialog"
+         tabindex="-1"
+         th:if="${!confetti.defaultConfetti}">
+        <div class="modal-dialog overlay-open:mt-12 overlay-open:duration-300 transition-all ease-out">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Delete Confetti</h3>
+                    <button type="button"
+                            class="btn btn-text btn-circle btn-sm absolute end-3 top-3"
+                            aria-label="Close"
+                            data-overlay="#delete-confetti-modal">
+                        <span class="icon-[tabler--x] size-4"></span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <p class="text-base-content/70">
+                        Are you sure you want to delete this confetti preset? This action cannot be undone.
+                    </p>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-soft btn-secondary" data-overlay="#delete-confetti-modal">Cancel</button>
+                    <form th:action="@{/admin/confetti/{id}/delete(id=${confetti.id})}" method="post">
+                        <button type="submit" class="btn btn-error">
+                            <span class="icon-[tabler--trash] size-4"></span>
+                            Delete Confetti
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<th:block layout:fragment="script">
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const deleteBtn = document.getElementById('delete-confetti-btn');
+            const deleteTrigger = document.getElementById('delete-confetti-trigger');
+
+            deleteBtn?.addEventListener('click', () => {
+                deleteTrigger?.click();
+            });
+        });
+    </script>
+    <script th:src="@{/js/confetti-admin.js}"></script>
+</th:block>
+</body>
+</html>
