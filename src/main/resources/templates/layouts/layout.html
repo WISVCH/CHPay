@@ -73,8 +73,14 @@
                    <small class="text-base-content/50" th:text="${currentUser.email}">user@example.com</small>
                  </div>
                </li>
+               <li>
+                 <a href="/confetti" class="dropdown-item">
+                   <span class="icon-[tabler--sparkles] size-5 flex-shrink-0"></span>
+                   Confetti
+                 </a>
+               </li>
                  <form th:action="@{/logout}" method="post" style="margin:0; padding:0; display:block;" class="text-error hover:bg-error/10 w-full">
-                   <button type="submit" class="btn btn-error btn-soft btn-block">
+                   <button type="submit" class="btn btn-error btn-soft btn-block justify-start text-left">
                      <span class="icon-[tabler--logout] size-5 flex-shrink-0"></span>
                      Sign out
                    </button>

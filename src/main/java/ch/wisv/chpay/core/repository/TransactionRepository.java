@@ -18,6 +18,8 @@ import org.springframework.data.repository.query.Param;
 public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
   List<Transaction> findByUser(User user);
 
+  long countByUserAndStatusIn(User user, List<TransactionStatus> statuses);
+
   @Query(
       "SELECT SUM(t.amount) FROM Transaction t WHERE t.type='TOP_UP' AND t.status='SUCCESSFUL' AND t.timestamp BETWEEN :dateStart AND :dateEnd")
   BigDecimal getIncomingSum(LocalDateTime dateStart, LocalDateTime dateEnd);

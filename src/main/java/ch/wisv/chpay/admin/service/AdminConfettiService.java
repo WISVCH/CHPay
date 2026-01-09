@@ -3,6 +3,8 @@ package ch.wisv.chpay.admin.service;
 import ch.wisv.chpay.core.model.Confetti;
 import ch.wisv.chpay.core.model.ConfettiShape;
 import ch.wisv.chpay.core.repository.ConfettiRepository;
+import ch.wisv.chpay.core.repository.UserRepository;
+import ch.wisv.chpay.core.service.ConfettiEligibilityService;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -17,10 +19,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdminConfettiService {
 
   private final ConfettiRepository confettiRepository;
+  private final UserRepository userRepository;
+  private final ConfettiEligibilityService confettiEligibilityService;
 
   @Autowired
-  public AdminConfettiService(ConfettiRepository confettiRepository) {
+  public AdminConfettiService(
+      ConfettiRepository confettiRepository,
+      UserRepository userRepository,
+      ConfettiEligibilityService confettiEligibilityService) {
     this.confettiRepository = confettiRepository;
+    this.userRepository = userRepository;
+    this.confettiEligibilityService = confettiEligibilityService;
   }
 
   @Transactional(readOnly = true)
@@ -85,6 +94,14 @@ public class AdminConfettiService {
     if (confetti.isDefaultConfetti()) {
       throw new IllegalStateException("Default confetti cannot be deleted.");
     }
+    Confetti fallback =
+        confettiEligibilityService
+            .getFallbackDefaultConfetti()
+            .orElseThrow(() -> new IllegalStateException("Default confetti not found."));
+    if (fallback.getId().equals(confetti.getId())) {
+      throw new IllegalStateException("Default confetti not found.");
+    }
+    userRepository.reassignConfetti(confetti, fallback);
     confettiRepository.delete(confetti);
   }
 

@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -28,4 +29,10 @@ public interface UserRepository extends JpaRepository<User, UUID> {
   User findByIdForUpdate(@Param("id") UUID id);
 
   Optional<User> findByRfid(String rfid);
+
+  @Modifying
+  @Query("UPDATE User u SET u.confetti = :defaultConfetti WHERE u.confetti = :confetti")
+  int reassignConfetti(
+      @Param("confetti") ch.wisv.chpay.core.model.Confetti confetti,
+      @Param("defaultConfetti") ch.wisv.chpay.core.model.Confetti defaultConfetti);
 }

@@ -1,8 +1,11 @@
 package ch.wisv.chpay.core.model;
 
 import ch.wisv.chpay.core.exception.InsufficientBalanceException;
+import ch.wisv.chpay.core.model.Confetti;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,6 +41,16 @@ public class User {
   @Setter
   @Column(nullable = true, unique = true)
   private String rfid;
+
+  @Setter
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "confetti_id")
+  private Confetti confetti;
+
+  @ElementCollection(fetch = FetchType.EAGER)
+  @CollectionTable(name = "user_groups", joinColumns = @JoinColumn(name = "user_id"))
+  @Column(name = "group_name", nullable = false, length = 255)
+  private List<String> groups = new ArrayList<>();
 
   @Column(nullable = false, precision = 12, scale = 2)
   private BigDecimal balance;
@@ -101,5 +114,12 @@ public class User {
       throw new InsufficientBalanceException("Insufficient balance");
     }
     this.balance = this.balance.subtract(amount);
+  }
+
+  public void setGroups(List<String> groups) {
+    this.groups.clear();
+    if (groups != null) {
+      this.groups.addAll(groups);
+    }
   }
 }

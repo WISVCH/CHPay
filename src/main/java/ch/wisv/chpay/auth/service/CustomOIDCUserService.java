@@ -2,7 +2,12 @@ package ch.wisv.chpay.auth.service;
 
 import ch.wisv.chpay.core.model.User;
 import ch.wisv.chpay.core.repository.UserRepository;
-import java.util.*;
+import ch.wisv.chpay.core.service.ConfettiEligibilityService;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,10 +48,14 @@ public class CustomOIDCUserService extends OidcUserService {
   @Getter @Setter private String claimName;
 
   private final UserRepository userRepository;
+  private final ConfettiEligibilityService confettiEligibilityService;
 
   @Autowired
-  public CustomOIDCUserService(UserRepository userRepository) {
+  public CustomOIDCUserService(
+      UserRepository userRepository,
+      ConfettiEligibilityService confettiEligibilityService) {
     this.userRepository = userRepository;
+    this.confettiEligibilityService = confettiEligibilityService;
   }
 
   /**
@@ -69,13 +78,13 @@ public class CustomOIDCUserService extends OidcUserService {
     String name = oidcUser.getGivenName() + " " + oidcUser.getFamilyName();
     String email = oidcUser.getEmail();
 
-    User user = saveOrUpdateUser(name, email, sub);
-
     Object rawGroups = idToken.getClaims().get(claimName);
     Collection<String> groups =
         (rawGroups instanceof Collection<?> collection)
             ? collection.stream().filter(Objects::nonNull).map(Object::toString).toList()
             : List.of();
+
+    User user = saveOrUpdateUser(name, email, sub, groups);
 
     List<SimpleGrantedAuthority> authorities = new ArrayList<>();
     authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
@@ -100,7 +109,7 @@ public class CustomOIDCUserService extends OidcUserService {
    * @return the saved or updated User entity
    */
   @Transactional
-  public User saveOrUpdateUser(String name, String email, String sub) {
+  public User saveOrUpdateUser(String name, String email, String sub, Collection<String> groups) {
     Optional<User> existingUser = userRepository.findAndLockByOpenID(sub);
     User user;
     if (existingUser.isPresent()) {
@@ -110,6 +119,9 @@ public class CustomOIDCUserService extends OidcUserService {
     } else {
       user = new User(name, email, sub);
     }
+
+    user.setGroups(groups == null ? List.of() : new ArrayList<>(groups));
+    confettiEligibilityService.ensureUserConfetti(user);
 
     return userRepository.save(user);
   }
