@@ -25,9 +25,8 @@
                         <span th:if="${!card.unlocked}" class="icon-[tabler--lock] size-6 text-base-content/70"></span>
                         <h3 class="card-title text-base" th:text="${card.confetti.name}">Confetti</h3>
                     </div>
-                    <p class="text-sm text-base-content/70 mt-1"
-                       th:if="${card.confetti.minimumTransactions > 0}"
-                       th:text="'Requires ' + ${card.confetti.minimumTransactions} + ' ' + (${card.confetti.minimumTransactions} == 1 ? 'transaction' : 'transactions')">
+                    <p class="text-sm text-base-content/70 mt-1 min-h-[1.25rem]"
+                       th:text="${card.confetti.minimumTransactions > 0} ? 'Requires ' + ${card.confetti.minimumTransactions} + ' ' + (${card.confetti.minimumTransactions} == 1 ? 'transaction' : 'transactions') : ''">
                         Requires 0 transactions
                     </p>
 
