@@ -52,8 +52,7 @@ public class CustomOIDCUserService extends OidcUserService {
 
   @Autowired
   public CustomOIDCUserService(
-      UserRepository userRepository,
-      ConfettiEligibilityService confettiEligibilityService) {
+      UserRepository userRepository, ConfettiEligibilityService confettiEligibilityService) {
     this.userRepository = userRepository;
     this.confettiEligibilityService = confettiEligibilityService;
   }

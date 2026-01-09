@@ -62,7 +62,8 @@ public class ConfettiController extends CustomerController {
                             confetti, eligibleTransactions, currentUser.getGroups())))
             .filter(card -> card.unlocked || !card.confetti.isHidden())
             .sorted(
-                Comparator.comparingInt((ConfettiCard card) -> card.confetti.getMinimumTransactions())
+                Comparator.comparingInt(
+                        (ConfettiCard card) -> card.confetti.getMinimumTransactions())
                     .thenComparing(
                         card -> normalizeGroup(card.confetti),
                         Comparator.nullsFirst(String.CASE_INSENSITIVE_ORDER))
@@ -102,8 +103,7 @@ public class ConfettiController extends CustomerController {
       return "redirect:/confetti";
     }
 
-    User user =
-        userRepository.findAndLockByOpenID(currentUser.getOpenID()).orElse(currentUser);
+    User user = userRepository.findAndLockByOpenID(currentUser.getOpenID()).orElse(currentUser);
     user.setConfetti(confetti.get());
     userRepository.save(user);
 

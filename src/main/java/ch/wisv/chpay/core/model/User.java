@@ -1,7 +1,6 @@
 package ch.wisv.chpay.core.model;
 
 import ch.wisv.chpay.core.exception.InsufficientBalanceException;
-import ch.wisv.chpay.core.model.Confetti;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;

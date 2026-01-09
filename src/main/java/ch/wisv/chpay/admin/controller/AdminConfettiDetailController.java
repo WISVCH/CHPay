@@ -57,8 +57,7 @@ public class AdminConfettiDetailController extends AdminController {
     model.addAttribute("defaultValue", current.isDefaultConfetti());
 
     model.addAttribute(
-        "shapeTypes",
-        current.getShapes().stream().map(shape -> shape.getType().name()).toList());
+        "shapeTypes", current.getShapes().stream().map(shape -> shape.getType().name()).toList());
     model.addAttribute(
         "shapeValues",
         current.getShapes().stream()
@@ -125,8 +124,7 @@ public class AdminConfettiDetailController extends AdminController {
   }
 
   @PostMapping("/delete")
-  public String deleteConfetti(
-      @PathVariable("id") UUID id, RedirectAttributes redirectAttributes) {
+  public String deleteConfetti(@PathVariable("id") UUID id, RedirectAttributes redirectAttributes) {
     Optional<Confetti> confetti = adminConfettiService.getById(id);
     if (confetti.isEmpty()) {
       notificationService.addErrorMessage(redirectAttributes, "Confetti not found");
@@ -142,5 +140,4 @@ public class AdminConfettiDetailController extends AdminController {
     notificationService.addSuccessMessage(redirectAttributes, "Confetti deleted successfully");
     return "redirect:/admin/confetti";
   }
-
 }

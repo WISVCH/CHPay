@@ -31,8 +31,7 @@ public class ConfettiFormParser {
 
     List<String> colors = parseColors(colorsInput);
     if (colors.isEmpty() || colors.stream().anyMatch(color -> !isValidColor(color))) {
-      return ConfettiFormResult.error(
-          "Please provide at least one valid hex color (e.g. #FF0000)");
+      return ConfettiFormResult.error("Please provide at least one valid hex color (e.g. #FF0000)");
     }
 
     ScalarParseResult scalarResult = parseScalar(scalarInput);
@@ -227,7 +226,8 @@ public class ConfettiFormParser {
     }
 
     public static ConfettiFormResult error(String message) {
-      return new ConfettiFormResult(null, List.of(), List.of(), 0.0, 0, null, false, false, message);
+      return new ConfettiFormResult(
+          null, List.of(), List.of(), 0.0, 0, null, false, false, message);
     }
 
     public boolean isValid() {

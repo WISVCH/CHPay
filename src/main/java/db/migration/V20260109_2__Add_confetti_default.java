@@ -63,9 +63,7 @@ public class V20260109_2__Add_confetti_default extends BaseJavaMigration {
 
     if (keepId != null) {
       try (PreparedStatement ps =
-          context
-              .getConnection()
-              .prepareStatement("UPDATE confetti SET is_default = FALSE")) {
+          context.getConnection().prepareStatement("UPDATE confetti SET is_default = FALSE")) {
         ps.executeUpdate();
       }
       try (PreparedStatement ps =
@@ -104,20 +102,12 @@ public class V20260109_2__Add_confetti_default extends BaseJavaMigration {
     }
 
     List<String> colors =
-        List.of(
-            "#26ccff",
-            "#a25afd",
-            "#ff5e7e",
-            "#88ff5a",
-            "#fcff42",
-            "#ffa62d",
-            "#ff36ff");
+        List.of("#26ccff", "#a25afd", "#ff5e7e", "#88ff5a", "#fcff42", "#ffa62d", "#ff36ff");
 
     try (PreparedStatement ps =
         context
             .getConnection()
-            .prepareStatement(
-                "INSERT INTO confetti_colors (confetti_id, color) VALUES (?, ?)")) {
+            .prepareStatement("INSERT INTO confetti_colors (confetti_id, color) VALUES (?, ?)")) {
       for (String color : colors) {
         ps.setObject(1, confettiId);
         ps.setString(2, color);

@@ -132,9 +132,7 @@ public class AdminConfettiService {
     List<Confetti> defaults = confettiRepository.findAllByDefaultConfettiTrue();
     if (defaults.isEmpty()) {
       Confetti fallback =
-          preferredId != null
-              ? confettiRepository.findById(preferredId).orElse(null)
-              : null;
+          preferredId != null ? confettiRepository.findById(preferredId).orElse(null) : null;
       if (fallback == null) {
         fallback =
             confettiRepository.findAll().stream()
