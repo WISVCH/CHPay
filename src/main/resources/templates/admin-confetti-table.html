@@ -29,11 +29,11 @@
                     "order": [[0, "asc"]],
                     "columnDefs": [
                         {
-                            "targets": [1, 2],
+                            "targets": [3, 4],
                             "orderable": false
                         },
                         {
-                            "targets": [2],
+                            "targets": [4],
                             "visible": false
                         }
                     ],
@@ -94,6 +94,20 @@
                                         <span class="icon-[tabler--chevron-down] hidden datatable-ordering-desc:block"></span>
                                     </div>
                                 </th>
+                                <th scope="col" class="w-auto group">
+                                    <div class="flex items-center justify-between">
+                                        Minimum
+                                        <span class="icon-[tabler--chevron-up] hidden datatable-ordering-asc:block"></span>
+                                        <span class="icon-[tabler--chevron-down] hidden datatable-ordering-desc:block"></span>
+                                    </div>
+                                </th>
+                                <th scope="col" class="w-full group">
+                                    <div class="flex items-center justify-between">
+                                        Group
+                                        <span class="icon-[tabler--chevron-up] hidden datatable-ordering-asc:block"></span>
+                                        <span class="icon-[tabler--chevron-down] hidden datatable-ordering-desc:block"></span>
+                                    </div>
+                                </th>
                                 <th scope="col" class="w-auto --exclude-from-ordering">Actions</th>
                                 <th scope="col" class="w-auto --exclude-from-ordering" style="display: none;">ID</th>
                             </tr>
@@ -107,6 +121,12 @@
                                         <span th:if="${confetti.defaultConfetti}" class="badge badge-soft badge-primary badge-sm">Default</span>
                                     </div>
                                 </td>
+
+                                <!-- Minimum Transactions Column -->
+                                <td class="w-auto" th:text="${confetti.minimumTransactions}">0</td>
+
+                                <!-- Group Column -->
+                                <td class="w-full" th:text="${confetti.group}">Group</td>
 
                                 <!-- Actions Column -->
                                 <td class="w-auto">
