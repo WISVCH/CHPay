@@ -1,7 +1,15 @@
+let confettiDefaults = {};
+
 // Three bursts: top-left, top-right, then bottom-center
 window.addEventListener("load", () => {
+    const meta = document.querySelector('[data-confetti-meta]');
+    if (window.confettiUtils && typeof window.confettiUtils.getDefaultsFromMeta === 'function') {
+        confettiDefaults = window.confettiUtils.getDefaultsFromMeta(meta);
+    }
+
     // top-left
     confetti({
+        ...confettiDefaults,
         particleCount: 120,
         angle: 60,
         spread: 70,
@@ -11,6 +19,7 @@ window.addEventListener("load", () => {
     // top-right + 250ms
     setTimeout(() => {
         confetti({
+            ...confettiDefaults,
             particleCount: 120,
             angle: 120,
             spread: 70,
@@ -21,6 +30,7 @@ window.addEventListener("load", () => {
     // bottom-center + 500ms
     setTimeout(() => {
         confetti({
+            ...confettiDefaults,
             particleCount: 120,
             spread: 80,
             origin: { x: 0.5, y: 0.8 }
@@ -30,23 +40,7 @@ window.addEventListener("load", () => {
 
 // Function to trigger confetti at click position
 function triggerConfettiAtClick(event) {
-    // Don't trigger confetti if clicking on buttons or links
-    if (event.target.closest('a, button')) {
-        return;
+    if (window.confettiUtils && typeof window.confettiUtils.launchAtEvent === 'function') {
+        window.confettiUtils.launchAtEvent(event, confettiDefaults, 'a, button');
     }
-    
-    function randomInRange(min, max) {
-        return Math.random() * (max - min) + min;
-    }
-
-    // Get click position relative to the viewport
-    const x = event.clientX / window.innerWidth;
-    const y = event.clientY / window.innerHeight;
-
-    confetti({
-        angle: randomInRange(55, 125),
-        spread: randomInRange(50, 70),
-        particleCount: randomInRange(50, 100),
-        origin: { x: x, y: y }
-    });
 }

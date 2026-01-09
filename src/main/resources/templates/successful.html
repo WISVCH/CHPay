@@ -6,6 +6,7 @@
     <title th:text="${isTopup} ? 'Top-up Successful' : 'Payment Successful'">Payment Successful</title>
     <th:block layout:fragment="script">
         <script th:src="@{/js/canvas-confetti.browser.js}"></script>
+        <script th:src="@{/js/confetti-shared.js}"></script>
         <script th:src="@{/js/confetti.js}"></script>
         <script th:if="${redirect} != null" th:inline="javascript">
             const redirectUrl = [[@{/payment/transaction/{id}(id=${redirect})}]];
@@ -15,6 +16,17 @@
 </head>
 <body>
     <div layout:fragment="main-content" onclick="triggerConfettiAtClick(event)">
+        <div class="hidden"
+             th:if="${currentUser != null and currentUser.confetti != null}"
+             data-confetti-meta
+             th:attr="data-confetti-scalar=${currentUser.confetti.scalar}">
+            <span th:each="color : ${currentUser.confetti.colors}"
+                  data-confetti-color
+                  th:attr="data-confetti-color=${color}"></span>
+            <span th:each="shape : ${currentUser.confetti.shapes}"
+                  data-confetti-shape
+                  th:attr="data-confetti-shape-type=${shape.type}, data-confetti-shape-value=${shape.value}"></span>
+        </div>
         <div class="container max-w-2xl mx-auto py-8">
             <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow">
                 <div class="card-body text-center p-8">

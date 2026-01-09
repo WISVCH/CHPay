@@ -188,79 +188,12 @@
 
 <th:block layout:fragment="script">
     <script th:src="@{/js/canvas-confetti.browser.js}"></script>
+    <script th:src="@{/js/confetti-shared.js}"></script>
     <script>
         window.addEventListener('load', () => {
             setTimeout(() => {
                 $('#confetti-datatable table').DataTable();
             }, 100);
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const randomInRange = (min, max) => Math.random() * (max - min) + min;
-
-            const buildShapes = (meta, scalar) => {
-                const shapeElements = Array.from(meta.querySelectorAll('[data-confetti-shape]'));
-                const shapes = [];
-
-                shapeElements.forEach(element => {
-                    const type = element.dataset.confettiShapeType;
-                    const value = element.dataset.confettiShapeValue || '';
-
-                    if (type === 'SQUARE') {
-                        shapes.push('square');
-                        return;
-                    }
-                    if (type === 'CIRCLE') {
-                        shapes.push('circle');
-                        return;
-                    }
-                    if (type === 'STAR') {
-                        shapes.push('star');
-                        return;
-                    }
-                    if (type === 'PATH' && value.trim().length > 0) {
-                        shapes.push(confetti.shapeFromPath({ path: value }));
-                        return;
-                    }
-                    if (type === 'TEXT' && value.trim().length > 0) {
-                        shapes.push(confetti.shapeFromText({ text: value, scalar: scalar }));
-                    }
-                });
-
-                return shapes;
-            };
-
-            const getColors = (meta) => Array.from(meta.querySelectorAll('[data-confetti-color]'))
-                .map(element => element.dataset.confettiColor)
-                .filter(color => color && color.length > 0);
-
-            document.querySelectorAll('[data-confetti-preview]').forEach(button => {
-                button.addEventListener('click', event => {
-                    const row = button.closest('tr');
-                    const meta = row ? row.querySelector('[data-confetti-meta]') : null;
-                    if (!meta || typeof confetti !== 'function') {
-                        return;
-                    }
-
-                    const scalarValue = Number.parseFloat(meta.dataset.confettiScalar);
-                    const scalar = Number.isFinite(scalarValue) && scalarValue > 0 ? scalarValue : 1;
-                    const shapes = buildShapes(meta, scalar);
-                    const colors = getColors(meta);
-                    const originX = event.clientX / window.innerWidth;
-                    const originY = event.clientY / window.innerHeight;
-
-                    confetti({
-                        angle: randomInRange(55, 125),
-                        spread: randomInRange(50, 70),
-                        particleCount: randomInRange(50, 100),
-                        origin: { x: originX, y: originY },
-                        colors: colors.length > 0 ? colors : undefined,
-                        shapes: shapes.length > 0 ? shapes : undefined,
-                        scalar: scalar
-                    });
-                });
-            });
         });
     </script>
 </th:block>
