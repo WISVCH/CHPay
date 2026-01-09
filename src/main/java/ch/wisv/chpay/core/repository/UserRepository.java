@@ -30,6 +30,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
   Optional<User> findByRfid(String rfid);
 
+  long countByConfetti(ch.wisv.chpay.core.model.Confetti confetti);
+
   @Modifying
   @Query("UPDATE User u SET u.confetti = :defaultConfetti WHERE u.confetti = :confetti")
   int reassignConfetti(

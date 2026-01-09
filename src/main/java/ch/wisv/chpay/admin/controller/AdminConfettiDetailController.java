@@ -48,6 +48,7 @@ public class AdminConfettiDetailController extends AdminController {
 
     Confetti current = confetti.get();
     model.addAttribute(MODEL_ATTR_CONFETTI, current);
+    model.addAttribute("confettiUserCount", adminConfettiService.getUsageCount(current));
     model.addAttribute("colorsCsv", String.join(", ", current.getColors()));
     model.addAttribute("scalarValue", current.getScalar());
     model.addAttribute("minTransactionsValue", current.getMinimumTransactions());

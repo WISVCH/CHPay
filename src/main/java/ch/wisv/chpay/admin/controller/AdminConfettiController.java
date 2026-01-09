@@ -23,6 +23,7 @@ public class AdminConfettiController extends AdminController {
   @GetMapping
   public String showConfettiOverview(Model model) {
     model.addAttribute(MODEL_ATTR_CONFETTIS, adminConfettiService.getAll());
+    model.addAttribute("confettiUsageCounts", adminConfettiService.getUsageCounts());
     model.addAttribute(MODEL_ATTR_URL_PAGE, "adminConfetti");
     return "admin-confetti-table";
   }

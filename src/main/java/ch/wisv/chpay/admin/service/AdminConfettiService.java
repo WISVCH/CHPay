@@ -3,12 +3,15 @@ package ch.wisv.chpay.admin.service;
 import ch.wisv.chpay.core.model.Confetti;
 import ch.wisv.chpay.core.model.ConfettiShape;
 import ch.wisv.chpay.core.repository.ConfettiRepository;
+import ch.wisv.chpay.core.repository.ConfettiUsageCount;
 import ch.wisv.chpay.core.repository.UserRepository;
 import ch.wisv.chpay.core.service.ConfettiEligibilityService;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,6 +39,26 @@ public class AdminConfettiService {
   @PreAuthorize("hasRole('ADMIN')")
   public List<Confetti> getAll() {
     return confettiRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
+  }
+
+  @Transactional(readOnly = true)
+  @PreAuthorize("hasRole('ADMIN')")
+  public Map<UUID, Long> getUsageCounts() {
+    return confettiRepository.getUsageCounts().stream()
+        .collect(
+            Collectors.toMap(
+                ConfettiUsageCount::getConfettiId,
+                ConfettiUsageCount::getUserCount,
+                (left, right) -> right));
+  }
+
+  @Transactional(readOnly = true)
+  @PreAuthorize("hasRole('ADMIN')")
+  public long getUsageCount(Confetti confetti) {
+    if (confetti == null) {
+      return 0L;
+    }
+    return userRepository.countByConfetti(confetti);
   }
 
   @Transactional(readOnly = true)

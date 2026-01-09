@@ -53,6 +53,10 @@
                                 <span class="font-mono" th:text="${confetti.id}">confetti-id</span>
                             </div>
                             <div class="flex justify-between">
+                                <span class="text-base-content/70">Users using</span>
+                                <span th:text="${confettiUserCount}">0</span>
+                            </div>
+                            <div class="flex justify-between">
                                 <span class="text-base-content/70">Created</span>
                                 <span th:text="${#temporals.format(confetti.createdAt, 'dd-MM-yyyy HH:mm:ss')}">01-01-2026 12:00:00</span>
                             </div>
