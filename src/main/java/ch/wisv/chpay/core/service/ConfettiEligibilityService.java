@@ -38,6 +38,10 @@ public class ConfettiEligibilityService {
       return false;
     }
 
+    if (confetti.isDefaultConfetti()) {
+      return true;
+    }
+
     if (eligibleTransactionCount < confetti.getMinimumTransactions()) {
       return false;
     }
