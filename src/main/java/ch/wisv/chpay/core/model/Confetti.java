@@ -44,6 +44,9 @@ public class Confetti {
   @Column(name = "group_name")
   private String group;
 
+  @Column(name = "group_starts_with", nullable = false)
+  private boolean groupStartsWith;
+
   @Column(nullable = false)
   private boolean hidden;
 
@@ -61,6 +64,7 @@ public class Confetti {
       double scalar,
       int minimumTransactions,
       String group,
+      boolean groupStartsWith,
       boolean hidden,
       boolean defaultConfetti) {
     this.name = name;
@@ -69,6 +73,7 @@ public class Confetti {
     this.scalar = scalar;
     this.minimumTransactions = minimumTransactions;
     this.group = normalizeGroup(group);
+    this.groupStartsWith = normalizeGroupStartsWith(groupStartsWith, this.group);
     this.hidden = hidden;
     this.defaultConfetti = defaultConfetti;
     this.createdAt = LocalDateTime.now();
@@ -81,6 +86,7 @@ public class Confetti {
       double scalar,
       int minimumTransactions,
       String group,
+      boolean groupStartsWith,
       boolean hidden,
       boolean defaultConfetti) {
     this.name = name;
@@ -91,6 +97,7 @@ public class Confetti {
     this.scalar = scalar;
     this.minimumTransactions = minimumTransactions;
     this.group = normalizeGroup(group);
+    this.groupStartsWith = normalizeGroupStartsWith(groupStartsWith, this.group);
     this.hidden = hidden;
     this.defaultConfetti = defaultConfetti;
   }
@@ -105,5 +112,9 @@ public class Confetti {
     }
     String trimmed = group.trim();
     return trimmed.isEmpty() ? null : trimmed;
+  }
+
+  private boolean normalizeGroupStartsWith(boolean groupStartsWith, String normalizedGroup) {
+    return normalizedGroup != null && groupStartsWith;
   }
 }

@@ -43,7 +43,7 @@
                 </div>
 
                 <form th:action="@{/admin/confetti/{id}(id=${confetti.id})}" method="post" class="needs-validation peer grid gap-y-4" novalidate data-confetti-form>
-                    <div th:replace="~{fragments/confetti-form :: fields(${confetti.name}, ${colorsCsv}, ${scalarValue}, ${minTransactionsValue}, ${groupValue}, ${hiddenValue}, ${defaultValue}, ${shapeTypes}, ${shapeValues})}"></div>
+                    <div th:replace="~{fragments/confetti-form :: fields(${confetti.name}, ${colorsCsv}, ${scalarValue}, ${minTransactionsValue}, ${groupValue}, ${groupStartsWithValue}, ${hiddenValue}, ${defaultValue}, ${shapeTypes}, ${shapeValues})}"></div>
 
                     <!-- Metadata -->
                     <div class="bg-base-200/50 rounded-lg p-4">

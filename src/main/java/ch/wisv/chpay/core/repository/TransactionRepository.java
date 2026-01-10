@@ -4,6 +4,7 @@ import ch.wisv.chpay.core.model.PaymentRequest;
 import ch.wisv.chpay.core.model.User;
 import ch.wisv.chpay.core.model.transaction.*;
 import ch.wisv.chpay.core.model.transaction.Transaction.TransactionStatus;
+import ch.wisv.chpay.core.model.transaction.Transaction.TransactionType;
 import jakarta.persistence.LockModeType;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -18,7 +19,8 @@ import org.springframework.data.repository.query.Param;
 public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
   List<Transaction> findByUser(User user);
 
-  long countByUserAndStatusIn(User user, List<TransactionStatus> statuses);
+  long countByUserAndStatusInAndTypeIn(
+      User user, List<TransactionStatus> statuses, List<TransactionType> types);
 
   @Query(
       "SELECT SUM(t.amount) FROM Transaction t WHERE t.type='TOP_UP' AND t.status='SUCCESSFUL' AND t.timestamp BETWEEN :dateStart AND :dateEnd")

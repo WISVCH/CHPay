@@ -19,6 +19,7 @@ public class V20260109_1__Add_confetti extends BaseJavaMigration {
             scalar DOUBLE PRECISION NOT NULL DEFAULT 1.0,
             minimum_transactions INTEGER NOT NULL DEFAULT 0,
             group_name VARCHAR(255),
+            group_starts_with BOOLEAN NOT NULL DEFAULT FALSE,
             hidden BOOLEAN NOT NULL DEFAULT FALSE
           )
           """);

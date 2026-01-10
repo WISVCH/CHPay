@@ -53,6 +53,7 @@ public class AdminConfettiDetailController extends AdminController {
     model.addAttribute("scalarValue", current.getScalar());
     model.addAttribute("minTransactionsValue", current.getMinimumTransactions());
     model.addAttribute("groupValue", current.getGroup());
+    model.addAttribute("groupStartsWithValue", current.isGroupStartsWith());
     model.addAttribute("hiddenValue", current.isHidden());
     model.addAttribute("defaultValue", current.isDefaultConfetti());
 
@@ -76,6 +77,7 @@ public class AdminConfettiDetailController extends AdminController {
       @RequestParam("scalar") String scalarInput,
       @RequestParam("minTransactions") String minTransactionsInput,
       @RequestParam("group") String groupInput,
+      @RequestParam(value = "groupStartsWith", defaultValue = "false") boolean groupStartsWith,
       @RequestParam(value = "hidden", defaultValue = "false") boolean hidden,
       @RequestParam(value = "isDefault", defaultValue = "false") boolean isDefault,
       @RequestParam(value = "shapeType", required = false) List<String> shapeTypes,
@@ -95,6 +97,7 @@ public class AdminConfettiDetailController extends AdminController {
             scalarInput,
             minTransactionsInput,
             groupInput,
+            groupStartsWith,
             hidden,
             isDefault,
             shapeTypes,
@@ -113,6 +116,7 @@ public class AdminConfettiDetailController extends AdminController {
           result.getScalar(),
           result.getMinTransactions(),
           result.getGroup(),
+          result.isGroupStartsWith(),
           result.isHidden(),
           result.isDefault());
     } catch (IllegalStateException ex) {

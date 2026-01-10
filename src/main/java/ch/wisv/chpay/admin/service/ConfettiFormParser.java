@@ -19,6 +19,7 @@ public class ConfettiFormParser {
       String scalarInput,
       String minimumTransactionsInput,
       String groupInput,
+      boolean groupStartsWith,
       boolean hidden,
       boolean isDefault,
       List<String> shapeTypes,
@@ -63,6 +64,7 @@ public class ConfettiFormParser {
         scalarResult.scalar,
         minimumTransactionsResult.minimumTransactions,
         normalizeGroup(groupInput),
+        normalizeGroupStartsWith(groupStartsWith, groupInput),
         hidden,
         isDefault);
   }
@@ -117,6 +119,11 @@ public class ConfettiFormParser {
     }
     String trimmed = groupInput.trim();
     return trimmed.isEmpty() ? null : trimmed;
+  }
+
+  private boolean normalizeGroupStartsWith(boolean groupStartsWith, String groupInput) {
+    String normalized = normalizeGroup(groupInput);
+    return normalized != null && groupStartsWith;
   }
 
   private ShapeParseResult buildShapes(List<String> shapeTypes, List<String> shapeValues) {
@@ -187,6 +194,7 @@ public class ConfettiFormParser {
     private final double scalar;
     private final int minimumTransactions;
     private final String group;
+    private final boolean groupStartsWith;
     private final boolean hidden;
     private final boolean isDefault;
     private final String errorMessage;
@@ -198,6 +206,7 @@ public class ConfettiFormParser {
         double scalar,
         int minimumTransactions,
         String group,
+        boolean groupStartsWith,
         boolean hidden,
         boolean isDefault,
         String errorMessage) {
@@ -207,6 +216,7 @@ public class ConfettiFormParser {
       this.scalar = scalar;
       this.minimumTransactions = minimumTransactions;
       this.group = group;
+      this.groupStartsWith = groupStartsWith;
       this.hidden = hidden;
       this.isDefault = isDefault;
       this.errorMessage = errorMessage;
@@ -219,15 +229,25 @@ public class ConfettiFormParser {
         double scalar,
         int minimumTransactions,
         String group,
+        boolean groupStartsWith,
         boolean hidden,
         boolean isDefault) {
       return new ConfettiFormResult(
-          name, colors, shapes, scalar, minimumTransactions, group, hidden, isDefault, null);
+          name,
+          colors,
+          shapes,
+          scalar,
+          minimumTransactions,
+          group,
+          groupStartsWith,
+          hidden,
+          isDefault,
+          null);
     }
 
     public static ConfettiFormResult error(String message) {
       return new ConfettiFormResult(
-          null, List.of(), List.of(), 0.0, 0, null, false, false, message);
+          null, List.of(), List.of(), 0.0, 0, null, false, false, false, message);
     }
 
     public boolean isValid() {
@@ -256,6 +276,10 @@ public class ConfettiFormParser {
 
     public String getGroup() {
       return group;
+    }
+
+    public boolean isGroupStartsWith() {
+      return groupStartsWith;
     }
 
     public boolean isHidden() {

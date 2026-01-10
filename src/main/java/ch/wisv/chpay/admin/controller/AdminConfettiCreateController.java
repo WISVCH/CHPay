@@ -42,6 +42,7 @@ public class AdminConfettiCreateController extends AdminController {
     model.addAttribute("scalarValue", Confetti.DEFAULT_SCALAR);
     model.addAttribute("minTransactionsValue", 0);
     model.addAttribute("groupValue", "");
+    model.addAttribute("groupStartsWithValue", false);
     model.addAttribute("hiddenValue", false);
     model.addAttribute("defaultValue", false);
     model.addAttribute("shapeTypes", List.of("SQUARE"));
@@ -57,6 +58,7 @@ public class AdminConfettiCreateController extends AdminController {
       @RequestParam("scalar") String scalarInput,
       @RequestParam("minTransactions") String minTransactionsInput,
       @RequestParam("group") String groupInput,
+      @RequestParam(value = "groupStartsWith", defaultValue = "false") boolean groupStartsWith,
       @RequestParam(value = "hidden", defaultValue = "false") boolean hidden,
       @RequestParam(value = "isDefault", defaultValue = "false") boolean isDefault,
       @RequestParam(value = "shapeType", required = false) List<String> shapeTypes,
@@ -70,6 +72,7 @@ public class AdminConfettiCreateController extends AdminController {
             scalarInput,
             minTransactionsInput,
             groupInput,
+            groupStartsWith,
             hidden,
             isDefault,
             shapeTypes,
@@ -87,6 +90,7 @@ public class AdminConfettiCreateController extends AdminController {
             result.getScalar(),
             result.getMinTransactions(),
             result.getGroup(),
+            result.isGroupStartsWith(),
             result.isHidden(),
             result.isDefault());
     notificationService.addSuccessMessage(redirectAttributes, "Confetti created successfully");

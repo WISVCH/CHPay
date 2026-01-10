@@ -76,12 +76,21 @@ public class AdminConfettiService {
       double scalar,
       int minimumTransactions,
       String group,
+      boolean groupStartsWith,
       boolean hidden,
       boolean isDefault) {
     boolean shouldBeDefault = isDefault || confettiRepository.countByDefaultConfettiTrue() == 0;
     Confetti confetti =
         new Confetti(
-            name, shapes, colors, scalar, minimumTransactions, group, hidden, shouldBeDefault);
+            name,
+            shapes,
+            colors,
+            scalar,
+            minimumTransactions,
+            group,
+            groupStartsWith,
+            hidden,
+            shouldBeDefault);
     Confetti saved = confettiRepository.save(confetti);
     enforceSingleDefault(saved.getId());
     return saved;
@@ -97,6 +106,7 @@ public class AdminConfettiService {
       double scalar,
       int minimumTransactions,
       String group,
+      boolean groupStartsWith,
       boolean hidden,
       boolean isDefault) {
     if (!isDefault
@@ -105,7 +115,15 @@ public class AdminConfettiService {
       throw new IllegalStateException("At least one confetti must be set as default.");
     }
     confetti.updateDefinition(
-        name, shapes, colors, scalar, minimumTransactions, group, hidden, isDefault);
+        name,
+        shapes,
+        colors,
+        scalar,
+        minimumTransactions,
+        group,
+        groupStartsWith,
+        hidden,
+        isDefault);
     Confetti saved = confettiRepository.save(confetti);
     enforceSingleDefault(saved.getId());
     return saved;

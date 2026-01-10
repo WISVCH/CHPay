@@ -1,4 +1,4 @@
-<div th:fragment="fields(confettiName, colorsCsv, scalarValue, minTransactionsValue, groupValue, hiddenValue, defaultValue, shapeTypes, shapeValues)" class="grid gap-y-4">
+<div th:fragment="fields(confettiName, colorsCsv, scalarValue, minTransactionsValue, groupValue, groupStartsWithValue, hiddenValue, defaultValue, shapeTypes, shapeValues)" class="grid gap-y-4">
     <!-- Name Field -->
     <div>
         <label class="label-text" for="name">Name</label>
@@ -33,14 +33,26 @@
 
     <div>
         <label class="label-text" for="group">Group</label>
-        <input
-            type="text"
-            id="group"
-            name="group"
-            class="input"
-            placeholder="Group name"
-            th:value="${groupValue}"
-        />
+        <div class="flex items-end gap-3 max-sm:flex-col">
+            <input
+                type="text"
+                id="group"
+                name="group"
+                class="input w-full sm:w-3/4"
+                placeholder="Group name"
+                th:value="${groupValue}"
+            />
+            <div class="flex items-center gap-2 w-full sm:w-1/4">
+                <input
+                    type="checkbox"
+                    id="groupStartsWith"
+                    name="groupStartsWith"
+                    class="switch switch-primary"
+                    th:checked="${groupStartsWithValue}"
+                />
+                <label class="label-text text-base" for="groupStartsWith">Starts with</label>
+            </div>
+        </div>
     </div>
 
     <div>

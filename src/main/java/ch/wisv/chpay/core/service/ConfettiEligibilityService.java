@@ -3,6 +3,7 @@ package ch.wisv.chpay.core.service;
 import ch.wisv.chpay.core.model.Confetti;
 import ch.wisv.chpay.core.model.User;
 import ch.wisv.chpay.core.model.transaction.Transaction.TransactionStatus;
+import ch.wisv.chpay.core.model.transaction.Transaction.TransactionType;
 import ch.wisv.chpay.core.repository.ConfettiRepository;
 import ch.wisv.chpay.core.repository.TransactionRepository;
 import java.util.Collection;
@@ -24,6 +25,8 @@ public class ConfettiEligibilityService {
           TransactionStatus.SUCCESSFUL,
           TransactionStatus.REFUNDED,
           TransactionStatus.PARTIALLY_REFUNDED);
+  private static final List<TransactionType> ELIGIBLE_TYPES =
+      List.of(TransactionType.PAYMENT, TransactionType.EXTERNAL_PAYMENT);
 
   @Autowired
   public ConfettiEligibilityService(
@@ -51,11 +54,20 @@ public class ConfettiEligibilityService {
       return true;
     }
 
-    if (userGroups != null && userGroups.contains(requiredGroup)) {
-      return true;
+    if (userGroups == null) {
+      return false;
     }
 
-    return false;
+    if (confetti.isGroupStartsWith()) {
+      for (String group : userGroups) {
+        if (group != null && group.startsWith(requiredGroup)) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    return userGroups.contains(requiredGroup);
   }
 
   @Transactional(readOnly = true)
@@ -63,7 +75,8 @@ public class ConfettiEligibilityService {
     if (user == null || user.getId() == null) {
       return 0;
     }
-    return transactionRepository.countByUserAndStatusIn(user, ELIGIBLE_STATUSES);
+    return transactionRepository.countByUserAndStatusInAndTypeIn(
+        user, ELIGIBLE_STATUSES, ELIGIBLE_TYPES);
   }
 
   @Transactional
