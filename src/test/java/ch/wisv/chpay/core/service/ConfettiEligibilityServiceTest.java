@@ -110,9 +110,11 @@ class ConfettiEligibilityServiceTest {
     assertEquals(7L, result);
 
     ArgumentCaptor<List<TransactionStatus>> statusesCaptor =
-        (ArgumentCaptor<List<TransactionStatus>>) (ArgumentCaptor<?>) ArgumentCaptor.forClass(List.class);
+        (ArgumentCaptor<List<TransactionStatus>>)
+            (ArgumentCaptor<?>) ArgumentCaptor.forClass(List.class);
     ArgumentCaptor<List<TransactionType>> typesCaptor =
-        (ArgumentCaptor<List<TransactionType>>) (ArgumentCaptor<?>) ArgumentCaptor.forClass(List.class);
+        (ArgumentCaptor<List<TransactionType>>)
+            (ArgumentCaptor<?>) ArgumentCaptor.forClass(List.class);
 
     verify(transactionRepository)
         .countByUserAndStatusInAndTypeIn(eq(user), statusesCaptor.capture(), typesCaptor.capture());
