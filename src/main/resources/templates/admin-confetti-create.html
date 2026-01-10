@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}">
+<head>
+    <title>New Confetti</title>
+</head>
+
+<body>
+<div layout:fragment="breadcrumbs">
+    <div class="breadcrumbs">
+        <ul>
+            <li>
+                <a href="/admin/confetti">Confetti</a>
+            </li>
+            <li class="breadcrumbs-separator rtl:rotate-180"><span class="icon-[tabler--chevron-right]"></span></li>
+            <li aria-current="page">New Confetti</li>
+        </ul>
+    </div>
+</div>
+
+<div layout:fragment="main-content">
+    <div class="container max-w-4xl mx-auto">
+        <!-- Header Section -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-base-content mb-2">New Confetti</h1>
+            <p class="text-base-content/70 text-lg">Create a new confetti preset</p>
+        </div>
+
+        <!-- Confetti Form Card -->
+        <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow">
+            <div class="card-body">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="avatar avatar-placeholder">
+                        <div class="bg-accent/20 text-accent size-12 rounded-full">
+                            <span class="icon-[tabler--sparkles] size-6"></span>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="card-title text-xl">Confetti Configuration</h3>
+                        <p class="text-base-content/70">Name, colors, and shapes for this preset</p>
+                    </div>
+                </div>
+
+                <form th:action="@{/admin/confetti/new}" method="post" class="needs-validation peer grid gap-y-4" novalidate data-confetti-form>
+                    <div th:replace="~{fragments/confetti-form :: fields(${confettiName}, ${colorsCsv}, ${scalarValue}, ${minTransactionsValue}, ${groupValue}, ${groupStartsWithValue}, ${hiddenValue}, ${defaultValue}, ${shapeTypes}, ${shapeValues})}"></div>
+
+                    <!-- Actions -->
+                    <div class="card-actions justify-end pt-4 border-base-content/10 mt-2">
+                        <button type="submit" class="btn btn-primary w-full sm:w-auto">
+                            <span class="icon-[tabler--plus] size-4"></span>
+                            Create Confetti
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="script">
+    <script th:src="@{/js/confetti-admin.js}"></script>
+</th:block>
+</body>
+</html>
