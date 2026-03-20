@@ -57,7 +57,7 @@ services:
     restart: unless-stopped
 
   oidc:
-    image: ghcr.io/soluto/oidc-server-mock:0.12.1
+    image: xdevsoftware/oidc-server-mock:1.2
     container_name: chpay-oidc
     ports:
       - "3083:8080"
