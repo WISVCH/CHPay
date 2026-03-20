@@ -19,7 +19,7 @@ java {
 
 // Node.js configuration
 node {
-	version = '20.11.0'
+	version = '24.14.0'
 	download = true
 	nodeProjectDir = file("${project.projectDir}/src/main/frontend")
 }

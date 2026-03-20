@@ -26,6 +26,6 @@
     "@iconify/tailwind4": "^1.0.6",
     "@tailwindcss/vite": "^4.1.13",
     "@wim.deblauwe/vite-plugin-spring-boot": "^1.0.1",
-    "vite": "^5.4.19"
+    "vite": "^7.0.0"
   }
 }
