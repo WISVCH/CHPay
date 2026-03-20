@@ -97,7 +97,7 @@ vite:
 
 vite-dev-server-config:
   host: localhost
-  port: 5173
+  port: 3084
 
 logging:
   level:

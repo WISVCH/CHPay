@@ -30,7 +30,7 @@ While the container is running:
 | Mailcatcher UI | http://localhost:3082 | Test inbox |
 | Mailcatcher SMTP | localhost:3587 | SMTP endpoint for dev mail |
 | Mock Keycloak (OIDC) | http://localhost:3083 | Login flow, seeded users |
-| Vite dev server | http://localhost:5173 | Front-end HMR (`frontend-dev` service) |
+| Vite dev server | http://localhost:3084 | Front-end HMR (`frontend-dev` service) |
 
 The mock Keycloak instance includes two ready-made accounts:
 
