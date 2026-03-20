@@ -50,11 +50,21 @@ The mock Keycloak instance includes two ready-made accounts:
 
    (Stop them with `docker compose down` when you are done.)
 3. Open the project in VS Code or IntelliJ. The project is already Gradle based, so it will import automatically.
-4. Run the backend with the supplied run configurations:
+4. Prepare the frontend from `src/main/frontend`:
+
+   ```bash
+   cd src/main/frontend
+   npm install
+   npm run build   # build static assets to build/vite
+   # or
+   npm run dev     # run Vite with live updates
+   ```
+
+5. Run the backend with the supplied run configurations:
    - IntelliJ: `Run ▸ Run 'Application [dev]'`.
    - VS Code: `Run and Debug ▸ Application`.
 
-All services listen on the same host ports listed in the table above. For local IDE development with the `dev` profile, frontend assets are served from `build/vite`; run `npm run build` after frontend changes.
+All services listen on the same host ports listed in the table above.
 
 ### Option 3 – Manual Setup
 
