@@ -17,7 +17,7 @@ You can work on CHPay in three different ways. All options share the same servic
    - IntelliJ: `File ▸ Open… ▸ .devcontainer/devcontainer.json` via Gateway.
 3. The dev container boots the project plus all dependencies using the included Compose files. No local tooling besides Docker is required.
 4. **Run the application** with the supplied run configurations:
-   - IntelliJ: `Run ▸ Run 'Application [dev]'`.
+   - IntelliJ: `Run ▸ Run 'Application [devcontainer]'`.
    - VS Code: `Run and Debug ▸ Application`.
 
 While the container is running:
@@ -25,12 +25,12 @@ While the container is running:
 | Service | Host URL / Port | Purpose |
 | --- | --- | --- |
 | Spring Boot app | http://localhost:3080 | CHPay web UI & API |
-| PostgreSQL 18 | localhost:35432 | Primary database (`postgres/postgres`) |
-| pgAdmin | http://localhost:3081 | Database administration (admin/admin) |
+| PostgreSQL 15 | localhost:35432 | Primary database (`postgres/postgres`) |
+| pgAdmin | http://localhost:3081 | Database administration (`admin@example.com` / `admin`) |
 | Mailcatcher UI | http://localhost:3082 | Test inbox |
 | Mailcatcher SMTP | localhost:3587 | SMTP endpoint for dev mail |
 | Mock Keycloak (OIDC) | http://localhost:3083 | Login flow, seeded users |
-| Front-end watcher | runs inside Compose | Executes `npm run watch` automatically |
+| Vite dev server | http://localhost:3084 | Front-end HMR (`frontend-dev` service) |
 
 The mock Keycloak instance includes two ready-made accounts:
 
@@ -45,14 +45,26 @@ The mock Keycloak instance includes two ready-made accounts:
 2. Start the shared services:
 
    ```bash
-   docker compose up -d db pgadmin mailcatcher oidc frontend-watch
+   docker compose up -d db pgadmin mailcatcher oidc
    ```
 
    (Stop them with `docker compose down` when you are done.)
 3. Open the project in VS Code or IntelliJ. The project is already Gradle based, so it will import automatically.
-4. Use the same run configurations as above (`Application` in VS Code, `Application [dev]` in IntelliJ) to launch the Spring Boot application.
+4. Prepare the frontend from `src/main/frontend`:
 
-All services listen on the same host ports listed in the table above. The `frontend-watch` container keeps Tailwind output up to date; if you prefer to run it manually, stop that service and execute `npm run watch` in `src/main/frontend`.
+   ```bash
+   cd src/main/frontend
+   npm install
+   npm run build   # build static assets to build/vite
+   # or
+   npm run dev     # run Vite with live updates
+   ```
+
+5. Run the backend with the supplied run configurations:
+   - IntelliJ: `Run ▸ Run 'Application [dev]'`.
+   - VS Code: `Run and Debug ▸ Application`.
+
+All services listen on the same host ports listed in the table above.
 
 ### Option 3 – Manual Setup
 
@@ -104,18 +116,29 @@ Deployments typically use the same Gradle build (`./gradlew bootJar`) and run th
 The UI uses FlyonUI components on top of Tailwind CSS, supplemented by DataTables, ApexCharts, lodash, jQuery, Clipboard.js, and Canvas Confetti.
 
 - **Templates** – HTML views live in `src/main/resources/templates`.
-- **Static assets** – JavaScript and compiled CSS are served from `src/main/resources/static`.
-- **Source styles** – Tailwind input and helper scripts are managed in `src/main/frontend`.
+- **Source** – Vite entrypoints are in `src/main/frontend/src` (`main.js`, `main.css`).
+- **Build output** – Vite writes hashed assets and manifest to `build/vite`.
+- **Packaged app** – Gradle copies `build/vite` into Spring static resources during `processResources`.
 
 ### Building Assets
 
 ```bash
 cd src/main/frontend
 npm install          # first run
+npm run dev          # Vite dev server (HMR)
 npm run build        # one-off build
-npm run watch        # continuous rebuild outside the dev container
+npm run preview      # preview built assets
 ```
 
-Inside the dev container the `frontend-watch` service runs `npm run watch` automatically, so edits to `styles.css` or imported components immediately rebuild `main.css`.
+Inside the dev container the `frontend-dev` service runs `npm install` and then `npm run dev` automatically.
 
-Use the IDE run configurations to start the Spring Boot server; the compiled assets are served directly from the `static` directory.
+### Run Production Mode Locally
+
+Use this when reproducing deployment issues:
+
+```bash
+./gradlew bootJar
+java -jar build/libs/chpay-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev --vite.mode=build
+```
+
+Then verify page source contains `/assets/...` CSS and JS files.

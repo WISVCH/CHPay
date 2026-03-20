@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "vite.config.mjs",
   "scripts": {
-    "dev": "cd ../../.. && vite --config src/main/frontend/vite.config.mjs",
-    "build": "cd ../../.. && vite build --config src/main/frontend/vite.config.mjs",
-    "preview": "cd ../../.. && vite preview --config src/main/frontend/vite.config.mjs --host 0.0.0.0 --port 4173"
+    "dev": "cd ../../.. && ./src/main/frontend/node_modules/.bin/vite --config src/main/frontend/vite.config.mjs",
+    "build": "cd ../../.. && ./src/main/frontend/node_modules/.bin/vite build --config src/main/frontend/vite.config.mjs",
+    "preview": "cd ../../.. && ./src/main/frontend/node_modules/.bin/vite preview --config src/main/frontend/vite.config.mjs --host 0.0.0.0 --port 4173"
   },
   "author": "",
   "license": "ISC",

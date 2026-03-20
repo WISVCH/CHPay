@@ -19,6 +19,7 @@ services:
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: chpay-pgadmin
+    entrypoint: ["/bin/sh", "/bootstrap-pgpass.sh"]
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@example.com
       PGADMIN_DEFAULT_PASSWORD: admin
@@ -32,7 +33,8 @@ services:
       - "3081:80"
     volumes:
       - ./pgadmin/servers.json:/pgadmin4/servers.json:ro
-      - ./pgadmin/pgpassfile:/pgpassfile:ro
+      - ./pgadmin/pgpassfile:/pgpassfile.template:ro
+      - ./pgadmin/bootstrap-pgpass.sh:/bootstrap-pgpass.sh:ro
 
 
   mailcatcher:
@@ -47,12 +49,12 @@ services:
     image: node:20
     container_name: chpay-frontend-dev
     working_dir: /workspace/src/main/frontend
-    command: bash -lc "if [ ! -d node_modules ] || [ -z \"$(ls -A node_modules 2>/dev/null)\" ]; then npm install; fi && npm run dev -- --host 0.0.0.0 --port 5173"
+    command: bash -lc "npm install && npm run dev -- --host 0.0.0.0 --port 3084"
     init: true
     tty: true
     stdin_open: true
     ports:
-      - "5173:5173"
+      - "3084:3084"
     volumes:
       - .:/workspace:cached
       - frontend-node-modules:/workspace/src/main/frontend/node_modules

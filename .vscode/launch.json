@@ -6,7 +6,8 @@
             "name": "Application",
             "request": "launch",
             "mainClass": "ch.wisv.chpay.Application",
-            "projectName": "workspace"
+            "projectName": "workspace",
+            "args": "--spring.profiles.active=dev,devcontainer"
         }
     ]
 }
