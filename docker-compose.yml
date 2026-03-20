@@ -43,14 +43,16 @@ services:
       - "3082:1080"
       - "3587:1025"
 
-  frontend-watch:
+  frontend-dev:
     image: node:20
-    container_name: chpay-frontend-watch
+    container_name: chpay-frontend-dev
     working_dir: /workspace/src/main/frontend
-    command: bash -lc "if [ ! -d node_modules ] || [ -z \"$(ls -A node_modules 2>/dev/null)\" ]; then npm install; fi && npm run watch"
+    command: bash -lc "if [ ! -d node_modules ] || [ -z \"$(ls -A node_modules 2>/dev/null)\" ]; then npm install; fi && npm run dev -- --host 0.0.0.0 --port 5173"
     init: true
     tty: true
     stdin_open: true
+    ports:
+      - "5173:5173"
     volumes:
       - .:/workspace:cached
       - frontend-node-modules:/workspace/src/main/frontend/node_modules

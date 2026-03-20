@@ -24,6 +24,8 @@ node {
 	nodeProjectDir = file("${project.projectDir}/src/main/frontend")
 }
 
+def viteOutputDir = layout.buildDirectory.dir("vite")
+
 repositories {
 	mavenCentral()
 }
@@ -63,6 +65,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:4.0.0'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+	implementation 'io.github.wimdeblauwe:vite-spring-boot-thymeleaf:2.0.0'
 
 	implementation 'com.google.zxing:core:3.5.4'
 	implementation 'com.google.zxing:javase:3.5.4'
@@ -113,13 +116,17 @@ spotless {
 }
 
 
-// Frontend build task using npm run build
+// Frontend build task using vite build
 tasks.register('frontendBuild', NpmTask) {
-	description = 'Build frontend assets using npm'
+	description = 'Build frontend assets using Vite'
 	group = 'build'
 	args = ['run', 'build']
 	dependsOn npmInstall
 }
 
-// Make the processResources task depend on frontendBuild
-processResources.dependsOn frontendBuild
+processResources {
+	dependsOn frontendBuild
+	from(viteOutputDir) {
+		into 'static'
+	}
+}

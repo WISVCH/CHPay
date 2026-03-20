@@ -42,16 +42,4 @@ logs/
 
 ### Frontend ###
 node_modules/
-src/main/resources/static/js/flyonui.js
-src/main/resources/static/js/jquery.min.js
-src/main/resources/static/css/main.css
-src/main/resources/static/js/dataTables.min.js
-src/main/resources/static/css/apexcharts.css
-src/main/resources/static/js/apexcharts.min.js
-src/main/resources/static/js/lodash.min.js
-src/main/resources/static/js/helper-apexcharts.js
-src/main/resources/static/js/canvas-confetti.browser.js
-src/main/resources/static/js/clipboard.min.js
-src/main/resources/static/js/helper-clipboard.js
-src/main/resources/static/css/flatpickr.min.css
-src/main/resources/static/js/flatpickr.min.js
+src/main/frontend/build/

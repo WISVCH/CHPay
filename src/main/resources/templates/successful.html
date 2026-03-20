@@ -5,7 +5,6 @@
 <head>
     <title th:text="${isTopup} ? 'Top-up Successful' : 'Payment Successful'">Payment Successful</title>
     <th:block layout:fragment="script">
-        <script th:src="@{/js/canvas-confetti.browser.js}"></script>
         <script th:src="@{/js/confetti-shared.js}"></script>
         <script th:src="@{/js/confetti.js}"></script>
         <script th:if="${redirect} != null" th:inline="javascript">

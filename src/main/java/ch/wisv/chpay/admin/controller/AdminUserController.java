@@ -71,9 +71,6 @@ public class AdminUserController extends AdminController {
     List<BalanceEntry> balanceHistory = adminUserService.calculateUserBalanceHistory(user);
     model.addAttribute("balanceHistory", balanceHistory);
 
-    // Enable charts for this page
-    model.addAttribute("hasCharts", true);
-
     return "admin-user-stats";
   }
 

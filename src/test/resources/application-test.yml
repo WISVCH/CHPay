@@ -72,3 +72,7 @@ chpay:
     expiration_fixed_rate: 1
   settings:
     mintopup: 2
+
+vite:
+  mode: build
+  vite-entries-prefix: src

@@ -88,6 +88,15 @@ chpay:
     mintopup: 2
   api_key: "dev-api-key"
 
+vite:
+  mode: dev
+  vite-entries-prefix: src
+  dev-server-config-file-location: build/vite-plugin-spring-boot/disabled-dev-server-config.json
+
+vite-dev-server-config:
+  host: localhost
+  port: 5173
+
 logging:
   level:
     org.hibernate.loader.Loader: WARN
