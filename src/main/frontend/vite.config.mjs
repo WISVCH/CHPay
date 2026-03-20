@@ -34,7 +34,10 @@ export default defineConfig({
     emptyOutDir: true,
     manifest: true,
     rollupOptions: {
-      input: path.resolve(frontendRoot, "src/main.js"),
+      input: {
+        "src/main.js": path.resolve(frontendRoot, "src/main.js"),
+        "src/main.css": path.resolve(frontendRoot, "src/main.css"),
+      },
     },
   },
 });

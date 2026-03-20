@@ -1,5 +1,3 @@
-import "../styles.css";
-
 import confetti from "canvas-confetti";
 import $ from "jquery";
 import DataTable from "datatables.net";

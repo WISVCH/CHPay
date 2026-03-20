@@ -32,7 +32,7 @@ spring:
     cache: false
   web:
     resources:
-      static-locations: file:src/main/resources/static/
+      static-locations: file:src/main/resources/static/,file:build/vite/
       cache:
         cachecontrol:
           max-age: 0
@@ -92,6 +92,7 @@ chpay:
 vite:
   mode: dev
   vite-entries-prefix: src
+  manifest: file:build/vite/.vite/manifest.json
   dev-server-config-file-location: build/vite-plugin-spring-boot/disabled-dev-server-config.json
 
 vite-dev-server-config:
