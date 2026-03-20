@@ -19,6 +19,7 @@ services:
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: chpay-pgadmin
+    entrypoint: ["/bin/sh", "/bootstrap-pgpass.sh"]
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@example.com
       PGADMIN_DEFAULT_PASSWORD: admin
@@ -32,7 +33,8 @@ services:
       - "3081:80"
     volumes:
       - ./pgadmin/servers.json:/pgadmin4/servers.json:ro
-      - ./pgadmin/pgpassfile:/pgpassfile:ro
+      - ./pgadmin/pgpassfile:/pgpassfile.template:ro
+      - ./pgadmin/bootstrap-pgpass.sh:/bootstrap-pgpass.sh:ro
 
 
   mailcatcher:
