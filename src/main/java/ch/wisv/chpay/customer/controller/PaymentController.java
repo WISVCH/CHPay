@@ -14,7 +14,6 @@ import ch.wisv.chpay.core.service.RequestService;
 import ch.wisv.chpay.core.service.TransactionService;
 import java.util.NoSuchElementException;
 import java.util.UUID;
-import javassist.NotFoundException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -150,12 +149,11 @@ public class PaymentController extends PageController {
   @PreAuthorize("hasAnyRole('USER', 'BANNED')")
   @GetMapping("/complete/{key}")
   public String depositSuccess(
-      @PathVariable String key, RedirectAttributes redirectAttributes, Model model)
-      throws NotFoundException {
+      @PathVariable String key, RedirectAttributes redirectAttributes, Model model) {
     Transaction t =
         transactionRepository
             .findById(UUID.fromString(key))
-            .orElseThrow(() -> new NotFoundException(key));
+            .orElseThrow(() -> new NoSuchElementException("Transaction not found: " + key));
     model.addAttribute(MODEL_ATTR_TRANSACTION_ID, key);
     model.addAttribute("isTopup", t.getType().equals(Transaction.TransactionType.TOP_UP));
     if (t.supportsRequest() && t.getRequest() != null) {
