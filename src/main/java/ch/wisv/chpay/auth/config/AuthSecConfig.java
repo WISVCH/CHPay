@@ -123,6 +123,7 @@ public class AuthSecConfig {
                       "/logout-success",
                       "/css/**",
                       "/js/**",
+                      "/assets/**",
                       "/images/**",
                       "/topup/status",
                       "/actuator/health/liveness",
