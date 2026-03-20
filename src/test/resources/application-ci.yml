@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: ${TRANSACTION_DB_URL:jdbc:postgresql://localhost:5432/chpay}
+    username: ${TRANSACTION_DB_USER:postgres}
+    password: ${TRANSACTION_DB_PASS:postgres}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create-drop
+
+  flyway:
+    enabled: false

@@ -32,6 +32,25 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: chpay
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d chpay"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      SPRING_PROFILES_ACTIVE: test,ci
+      TRANSACTION_DB_URL: jdbc:postgresql://localhost:5432/chpay
+      TRANSACTION_DB_USER: postgres
+      TRANSACTION_DB_PASS: postgres
     steps:
       - name: Check out code
         uses: actions/checkout@v6
@@ -49,6 +68,24 @@ jobs:
 
       - name: Test
         run: ./gradlew test
+
+      - name: Upload test report (HTML + XML)
+        if: ${{ !cancelled() }}
+        id: upload-test-report
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report-${{ github.run_id }}
+          path: |
+            build/reports/tests/test
+            build/test-results/test
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Add test report link to job summary
+        if: ${{ !cancelled() }}
+        run: |
+          echo "### Test report" >> "$GITHUB_STEP_SUMMARY"
+          echo "- HTML/XML artifact: ${{ steps.upload-test-report.outputs.artifact-url }}" >> "$GITHUB_STEP_SUMMARY"
 
   verify:
     name: Verify/Lint
