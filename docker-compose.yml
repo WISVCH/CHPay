@@ -47,7 +47,7 @@ services:
     image: node:20
     container_name: chpay-frontend-dev
     working_dir: /workspace/src/main/frontend
-    command: bash -lc "if [ ! -d node_modules ] || [ -z \"$(ls -A node_modules 2>/dev/null)\" ]; then npm install; fi && npm run dev -- --host 0.0.0.0 --port 5173"
+    command: bash -lc "npm install && npm run dev -- --host 0.0.0.0 --port 5173"
     init: true
     tty: true
     stdin_open: true
