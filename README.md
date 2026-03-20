@@ -25,7 +25,7 @@ While the container is running:
 | Service | Host URL / Port | Purpose |
 | --- | --- | --- |
 | Spring Boot app | http://localhost:3080 | CHPay web UI & API |
-| PostgreSQL 15 | localhost:35432 | Primary database |
+| PostgreSQL 15 | localhost:35432 | Primary database (`postgres/postgres`) |
 | pgAdmin | http://localhost:3081 | Database administration (`admin@example.com` / `admin`) |
 | Mailcatcher UI | http://localhost:3082 | Test inbox |
 | Mailcatcher SMTP | localhost:3587 | SMTP endpoint for dev mail |
