@@ -1,0 +1,9 @@
+{
+  "src/main.js": {
+    "file": "assets/main-test.js",
+    "isEntry": true,
+    "css": [
+      "assets/main-test.css"
+    ]
+  }
+}

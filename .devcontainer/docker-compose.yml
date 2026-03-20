@@ -16,11 +16,10 @@ services:
       - db
       - mailcatcher
       - oidc
-      - frontend-watch
+      - frontend-dev
     ports:
       - "3080:3080"
 
 volumes:
   gradle-cache:
   m2-cache:
-  frontend-node-modules:

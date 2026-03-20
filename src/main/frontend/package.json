@@ -1,17 +1,16 @@
 {
   "name": "frontend",
   "version": "1.0.0",
-  "main": "tailwind.config.js",
+  "main": "vite.config.mjs",
   "scripts": {
-    "copy-js": "cp node_modules/flyonui/flyonui.js ../resources/static/js/flyonui.js && cp node_modules/jquery/dist/jquery.min.js ../resources/static/js/jquery.min.js && cp node_modules/datatables.net/js/dataTables.min.js ../resources/static/js/dataTables.min.js && cp node_modules/apexcharts/dist/apexcharts.css ../resources/static/css/apexcharts.css && cp node_modules/apexcharts/dist/apexcharts.min.js ../resources/static/js/apexcharts.min.js && cp node_modules/lodash/lodash.min.js ../resources/static/js/lodash.min.js && cp node_modules/flyonui/dist/helper-apexcharts.js ../resources/static/js/helper-apexcharts.js && cp node_modules/canvas-confetti/dist/confetti.browser.js ../resources/static/js/canvas-confetti.browser.js && cp node_modules/flyonui/dist/helper-clipboard.js ../resources/static/js/helper-clipboard.js && cp node_modules/clipboard/dist/clipboard.min.js ../resources/static/js/clipboard.min.js && cp node_modules/flatpickr/dist/flatpickr.min.css ../resources/static/css/flatpickr.min.css && cp node_modules/flatpickr/dist/flatpickr.min.js ../resources/static/js/flatpickr.min.js",
-    "build": "npm run copy-js && tailwindcss -i ./styles.css -o ../resources/static/css/main.css",
-    "watch": "npm run copy-js && tailwindcss --watch -i ./styles.css -o ../resources/static/css/main.css"
+    "dev": "cd ../../.. && vite --config src/main/frontend/vite.config.mjs",
+    "build": "cd ../../.. && vite build --config src/main/frontend/vite.config.mjs",
+    "preview": "cd ../../.. && vite preview --config src/main/frontend/vite.config.mjs --host 0.0.0.0 --port 4173"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@tailwindcss/cli": "^4.1.13",
     "apexcharts": "^5.3.5",
     "canvas-confetti": "^1.9.3",
     "clipboard": "^2.0.11",
@@ -24,6 +23,9 @@
   },
   "devDependencies": {
     "@iconify-json/tabler": "^1.2.22",
-    "@iconify/tailwind4": "^1.0.6"
+    "@iconify/tailwind4": "^1.0.6",
+    "@tailwindcss/vite": "^4.1.13",
+    "@wim.deblauwe/vite-plugin-spring-boot": "^1.0.1",
+    "vite": "^5.4.19"
   }
 }
