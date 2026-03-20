@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Application [devcontainer]" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-    <option name="ACTIVE_PROFILES" value="devcontainer" />
+    <option name="ACTIVE_PROFILES" value="dev,devcontainer" />
     <module name="chpay.main" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="ch.wisv.chpay.Application" />
     <extension name="coverage">

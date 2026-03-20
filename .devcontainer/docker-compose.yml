@@ -11,7 +11,7 @@ services:
       - gradle-cache:/home/dev/.gradle
       - m2-cache:/home/dev/.m2
     environment:
-      SPRING_PROFILES_ACTIVE: devcontainer
+      SPRING_PROFILES_ACTIVE: dev,devcontainer
     depends_on:
       - db
       - mailcatcher
