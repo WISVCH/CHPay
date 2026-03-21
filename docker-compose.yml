@@ -7,7 +7,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
-      - db-data:/var/lib/postgresql
+      - db-data:/var/lib/postgresql/data
     ports:
       - "35432:5432"
     healthcheck:
@@ -17,12 +17,13 @@ services:
       retries: 20
 
   pgadmin:
-    image: dpage/pgadmin4:latest
+    image: dpage/pgadmin4:9
     container_name: chpay-pgadmin
     entrypoint: ["/bin/sh", "/bootstrap-pgpass.sh"]
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@example.com
       PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SESSION_COOKIE_NAME: "'chpay_pga4_session'"
       PGADMIN_SERVER_JSON_FILE: /pgadmin4/servers.json
       PGADMIN_REPLACE_SERVERS_ON_STARTUP: "True"
       PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
@@ -32,6 +33,7 @@ services:
     ports:
       - "3081:80"
     volumes:
+      - pgadmin-data:/var/lib/pgadmin
       - ./pgadmin/servers.json:/pgadmin4/servers.json:ro
       - ./pgadmin/pgpassfile:/pgpassfile.template:ro
       - ./pgadmin/bootstrap-pgpass.sh:/bootstrap-pgpass.sh:ro
@@ -157,3 +159,4 @@ services:
 volumes:
   db-data:
   frontend-node-modules:
+  pgadmin-data:

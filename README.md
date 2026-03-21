@@ -4,12 +4,16 @@ CHPay is the digital wallet platform for W.I.S.V. ‘Christiaan Huygens’. It c
 
 ## Development
 
-You can work on CHPay in three different ways. All options share the same service topology and expose identical ports, so switching between them is straightforward.
+You can work on CHPay in three different ways:
+
+- **Dev Container** (containerized workspace + dependencies).
+- **Bare metal development with services in Docker** (local IDE + `docker compose` dependencies).
+- **All bare metal** (manual local setup of all dependencies).
 
 ### Option 1 – Dev Container (VS Code or IntelliJ)
 
 1. **Prerequisites**
-   - Docker Desktop 4.31+ (Linux users: Docker Engine + Docker Compose v2).
+   - Docker Desktop (Linux users: Docker Engine + Docker Compose v2).
    - For VS Code: install the *Dev Containers* extension.  
      For IntelliJ IDEA: install JetBrains Gateway with the *Dev Containers* plugin.
 2. **Open the workspace**
@@ -17,8 +21,8 @@ You can work on CHPay in three different ways. All options share the same servic
    - IntelliJ: `File ▸ Open… ▸ .devcontainer/devcontainer.json` via Gateway.
 3. The dev container boots the project plus all dependencies using the included Compose files. No local tooling besides Docker is required.
 4. **Run the application** with the supplied run configurations:
-   - IntelliJ: `Run ▸ Run 'Application [devcontainer]'`.
-   - VS Code: `Run and Debug ▸ Application`.
+   - IntelliJ: select `Application [devcontainer]` in the dropdown at the top-right, then click the green play button.
+   - VS Code: `Run and Debug ▸ Application [devcontainer]` (Not `Application [dev]`).
 
 While the container is running:
 
@@ -32,7 +36,7 @@ While the container is running:
 | Mock Keycloak (OIDC) | http://localhost:3083 | Login flow, seeded users |
 | Vite dev server | http://localhost:3084 | Front-end HMR (`frontend-dev` service) |
 
-The mock Keycloak instance includes two ready-made accounts:
+The mock OIDC service includes two ready-made accounts:
 
 | Username | Password | Roles |
 | --- | --- | --- |
@@ -62,7 +66,7 @@ The mock Keycloak instance includes two ready-made accounts:
 
 5. Run the backend with the supplied run configurations:
    - IntelliJ: `Run ▸ Run 'Application [dev]'`.
-   - VS Code: `Run and Debug ▸ Application`.
+   - VS Code: `Run and Debug ▸ Application [dev]`.
 
 All services listen on the same host ports listed in the table above.
 

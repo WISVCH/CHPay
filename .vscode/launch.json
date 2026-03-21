@@ -3,10 +3,16 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Application",
+            "name": "Application [dev]",
             "request": "launch",
             "mainClass": "ch.wisv.chpay.Application",
-            "projectName": "workspace",
+            "args": "--spring.profiles.active=dev"
+        },
+        {
+            "type": "java",
+            "name": "Application [devcontainer]",
+            "request": "launch",
+            "mainClass": "ch.wisv.chpay.Application",
             "args": "--spring.profiles.active=dev,devcontainer"
         }
     ]
