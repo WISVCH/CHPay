@@ -1,7 +1,8 @@
 services:
   app:
     build:
-      dockerfile: Dockerfile.dev
+      context: .
+      dockerfile: .devcontainer/Dockerfile
     container_name: chpay-app
     working_dir: /workspace
     command: sleep infinity
