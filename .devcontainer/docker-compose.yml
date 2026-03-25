@@ -1,7 +1,8 @@
 services:
   app:
     build:
-      dockerfile: Dockerfile.dev
+      context: .
+      dockerfile: .devcontainer/Dockerfile
     container_name: chpay-app
     working_dir: /workspace
     command: sleep infinity
@@ -11,16 +12,15 @@ services:
       - gradle-cache:/home/dev/.gradle
       - m2-cache:/home/dev/.m2
     environment:
-      SPRING_PROFILES_ACTIVE: devcontainer
+      SPRING_PROFILES_ACTIVE: dev,devcontainer
     depends_on:
       - db
       - mailcatcher
       - oidc
-      - frontend-watch
+      - frontend-dev
     ports:
       - "3080:3080"
 
 volumes:
   gradle-cache:
   m2-cache:
-  frontend-node-modules:

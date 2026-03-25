@@ -81,3 +81,5 @@ logging:
     org.hibernate.sql.results.jdbc.internal.DeferredResultSetAccess: WARN
 server:
   forward-headers-strategy: native
+vite:
+  vite-entries-prefix: src

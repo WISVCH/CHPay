@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout}"
-      th:with="layoutWide=true, hasDataTable=true">
+      th:with="layoutWide=true">
 <head>
     <title th:text="${transactionPageType == 'user'} ? 'User Transactions' : (${transactionPageType == 'paymentRequest'} ? 'Payment Request Transactions' : 'All Transactions')">All Transactions</title>
 </head>

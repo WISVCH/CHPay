@@ -1,6 +1,7 @@
 package ch.wisv.chpay.customer.controller;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -48,5 +49,19 @@ class IndexPageRenderTest {
         .andExpect(status().isOk())
         .andExpect(view().name("index"))
         .andExpect(content().string(containsString("Welcome to CHPay!")));
+  }
+
+  @Test
+  void indexPageResolvesViteAssets() throws Exception {
+    mockMvc
+        .perform(
+            get("/index")
+                .with(
+                    oidcLogin()
+                        .authorities(new SimpleGrantedAuthority("ROLE_USER"))
+                        .idToken(token -> token.claim("sub", OPEN_ID))))
+        .andExpect(status().isOk())
+        .andExpect(content().string(containsString("/assets/main-test.js")))
+        .andExpect(content().string(not(containsString("<vite:"))));
   }
 }
