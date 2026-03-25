@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/layout}"
-      th:with="hasDatePicker=true">
+      layout:decorate="~{layouts/layout}">
 <head>
     <title>New Payment Request</title>
 </head>
@@ -179,7 +178,7 @@
 
                 // Date picker
                 if (expireDateInput && window.flatpickr) {
-                    expireDatePicker = flatpickr(expireDateInput, {
+                    expireDatePicker = window.flatpickr(expireDateInput, {
                         dateFormat: 'Y-m-d',
                         altInput: true,
                         altFormat: 'd-m-Y',

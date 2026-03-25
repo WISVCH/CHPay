@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout}"
-      th:with="layoutWide=true, hasDataTable=true">
+      th:with="layoutWide=true">
 <head>
     <title>Confetti</title>
 </head>
@@ -200,7 +200,6 @@
 </div>
 
 <th:block layout:fragment="script">
-    <script th:src="@{/js/canvas-confetti.browser.js}"></script>
     <script th:src="@{/js/confetti-shared.js}"></script>
     <script>
         window.addEventListener('load', () => {

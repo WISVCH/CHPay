@@ -1,10 +1,10 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '4.0.3'
+	id 'org.springframework.boot' version '4.0.4'
 	id 'io.spring.dependency-management' version '1.1.7'
 	id 'jacoco'
 	id 'pmd'
-	id 'com.diffplug.spotless' version '8.3.0'
+	id 'com.diffplug.spotless' version '8.4.0'
 	id 'com.github.node-gradle.node' version '7.1.0'
 }
 
@@ -19,10 +19,12 @@ java {
 
 // Node.js configuration
 node {
-	version = '20.11.0'
+	version = '24.14.0'
 	download = true
 	nodeProjectDir = file("${project.projectDir}/src/main/frontend")
 }
+
+def viteOutputDir = layout.buildDirectory.dir("vite")
 
 repositories {
 	mavenCentral()
@@ -34,8 +36,6 @@ dependencies {
 	implementation 'org.postgresql:postgresql'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
-	implementation 'org.thymeleaf:thymeleaf-spring6'
-	implementation 'org.thymeleaf:thymeleaf'
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	runtimeOnly 'com.h2database:h2'
@@ -46,8 +46,6 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-cache'
 	implementation 'com.github.ben-manes.caffeine:caffeine'
 	implementation 'be.woutschoovaerts:mollie:4.6.4'
-	implementation 'com.microsoft.playwright:playwright:1.58.0'
-	implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-resource-server'
 	implementation 'org.springframework.boot:spring-boot-starter-flyway'
 	implementation 'org.flywaydb:flyway-database-postgresql'
 
@@ -63,6 +61,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+	implementation 'io.github.wimdeblauwe:vite-spring-boot-thymeleaf:2.0.0'
 
 	implementation 'com.google.zxing:core:3.5.4'
 	implementation 'com.google.zxing:javase:3.5.4'
@@ -70,18 +69,8 @@ dependencies {
 
 test {
 	jvmArgs "-javaagent:${configurations.testRuntimeClasspath.find { it.name.contains('mockito-core') }}", '-Xshare:off'
-	useJUnitPlatform {
-		excludeTags 'playwright'
-	}
+	useJUnitPlatform()
 	finalizedBy jacocoTestReport
-}
-
-tasks.register('playwrightTest', Test) {
-	useJUnitPlatform {
-		includeTags 'playwright'
-	}
-	testClassesDirs = sourceSets.test.output.classesDirs
-	classpath = sourceSets.test.runtimeClasspath
 }
 
 jacocoTestReport {
@@ -113,13 +102,17 @@ spotless {
 }
 
 
-// Frontend build task using npm run build
+// Frontend build task using vite build
 tasks.register('frontendBuild', NpmTask) {
-	description = 'Build frontend assets using npm'
+	description = 'Build frontend assets using Vite'
 	group = 'build'
 	args = ['run', 'build']
 	dependsOn npmInstall
 }
 
-// Make the processResources task depend on frontendBuild
-processResources.dependsOn frontendBuild
+processResources {
+	dependsOn frontendBuild
+	from(viteOutputDir) {
+		into 'static'
+	}
+}

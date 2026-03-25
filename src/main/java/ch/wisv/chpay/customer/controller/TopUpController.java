@@ -11,8 +11,8 @@ import ch.wisv.chpay.core.service.SettingService;
 import ch.wisv.chpay.core.service.TransactionService;
 import ch.wisv.chpay.customer.service.DepositService;
 import java.math.BigDecimal;
+import java.util.NoSuchElementException;
 import java.util.UUID;
-import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -152,12 +152,11 @@ public class TopUpController extends CustomerController {
   @PreAuthorize("hasAnyRole('USER', 'BANNED')")
   @GetMapping("/complete/{key}")
   public String depositSuccess(
-      @PathVariable String key, @ModelAttribute("currentUser") User currentUser, Model model)
-      throws NotFoundException {
+      @PathVariable String key, @ModelAttribute("currentUser") User currentUser, Model model) {
     Transaction t =
         transactionRepository
             .findById(UUID.fromString(key))
-            .orElseThrow(() -> new NotFoundException(key));
+            .orElseThrow(() -> new NoSuchElementException("Transaction not found: " + key));
     model.addAttribute(MODEL_ATTR_TRANSACTION_ID, key);
     model.addAttribute("isTopup", t.getType().equals(Transaction.TransactionType.TOP_UP));
     if (t instanceof TopupTransaction topupTransaction

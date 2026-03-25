@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/layout}"
-      th:with="hasClipboard=true, hasDatePicker=true">
+      layout:decorate="~{layouts/layout}">
 <head>
     <title>Payment Request Details</title>
 </head>
@@ -330,7 +329,7 @@
                     expireDateActionText.classList.remove('hidden');
                 }
                 if (expireDateInput && window.flatpickr && !expireDatePicker) {
-                    expireDatePicker = flatpickr(expireDateInput, {
+                    expireDatePicker = window.flatpickr(expireDateInput, {
                         dateFormat: 'Y-m-d',
                         altInput: true,
                         altFormat: 'd-m-Y',

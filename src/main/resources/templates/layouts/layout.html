@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:vite="https://www.wimdeblauwe.com/vite"
       class="h-full">
 <head>
     <meta charset="UTF-8" />
@@ -11,15 +12,11 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="CHPay" />
     <link rel="manifest" href="/images/site.webmanifest" />
-    <!-- Charts styles - only load when needed -->
-    <th:block th:if="${hasCharts}">
-        <link th:href="@{/css/apexcharts.css}" rel="stylesheet" />
-    </th:block>
-    <!-- DatePicker styles - only load when needed -->
-    <th:block th:if="${hasDatePicker}">
-        <link th:href="@{/css/flatpickr.min.css}" rel="stylesheet" />
-    </th:block>
-    <link th:href="@{/css/main.css}" rel="stylesheet" />
+    <vite:client></vite:client>
+    <vite:vite>
+        <vite:entry value="/main.css"></vite:entry>
+        <vite:entry value="/main.js"></vite:entry>
+    </vite:vite>
     <title layout:title-pattern="$CONTENT_TITLE - CHPay">CHPay</title>
     <th:block layout:fragment="css"></th:block>
 </head>
@@ -215,28 +212,6 @@
              </footer>
         </div>
       </div>
-
-      <script th:src="@{/js/jquery.min.js}"></script>
-      <!-- DataTables scripts - only load when needed -->
-      <th:block th:if="${hasDataTable}">
-          <script th:src="@{/js/dataTables.min.js}"></script>
-      </th:block>
-      <!-- Charts scripts - only load when needed -->
-      <th:block th:if="${hasCharts}">
-          <script th:src="@{/js/apexcharts.min.js}"></script>
-          <script th:src="@{/js/lodash.min.js}"></script>
-          <script th:src="@{/js/helper-apexcharts.js}"></script>
-      </th:block>
-      <!-- Clipboard scripts - only load when needed -->
-      <th:block th:if="${hasClipboard}">
-          <script th:src="@{/js/clipboard.min.js}"></script>
-          <script th:src="@{/js/helper-clipboard.js}"></script>
-      </th:block>
-      <!-- DatePicker scripts - only load when needed -->
-      <th:block th:if="${hasDatePicker}">
-          <script th:src="@{/js/flatpickr.min.js}"></script>
-      </th:block>
-      <script th:src="@{/js/flyonui.js}"></script>
 
     <!-- Modals Fragment -->
     <th:block layout:fragment="modals"></th:block>
