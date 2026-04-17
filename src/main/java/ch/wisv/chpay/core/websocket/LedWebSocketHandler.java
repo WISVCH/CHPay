@@ -51,7 +51,7 @@ public class LedWebSocketHandler extends TextWebSocketHandler {
         String payload = message.getPayload();
         lastActivity.put(session, Instant.now());  // Update activity on any message
 
-        if ("ping".equals(payload)) {
+        if (payload != null && "ping".equals(payload)) {
             session.sendMessage(new TextMessage("pong"));
             logger.debug("Responded to ping with pong for session: {}", session.getId());
         } else {
