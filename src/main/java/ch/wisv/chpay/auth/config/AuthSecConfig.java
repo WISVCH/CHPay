@@ -28,15 +28,11 @@ import org.springframework.security.web.servlet.util.matcher.PathPatternRequestM
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
- * AuthSecConfig is a Spring configuration class that sets up the security
- * configuration for the
- * application. It customizes behaviors such as request authorization, OAuth2
- * login, and logout
+ * AuthSecConfig is a Spring configuration class that sets up the security configuration for the
+ * application. It customizes behaviors such as request authorization, OAuth2 login, and logout
  * functionality.
  *
- * <p>
- * The class integrates a custom OIDC (OpenID Connect) user service to handle
- * user details during
+ * <p>The class integrates a custom OIDC (OpenID Connect) user service to handle user details during
  * the authentication process.
  */
 @Configuration
@@ -44,17 +40,13 @@ import org.springframework.web.util.UriComponentsBuilder;
 @EnableMethodSecurity(prePostEnabled = true)
 public class AuthSecConfig {
 
-  @Autowired
-  private CustomOIDCUserService customOidcUserService;
+  @Autowired private CustomOIDCUserService customOidcUserService;
 
-  @Autowired
-  private CustomAccessDeniedHandler customAccessDeniedHandler;
+  @Autowired private CustomAccessDeniedHandler customAccessDeniedHandler;
 
-  @Autowired
-  private OAuth2FailureHandler OAuth2FailureHandler;
+  @Autowired private OAuth2FailureHandler OAuth2FailureHandler;
 
-  @Autowired
-  private ClientRegistrationRepository clientRegistrationRepository;
+  @Autowired private ClientRegistrationRepository clientRegistrationRepository;
 
   @Value("${chpay.api_key}")
   private String apiKey;
@@ -68,8 +60,7 @@ public class AuthSecConfig {
   private String activeProfiles;
 
   /**
-   * Configures and builds the security filter chain used to secure HTTP requests.
-   * This method sets
+   * Configures and builds the security filter chain used to secure HTTP requests. This method sets
    * up request authorization, authentication, and logout behavior.
    *
    * @param http the {@code HttpSecurity} object used to configure HTTP security
@@ -86,22 +77,25 @@ public class AuthSecConfig {
     http.addFilterBefore(apiKeyFilter, UsernamePasswordAuthenticationFilter.class);
 
     // Create and configure the success handler
-    SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
+    SavedRequestAwareAuthenticationSuccessHandler successHandler =
+        new SavedRequestAwareAuthenticationSuccessHandler();
     successHandler.setDefaultTargetUrl("/index");
     http.oauth2Login(
-        oauth2 -> oauth2
-            .loginPage("/login")
-            .successHandler(successHandler)
-            .failureHandler(OAuth2FailureHandler)
-            .userInfoEndpoint(
-                userInfo -> {
-                  userInfo.oidcUserService(customOidcUserService);
-                }))
+            oauth2 ->
+                oauth2
+                    .loginPage("/login")
+                    .successHandler(successHandler)
+                    .failureHandler(OAuth2FailureHandler)
+                    .userInfoEndpoint(
+                        userInfo -> {
+                          userInfo.oidcUserService(customOidcUserService);
+                        }))
         .sessionManagement(
             s -> s.maximumSessions(1).sessionRegistry(sessionRegistry()).expiredUrl("/expired"))
         .headers(
-            headers -> headers.httpStrictTransportSecurity(
-                hsts -> hsts.includeSubDomains(true).preload(true).maxAgeInSeconds(31536000)));
+            headers ->
+                headers.httpStrictTransportSecurity(
+                    hsts -> hsts.includeSubDomains(true).preload(true).maxAgeInSeconds(31536000)));
 
     configureLogout(http);
     return http.build();
@@ -110,83 +104,77 @@ public class AuthSecConfig {
   /**
    * Configures authorization rules for incoming HTTP requests.
    *
-   * <p>
-   * This method specifies which requests should be permitted or require
-   * authentication. Most
-   * authorization is now handled at the controller level using @PreAuthorize
-   * annotations.
+   * <p>This method specifies which requests should be permitted or require authentication. Most
+   * authorization is now handled at the controller level using @PreAuthorize annotations.
    *
-   * @param http an instance of {@link HttpSecurity} used to customize
-   *             authorization rules
+   * @param http an instance of {@link HttpSecurity} used to customize authorization rules
    * @throws Exception if an error occurs while configuring authorization
    */
   private void configureRequestAuthorization(HttpSecurity http) throws Exception {
     http.authorizeHttpRequests(
-        authz -> {
-          // Base permitted paths
-          authz
-              .requestMatchers(
-                  "/",
-                  "/expired",
-                  "/login",
-                  "/ws/ledstrip",
-                  "/error",
-                  "/logout-success",
-                  "/css/**",
-                  "/js/**",
-                  "/assets/**",
-                  "/images/**",
-                  "/topup/status",
-                  "/actuator/health/liveness",
-                  "/actuator/health/readiness",
-                  "/actuator/health")
-              .permitAll();
+            authz -> {
+              // Base permitted paths
+              authz
+                  .requestMatchers(
+                      "/",
+                      "/expired",
+                      "/login",
+                      "/ws/ledstrip",
+                      "/error",
+                      "/logout-success",
+                      "/css/**",
+                      "/js/**",
+                      "/assets/**",
+                      "/images/**",
+                      "/topup/status",
+                      "/actuator/health/liveness",
+                      "/actuator/health/readiness",
+                      "/actuator/health")
+                  .permitAll();
 
-          // Only permit test endpoints when test profile is active
-          if (activeProfiles.contains("test")) {
-            authz.requestMatchers("/test/**").permitAll();
-          }
+              // Only permit test endpoints when test profile is active
+              if (activeProfiles.contains("test")) {
+                authz.requestMatchers("/test/**").permitAll();
+              }
 
-          // All other requests require authentication - authorization is handled at
-          // controller
-          // level
-          authz.anyRequest().authenticated();
-        })
+              // All other requests require authentication - authorization is handled at
+              // controller
+              // level
+              authz.anyRequest().authenticated();
+            })
         .csrf(
-            csrf -> csrf.ignoringRequestMatchers(
-                "/topup/status", "/transactions/email-receipt/**", "/api/**"))
+            csrf ->
+                csrf.ignoringRequestMatchers(
+                    "/topup/status", "/transactions/email-receipt/**", "/api/**"))
         .exceptionHandling(
             exceptions -> exceptions.accessDeniedHandler(customAccessDeniedHandler)
-        /*
-         * This code has tested my resolve like nothing has since that time I was
-         * stabbed. When
-         * Spring Security's filter chain throws an exception, even if it does so
-         * because you
-         * coded it that way, you are NOT able to intercept this exception with the
-         * exception
-         * handler (with the annotations SPRING provides) because the exception is
-         * thrown BEFORE
-         * the request reaches Spring MVC's DispatcherServlet. As a result,
-         * the @RestControllerAdvice exception handler never sees this exception. So we
-         * had to
-         * implement it in a custom handler.
-         */
-        );
+            /*
+             * This code has tested my resolve like nothing has since that time I was
+             * stabbed. When
+             * Spring Security's filter chain throws an exception, even if it does so
+             * because you
+             * coded it that way, you are NOT able to intercept this exception with the
+             * exception
+             * handler (with the annotations SPRING provides) because the exception is
+             * thrown BEFORE
+             * the request reaches Spring MVC's DispatcherServlet. As a result,
+             * the @RestControllerAdvice exception handler never sees this exception. So we
+             * had to
+             * implement it in a custom handler.
+             */
+            );
   }
 
   /**
-   * Configures the logout functionality for the application with proper
-   * OAuth2/OIDC logout.
+   * Configures the logout functionality for the application with proper OAuth2/OIDC logout.
    *
-   * <p>
-   * This method implements secure logout using Spring Security's built-in OIDC
-   * logout handler
+   * <p>This method implements secure logout using Spring Security's built-in OIDC logout handler
    * that:
    *
    * <ul>
-   * <li>Clears the local session and authentication
-   * <li>Redirects to the OAuth2 provider's logout endpoint (WISV CH Connect)
-   * <li>Handles the post-logout redirect back to the application
+   *   <li>Clears the local session and authentication
+   *   <li>Redirects to the OAuth2 provider's logout endpoint (WISV CH Connect)
+   *   <li>Handles the post-logout redirect back to the application
    * </ul>
    *
    * @param http the {@link HttpSecurity} to modify the logout behavior
@@ -200,27 +188,30 @@ public class AuthSecConfig {
     oidcLogoutSuccessHandler.setPostLogoutRedirectUri("{baseUrl}/logout-success");
 
     http.logout(
-        logout -> logout
-            .logoutUrl("/logout")
-            .clearAuthentication(true)
-            .invalidateHttpSession(true)
-            .deleteCookies("JSESSIONID")
-            .logoutRequestMatcher(
-                PathPatternRequestMatcher.pathPattern(HttpMethod.POST, "/logout"))
-            .logoutSuccessHandler(oidcLogoutSuccessHandler));
+        logout ->
+            logout
+                .logoutUrl("/logout")
+                .clearAuthentication(true)
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+                .logoutRequestMatcher(
+                    PathPatternRequestMatcher.pathPattern(HttpMethod.POST, "/logout"))
+                .logoutSuccessHandler(oidcLogoutSuccessHandler));
   }
 
   private OidcClientInitiatedLogoutSuccessHandler createLogoutSuccessHandler() {
     if (activeProfiles.contains("devcontainer")) {
-      ClientRegistration registration = clientRegistrationRepository.findByRegistrationId("wisvchconnect");
+      ClientRegistration registration =
+          clientRegistrationRepository.findByRegistrationId("wisvchconnect");
       if (registration != null) {
         URI authorizationUri = URI.create(registration.getProviderDetails().getAuthorizationUri());
-        URI hostAccessible = UriComponentsBuilder.newInstance()
-            .scheme(authorizationUri.getScheme())
-            .host(authorizationUri.getHost())
-            .port(authorizationUri.getPort())
-            .build(true)
-            .toUri();
+        URI hostAccessible =
+            UriComponentsBuilder.newInstance()
+                .scheme(authorizationUri.getScheme())
+                .host(authorizationUri.getHost())
+                .port(authorizationUri.getPort())
+                .build(true)
+                .toUri();
         return new HostAwareOidcLogoutSuccessHandler(clientRegistrationRepository, hostAccessible);
       }
     }
@@ -248,12 +239,13 @@ public class AuthSecConfig {
       try {
         URI original = URI.create(targetUrl);
         if ("oidc".equalsIgnoreCase(original.getHost())) {
-          URI adjusted = UriComponentsBuilder.fromUri(original)
-              .scheme(overrideBase.getScheme())
-              .host(overrideBase.getHost())
-              .port(overrideBase.getPort())
-              .build(true)
-              .toUri();
+          URI adjusted =
+              UriComponentsBuilder.fromUri(original)
+                  .scheme(overrideBase.getScheme())
+                  .host(overrideBase.getHost())
+                  .port(overrideBase.getPort())
+                  .build(true)
+                  .toUri();
           return adjusted.toString();
         }
       } catch (IllegalArgumentException ignored) {
