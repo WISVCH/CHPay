@@ -187,7 +187,7 @@ public class TransactionService {
         IllegalStateException.class,
         NoSuchElementException.class
       },
-      backoff = @Backoff(delay = 200, multiplier = 2))   
+      backoff = @Backoff(delay = 200, multiplier = 2))
   @Transactional
   public Transaction fullfillTransaction(UUID transactionId, User user)
       throws IllegalStateException,
@@ -222,7 +222,7 @@ public class TransactionService {
     if (request != null) {
       request.addFulfilment();
       requestRepository.save(request);
-      ledHandler.broadcastPaymentSuccess(55, 125, 255, "random");  // Customize RGB/pattern as needed
+      ledHandler.broadcastPaymentSuccess(55, 125, 255, "random"); // Customize RGB/pattern as needed
     }
 
     return result;

@@ -9,16 +9,17 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
 
-    private final LedWebSocketHandler ledHandler;
+  private final LedWebSocketHandler ledHandler;
 
-    public WebSocketConfig(LedWebSocketHandler ledHandler) {
-        this.ledHandler = ledHandler;
-    }
+  public WebSocketConfig(LedWebSocketHandler ledHandler) {
+    this.ledHandler = ledHandler;
+  }
 
-    @Override
-    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(ledHandler, "/ws/ledstrip")
-                .setAllowedOrigins("chpay.ch.tudelft.nl")  // Adjust for security (e.g., specific ESP IPs)
-                .withSockJS();  // Optional: Enables SockJS fallback for older browsers
-    }
+  @Override
+  public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+    registry
+        .addHandler(ledHandler, "/ws/ledstrip")
+        .setAllowedOrigins("chpay.ch.tudelft.nl") // Adjust for security (e.g., specific ESP IPs)
+        .withSockJS(); // Optional: Enables SockJS fallback for older browsers
+  }
 }
