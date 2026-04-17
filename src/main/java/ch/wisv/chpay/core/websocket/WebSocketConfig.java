@@ -18,7 +18,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(ledHandler, "/ws/ledstrip")
-                .setAllowedOrigins("*")  // Adjust for security (e.g., specific ESP IPs)
+                .setAllowedOrigins("chpay.ch.tudelft.nl")  // Adjust for security (e.g., specific ESP IPs)
                 .withSockJS();  // Optional: Enables SockJS fallback for older browsers
     }
 }
