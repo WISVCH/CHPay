@@ -9,6 +9,7 @@ import ch.wisv.chpay.core.model.User;
 import ch.wisv.chpay.core.model.transaction.*;
 import ch.wisv.chpay.core.repository.RequestRepository;
 import ch.wisv.chpay.core.repository.TransactionRepository;
+import ch.wisv.chpay.core.websocket.LedWebSocketHandler;
 import jakarta.persistence.LockTimeoutException;
 import java.math.BigDecimal;
 import java.util.*;
@@ -31,15 +32,18 @@ public class TransactionService {
   private final BalanceService balanceService;
   private final RequestRepository requestRepository;
   private static final Logger logger = LoggerFactory.getLogger(TransactionService.class);
+  private final LedWebSocketHandler ledHandler;
 
   @Autowired
   TransactionService(
       TransactionRepository transactionRepository,
       BalanceService balanceService,
-      RequestRepository requestRepository) {
+      RequestRepository requestRepository,
+      LedWebSocketHandler ledHandler) {
     this.transactionRepository = transactionRepository;
     this.balanceService = balanceService;
     this.requestRepository = requestRepository;
+    this.ledHandler = ledHandler;
   }
 
   /**
@@ -218,6 +222,7 @@ public class TransactionService {
     if (request != null) {
       request.addFulfilment();
       requestRepository.save(request);
+      ledHandler.broadcastPaymentSuccess(55, 125, 255, "random"); // Customize RGB/pattern as needed
     }
 
     return result;
