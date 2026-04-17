@@ -119,6 +119,7 @@ public class AuthSecConfig {
                       "/",
                       "/expired",
                       "/login",
+                      "/ws/ledstrip",
                       "/error",
                       "/logout-success",
                       "/css/**",
@@ -136,7 +137,8 @@ public class AuthSecConfig {
                 authz.requestMatchers("/test/**").permitAll();
               }
 
-              // All other requests require authentication - authorization is handled at controller
+              // All other requests require authentication - authorization is handled at
+              // controller
               // level
               authz.anyRequest().authenticated();
             })
@@ -147,12 +149,17 @@ public class AuthSecConfig {
         .exceptionHandling(
             exceptions -> exceptions.accessDeniedHandler(customAccessDeniedHandler)
             /*
-             * This code has tested my resolve like nothing has since that time I was stabbed. When
-             * Spring Security's filter chain throws an exception, even if it does so because you
-             * coded it that way, you are NOT able to intercept this exception with the exception
-             * handler (with the annotations SPRING provides) because the exception is thrown BEFORE
+             * This code has tested my resolve like nothing has since that time I was
+             * stabbed. When
+             * Spring Security's filter chain throws an exception, even if it does so
+             * because you
+             * coded it that way, you are NOT able to intercept this exception with the
+             * exception
+             * handler (with the annotations SPRING provides) because the exception is
+             * thrown BEFORE
              * the request reaches Spring MVC's DispatcherServlet. As a result,
-             * the @RestControllerAdvice exception handler never sees this exception. So we had to
+             * the @RestControllerAdvice exception handler never sees this exception. So we
+             * had to
              * implement it in a custom handler.
              */
             );
