@@ -4,7 +4,6 @@ import ch.wisv.chpay.admin.service.AdminTransactionService;
 import ch.wisv.chpay.core.model.transaction.Transaction;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.YearMonth;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
@@ -37,40 +36,8 @@ public abstract class BaseTransactionController extends AdminController {
       HttpServletRequest request,
       java.util.function.Supplier<YearMonth> getMostRecentYearMonth,
       java.util.function.Function<YearMonth, String> buildRedirectUrl) {
-
-    // Parse yearMonth parameter or redirect to most recent
-    if (yearMonth == null || yearMonth.trim().isEmpty()) {
-      YearMonth selectedYearMonth = getMostRecentYearMonth.get();
-      String queryString = request.getQueryString();
-      String preservedParams = "";
-      if (queryString != null && !queryString.isEmpty()) {
-        // Remove yearMonth parameter if it exists, keep others
-        preservedParams =
-            "&" + queryString.replaceAll("(&?)yearMonth=[^&]*(&?)", "").replaceAll("^&|&$", "");
-      }
-      String redirectUrl =
-          buildRedirectUrl.apply(selectedYearMonth)
-              + (preservedParams.isEmpty() ? "" : "&" + preservedParams);
-      throw new RedirectException(redirectUrl);
-    }
-
-    try {
-      return YearMonth.parse(yearMonth);
-    } catch (DateTimeParseException e) {
-      // Invalid format, redirect to most recent month
-      YearMonth selectedYearMonth = getMostRecentYearMonth.get();
-      String queryString = request.getQueryString();
-      String preservedParams = "";
-      if (queryString != null && !queryString.isEmpty()) {
-        // Remove yearMonth parameter if it exists, keep others
-        preservedParams =
-            "&" + queryString.replaceAll("(&?)yearMonth=[^&]*(&?)", "").replaceAll("^&|&$", "");
-      }
-      String redirectUrl =
-          buildRedirectUrl.apply(selectedYearMonth)
-              + (preservedParams.isEmpty() ? "" : "&" + preservedParams);
-      throw new RedirectException(redirectUrl);
-    }
+    return YearMonthSelectionSupport.resolveYearMonthOrRedirect(
+        yearMonth, request, getMostRecentYearMonth, buildRedirectUrl);
   }
 
   /**
@@ -89,19 +56,5 @@ public abstract class BaseTransactionController extends AdminController {
     model.addAttribute(MODEL_ATTR_TRANSACTIONS, transactions);
     model.addAttribute(MODEL_ATTR_SELECTED_YEAR_MONTH, selectedYearMonth);
     model.addAttribute(MODEL_ATTR_ALL_POSSIBLE_MONTHS, allPossibleMonths);
-  }
-
-  /** Custom exception for handling redirects in the base controller. */
-  public static class RedirectException extends RuntimeException {
-    private final String redirectUrl;
-
-    public RedirectException(String redirectUrl) {
-      super("Redirect to: " + redirectUrl);
-      this.redirectUrl = redirectUrl;
-    }
-
-    public String getRedirectUrl() {
-      return redirectUrl;
-    }
   }
 }

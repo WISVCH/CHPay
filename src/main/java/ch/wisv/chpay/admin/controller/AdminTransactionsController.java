@@ -69,7 +69,7 @@ public class AdminTransactionsController extends BaseTransactionController {
       model.addAttribute(MODEL_ATTR_URL_PAGE, "adminTransactions");
 
       return "admin-transaction-table";
-    } catch (BaseTransactionController.RedirectException e) {
+    } catch (YearMonthSelectionSupport.RedirectException e) {
       return "redirect:" + e.getRedirectUrl();
     }
   }
