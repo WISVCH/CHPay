@@ -3,6 +3,7 @@ package ch.wisv.chpay.api.external_payment.controller;
 import ch.wisv.chpay.api.external_payment.model.CHPaymentRequest;
 import ch.wisv.chpay.api.external_payment.model.CHPaymentResponse;
 import ch.wisv.chpay.api.external_payment.service.ExternalPaymentServiceImpl;
+import ch.wisv.chpay.core.model.transaction.ExternalTransaction;
 import ch.wisv.chpay.core.model.transaction.Transaction;
 import ch.wisv.chpay.core.repository.TransactionRepository;
 import java.util.Optional;
@@ -61,13 +62,24 @@ public class ExternalPaymentController {
   @PreAuthorize("hasAuthority('SCOPE_external_payment')")
   @GetMapping("/status")
   public ResponseEntity<Transaction.TransactionStatus> getExternalPaymentStatus(
-      @RequestParam UUID PaymentId) {
+      @RequestParam UUID PaymentId,
+      @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
+    UUID apiClientId = extractApiClientId(principal);
     Optional<Transaction> tx = transactionRepository.findById(PaymentId);
     if (tx.isEmpty()) {
       return ResponseEntity.notFound().build();
     }
 
-    Transaction.TransactionStatus status = tx.get().getStatus();
+    Transaction transaction = tx.get();
+    if (!(transaction instanceof ExternalTransaction externalTransaction)) {
+      return ResponseEntity.notFound().build();
+    }
+    if (externalTransaction.getApiClient() == null
+        || !externalTransaction.getApiClient().getId().equals(apiClientId)) {
+      return ResponseEntity.notFound().build();
+    }
+
+    Transaction.TransactionStatus status = externalTransaction.getStatus();
     return ResponseEntity.ok(status);
   }
 

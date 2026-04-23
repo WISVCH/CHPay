@@ -1,7 +1,6 @@
 package ch.wisv.chpay.customer.controller;
 
 import ch.wisv.chpay.api.external_payment.service.ExternalPaymentServiceImpl;
-import ch.wisv.chpay.core.controller.PageController;
 import ch.wisv.chpay.core.exception.TransactionAlreadyFulfilled;
 import ch.wisv.chpay.core.model.PaymentRequest;
 import ch.wisv.chpay.core.model.User;
@@ -28,7 +27,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @PreAuthorize("hasRole('USER') and !hasRole('BANNED')")
 @RequestMapping("/payment")
-public class PaymentController extends PageController {
+public class PaymentController extends CustomerController {
   /** Model attr of the Transaction. */
   private static final String MODEL_ATTR_TX = MODEL_ATTR_TRANSACTION;
 
@@ -102,6 +101,8 @@ public class PaymentController extends PageController {
         transactionService
             .getTransactionById(UUID.fromString(tx))
             .orElseThrow(() -> new NoSuchElementException("Transaction not found"));
+    User currentUser = (User) model.getAttribute("currentUser");
+    assertCurrentUserOwnsTransaction(currentUser, transaction);
 
     if (transaction.getStatus().equals(Transaction.TransactionStatus.FAILED)
         || transaction.getStatus().equals(Transaction.TransactionStatus.SUCCESSFUL)) {
@@ -129,12 +130,13 @@ public class PaymentController extends PageController {
         transactionService
             .getTransactionById(UUID.fromString(tx))
             .orElseThrow(() -> new NoSuchElementException("Transaction not found"));
+    User currentUser = (User) model.getAttribute("currentUser");
     if (transaction.getType().equals(Transaction.TransactionType.EXTERNAL_PAYMENT)) {
       return completeExternalTransactionInternal(tx, model);
     }
+    assertCurrentUserOwnsTransaction(currentUser, transaction);
 
-    transactionService.fullfillTransaction(
-        transaction.getId(), (User) model.getAttribute("currentUser"));
+    transactionService.fullfillTransaction(transaction.getId(), currentUser);
 
     notificationService.addSuccessMessage(redirectAttributes, "Authorized Transaction");
     return "redirect:/payment/complete/" + tx;
@@ -154,6 +156,8 @@ public class PaymentController extends PageController {
         transactionRepository
             .findById(UUID.fromString(key))
             .orElseThrow(() -> new NoSuchElementException("Transaction not found: " + key));
+    User currentUser = (User) model.getAttribute("currentUser");
+    assertCurrentUserOwnsTransaction(currentUser, t);
     model.addAttribute(MODEL_ATTR_TRANSACTION_ID, key);
     model.addAttribute("isTopup", t.getType().equals(Transaction.TransactionType.TOP_UP));
     if (t.supportsRequest() && t.getRequest() != null) {
@@ -199,10 +203,12 @@ public class PaymentController extends PageController {
 
     User currentUser = (User) model.getAttribute("currentUser");
 
-    // If transaction doesn't have a user (anonymous), link the current user to it
+    // If transaction doesn't have a user (anonymous), link the current user to it.
     if (transaction.getUser() == null) {
       transaction.linkUser(currentUser);
       transactionRepository.save(transaction);
+    } else {
+      assertCurrentUserOwnsTransaction(currentUser, transaction);
     }
 
     transactionService.fullfillExternalTransaction(transaction.getId(), transaction.getUser());

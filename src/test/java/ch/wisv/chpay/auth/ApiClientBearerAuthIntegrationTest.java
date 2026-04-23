@@ -37,6 +37,7 @@ class ApiClientBearerAuthIntegrationTest {
   @Autowired private WebApplicationContext context;
 
   private String externalPaymentToken;
+  private String secondExternalPaymentToken;
   private String ledstripToken;
 
   @BeforeEach
@@ -47,6 +48,12 @@ class ApiClientBearerAuthIntegrationTest {
     externalPaymentToken =
         createClientToken(
             "events-client", "token-ext", "secret-ext", Set.of(ApiClientRole.EXTERNAL_PAYMENT));
+    secondExternalPaymentToken =
+        createClientToken(
+            "other-events-client",
+            "token-ext-2",
+            "secret-ext-2",
+            Set.of(ApiClientRole.EXTERNAL_PAYMENT));
     ledstripToken =
         createClientToken("led-client", "token-led", "secret-led", Set.of(ApiClientRole.LEDSTRIP));
   }
@@ -143,6 +150,30 @@ class ApiClientBearerAuthIntegrationTest {
     if (!transaction.getApiClient().getId().equals(client.getId())) {
       throw new AssertionError("External transaction API client reference does not match creator");
     }
+  }
+
+  @Test
+  void externalPaymentStatusDoesNotExposeOtherClientTransactions() throws Exception {
+    MvcResult createResult =
+        mockMvc
+            .perform(
+                post("/api/v1/external-payment")
+                    .header("Authorization", "Bearer " + externalPaymentToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(validExternalPaymentRequestJson()))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.transactionId").isNotEmpty())
+            .andReturn();
+
+    String createResponseBody = createResult.getResponse().getContentAsString();
+    String paymentId = extractJsonValue(createResponseBody, "transactionId");
+
+    mockMvc
+        .perform(
+            get("/api/v1/external-payment/status")
+                .queryParam("PaymentId", paymentId)
+                .header("Authorization", "Bearer " + secondExternalPaymentToken))
+        .andExpect(status().isNotFound());
   }
 
   @Test
