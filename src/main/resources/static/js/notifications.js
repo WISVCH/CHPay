@@ -35,7 +35,7 @@ function getAlertClass(type) {
 
 function triggerNotificationFromData(data) {
     const container = document.querySelector('.notification-container');
-    const msg = data.message.trim();
+    const msg = typeof data.message === 'string' ? data.message.trim() : '';
     const alertId = 'alert-' + Date.now();
 
     // Create the new notification using FlyonUI alert
@@ -48,13 +48,24 @@ function triggerNotificationFromData(data) {
     notif.style.transform = 'translateX(100%)';
     notif.style.opacity = '0';
     
-    notif.innerHTML = `
-        <span class="${getIconClass(data.type)} shrink-0 size-6"></span>
-        <p>${msg}</p>
-        <button class="ms-auto cursor-pointer leading-none" onclick="dismissNotification('${alertId}')" aria-label="Close Button">
-            <span class="icon-[tabler--x] size-5"></span>
-        </button>
-    `;
+    const icon = document.createElement('span');
+    icon.className = `${getIconClass(data.type)} shrink-0 size-6`;
+
+    const message = document.createElement('p');
+    message.textContent = msg;
+
+    const closeButton = document.createElement('button');
+    closeButton.className = 'ms-auto cursor-pointer leading-none';
+    closeButton.setAttribute('aria-label', 'Close Button');
+    closeButton.addEventListener('click', () => dismissNotification(alertId));
+
+    const closeIcon = document.createElement('span');
+    closeIcon.className = 'icon-[tabler--x] size-5';
+    closeButton.appendChild(closeIcon);
+
+    notif.appendChild(icon);
+    notif.appendChild(message);
+    notif.appendChild(closeButton);
     
     container.appendChild(notif);
 
@@ -85,4 +96,3 @@ function dismissNotification(alertId) {
         }, 300);
     }
 }
-

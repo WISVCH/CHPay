@@ -1,6 +1,5 @@
 package ch.wisv.chpay.auth.component;
 
-import ch.wisv.chpay.core.service.NotificationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -13,11 +12,10 @@ import org.springframework.web.servlet.support.SessionFlashMapManager;
 @Component
 public class OAuth2FailureHandler implements AuthenticationFailureHandler {
 
-  private final NotificationService notificationService;
+  private static final String GENERIC_AUTH_FAILURE_MESSAGE =
+      "Authentication failed. Please try again.";
 
-  public OAuth2FailureHandler(NotificationService notificationService) {
-    this.notificationService = notificationService;
-  }
+  public OAuth2FailureHandler() {}
 
   /**
    * Handles authentication failure scenarios by redirecting the user to the login page with an
@@ -36,7 +34,7 @@ public class OAuth2FailureHandler implements AuthenticationFailureHandler {
 
     FlashMap flashMap = new FlashMap();
     flashMap.put("notificationType", "error");
-    flashMap.put("notificationMessage", ex.getMessage());
+    flashMap.put("notificationMessage", GENERIC_AUTH_FAILURE_MESSAGE);
 
     new SessionFlashMapManager().saveOutputFlashMap(flashMap, request, response);
 

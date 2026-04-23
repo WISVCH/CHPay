@@ -36,7 +36,6 @@ public class LoginController extends PageController {
   public String loginPage(
       @RequestParam(value = "logout", required = false) String logout,
       @RequestParam(value = "error", required = false) String error,
-      @RequestParam(value = "message", required = false) String errorMessage,
       Model model,
       RedirectAttributes redirectAttributes) {
 
@@ -52,10 +51,8 @@ public class LoginController extends PageController {
     }
 
     if (error != null) {
-      // Use notification service for error message
-      String message =
-          errorMessage != null ? errorMessage : "Authentication failed. Please try again.";
-      notificationService.addErrorMessage(redirectAttributes, message);
+      notificationService.addErrorMessage(
+          redirectAttributes, "Authentication failed. Please try again.");
       return "redirect:/login";
     }
 
