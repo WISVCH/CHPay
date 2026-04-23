@@ -28,8 +28,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
   @Query("SELECT u FROM User u WHERE u.id = :id")
   User findByIdForUpdate(@Param("id") UUID id);
 
-  Optional<User> findByRfid(String rfid);
-
   long countByConfetti(ch.wisv.chpay.core.model.Confetti confetti);
 
   @Modifying

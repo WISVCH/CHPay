@@ -95,6 +95,14 @@
                     </div>
                 </div>
 
+                <div th:if="${transaction.type.name() == 'EXTERNAL_PAYMENT'}" class="py-2 border-b border-base-content/10">
+                    <div class="text-base-content/70 text-sm mb-1">API Client</div>
+                    <div th:if="${externalApiClient != null}">
+                        <div th:text="${externalApiClient.name}">Client Name</div>
+                    </div>
+                    <div th:if="${externalApiClient == null}" class="text-base-content/70">Unknown</div>
+                </div>
+
                 <!-- Status -->
                 <div class="py-2 border-b border-base-content/10">
                     <div class="text-base-content/70 text-sm mb-1">Status</div>
@@ -328,15 +336,23 @@
 
 <!-- Scripts -->
 <th:block layout:fragment="script">
+    <form id="refund-submit-form"
+          th:if="${transaction.getType().name().equals('PAYMENT') || transaction.getType().name().equals('EXTERNAL_PAYMENT')}"
+          th:action="@{/admin/transaction/{id}/refund(id=${transaction.id})}"
+          method="post"
+          class="hidden">
+        <input type="hidden" name="amount" id="refund-submit-amount"/>
+    </form>
     <script th:inline="javascript">
         // Transaction management functionality
         window.addEventListener('load', () => {
             const refundAmountInput = document.getElementById('refundAmount');
             const maxRefundBtn = document.getElementById('maxRefundBtn');
             const confirmRefundBtn = document.getElementById('confirmRefundBtn');
+            const refundSubmitForm = document.getElementById('refund-submit-form');
+            const refundSubmitAmount = document.getElementById('refund-submit-amount');
             
             const maxValue = parseFloat([[${refundPossible ?: 0}]]);
-            const transactionId = [[${transaction.getId()}]];
 
             // Max button functionality
             if (maxRefundBtn && refundAmountInput) {
@@ -405,7 +421,10 @@
                     
                     // Small delay to show the notification, then redirect
                     setTimeout(() => {
-                        window.location.href = `/admin/transaction/${transactionId}/refund?amount=${refundAmount}`;
+                        if (refundSubmitAmount) {
+                            refundSubmitAmount.value = refundAmount.toFixed(2);
+                        }
+                        refundSubmitForm?.submit();
                     }, 500);
                 });
             }

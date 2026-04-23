@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasRole('SUPERADMIN')")
 @RequestMapping(value = "/admin/log")
 public class AdminLogController extends AdminController {
   @GetMapping

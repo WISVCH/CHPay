@@ -35,7 +35,7 @@ public class AdminPaymentRequestController extends AdminController {
     this.adminPaymentRequestService = adminPaymentRequestService;
   }
 
-  @GetMapping(value = "/{tx}/expire")
+  @PostMapping(value = "/{tx}/expire")
   public String expirePaymentRequest(
       Model model, @PathVariable String tx, RedirectAttributes redirectAttributes) {
     PaymentRequest paymentRequest =

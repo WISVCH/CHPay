@@ -123,6 +123,13 @@ public class TopUpController extends CustomerController {
                 redirectAttributes, "Invalid redirect payment reference.");
             return "redirect:/topup";
           }
+
+          if (redirectTx.getUser() == null
+              || !redirectTx.getUser().getId().equals(currentUser.getId())) {
+            notificationService.addErrorMessage(
+                redirectAttributes, "Invalid redirect payment reference.");
+            return "redirect:/topup";
+          }
         }
         transaction.setRedirectPayment(redirectTx);
         transactionRepository.save(transaction);
@@ -138,7 +145,7 @@ public class TopUpController extends CustomerController {
       }
     } catch (Exception e) {
       notificationService.addErrorMessage(
-          redirectAttributes, "An unexpected error occurred: " + e.getMessage());
+          redirectAttributes, "An unexpected error occurred. Please try again.");
     }
     return "redirect:/topup";
   }
@@ -157,6 +164,7 @@ public class TopUpController extends CustomerController {
         transactionRepository
             .findById(UUID.fromString(key))
             .orElseThrow(() -> new NoSuchElementException("Transaction not found: " + key));
+    assertCurrentUserOwnsTransaction(currentUser, t);
     model.addAttribute(MODEL_ATTR_TRANSACTION_ID, key);
     model.addAttribute("isTopup", t.getType().equals(Transaction.TransactionType.TOP_UP));
     if (t instanceof TopupTransaction topupTransaction

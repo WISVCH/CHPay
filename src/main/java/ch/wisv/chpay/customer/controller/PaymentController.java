@@ -1,7 +1,6 @@
 package ch.wisv.chpay.customer.controller;
 
 import ch.wisv.chpay.api.external_payment.service.ExternalPaymentServiceImpl;
-import ch.wisv.chpay.core.controller.PageController;
 import ch.wisv.chpay.core.exception.TransactionAlreadyFulfilled;
 import ch.wisv.chpay.core.model.PaymentRequest;
 import ch.wisv.chpay.core.model.User;
@@ -19,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestClientException;
@@ -27,7 +27,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @PreAuthorize("hasRole('USER') and !hasRole('BANNED')")
 @RequestMapping("/payment")
-public class PaymentController extends PageController {
+public class PaymentController extends CustomerController {
   /** Model attr of the Transaction. */
   private static final String MODEL_ATTR_TX = MODEL_ATTR_TRANSACTION;
 
@@ -101,6 +101,16 @@ public class PaymentController extends PageController {
         transactionService
             .getTransactionById(UUID.fromString(tx))
             .orElseThrow(() -> new NoSuchElementException("Transaction not found"));
+    User currentUser = (User) model.getAttribute("currentUser");
+    // External checkout links are created without a user and are intended to be claimable by the
+    // first authenticated user that completes the payment.
+    boolean isClaimableExternalCheckout =
+        transaction.getType() == Transaction.TransactionType.EXTERNAL_PAYMENT
+            && transaction.getUser() == null
+            && transaction.getStatus() == Transaction.TransactionStatus.PENDING;
+    if (!isClaimableExternalCheckout) {
+      assertCurrentUserOwnsTransaction(currentUser, transaction);
+    }
 
     if (transaction.getStatus().equals(Transaction.TransactionStatus.FAILED)
         || transaction.getStatus().equals(Transaction.TransactionStatus.SUCCESSFUL)) {
@@ -121,20 +131,20 @@ public class PaymentController extends PageController {
    * @param redirectAttributes attributes used to pass temporary data during a redirect
    * @return a redirect string to the main index page after processing the transaction
    */
-  @PreAuthorize("hasRole('USER') and !hasRole('BANNED')")
-  @GetMapping(value = "pay")
-  public String getPage(
+  @PostMapping(value = "pay")
+  public String processPayment(
       Model model, @RequestParam(name = "tx") String tx, RedirectAttributes redirectAttributes) {
     Transaction transaction =
         transactionService
             .getTransactionById(UUID.fromString(tx))
             .orElseThrow(() -> new NoSuchElementException("Transaction not found"));
+    User currentUser = (User) model.getAttribute("currentUser");
     if (transaction.getType().equals(Transaction.TransactionType.EXTERNAL_PAYMENT)) {
-      return "redirect:/payment/externalcomplete/" + transaction.getId();
+      return completeExternalTransactionInternal(tx, model);
     }
+    assertCurrentUserOwnsTransaction(currentUser, transaction);
 
-    transactionService.fullfillTransaction(
-        transaction.getId(), (User) model.getAttribute("currentUser"));
+    transactionService.fullfillTransaction(transaction.getId(), currentUser);
 
     notificationService.addSuccessMessage(redirectAttributes, "Authorized Transaction");
     return "redirect:/payment/complete/" + tx;
@@ -154,6 +164,8 @@ public class PaymentController extends PageController {
         transactionRepository
             .findById(UUID.fromString(key))
             .orElseThrow(() -> new NoSuchElementException("Transaction not found: " + key));
+    User currentUser = (User) model.getAttribute("currentUser");
+    assertCurrentUserOwnsTransaction(currentUser, t);
     model.addAttribute(MODEL_ATTR_TRANSACTION_ID, key);
     model.addAttribute("isTopup", t.getType().equals(Transaction.TransactionType.TOP_UP));
     if (t.supportsRequest() && t.getRequest() != null) {
@@ -179,9 +191,13 @@ public class PaymentController extends PageController {
    * @throws RestClientException If an error occurs while calling {@code
    *     externalPaymentServiceImpl.postToWebhook()}.
    */
-  @PreAuthorize("hasRole('USER') and !hasRole('BANNED')")
-  @GetMapping("/externalcomplete/{id}")
+  @PostMapping("/externalcomplete/{id}")
   public String completeExternalTransaction(@PathVariable String id, Model model)
+      throws RestClientException {
+    return completeExternalTransactionInternal(id, model);
+  }
+
+  private String completeExternalTransactionInternal(String id, Model model)
       throws RestClientException {
     ExternalTransaction transaction =
         (ExternalTransaction)
@@ -195,10 +211,12 @@ public class PaymentController extends PageController {
 
     User currentUser = (User) model.getAttribute("currentUser");
 
-    // If transaction doesn't have a user (anonymous), link the current user to it
+    // If transaction doesn't have a user (anonymous), link the current user to it.
     if (transaction.getUser() == null) {
       transaction.linkUser(currentUser);
       transactionRepository.save(transaction);
+    } else {
+      assertCurrentUserOwnsTransaction(currentUser, transaction);
     }
 
     transactionService.fullfillExternalTransaction(transaction.getId(), transaction.getUser());

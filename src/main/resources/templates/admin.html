@@ -14,10 +14,30 @@
                 <h1 class="text-3xl font-bold text-base-content mb-2">Admin Dashboard</h1>
             </div>
 
-            <!-- Main Stats Section -->
+            <!-- Total Balance Card -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-semibold text-base-content mb-6">Total Balance</h2>
+                <div class="card bg-base-100 shadow-lg border border-base-content/10">
+                    <div class="card-body">
+                        <div class="flex items-center gap-4">
+                            <div class="avatar avatar-placeholder">
+                                <div class="bg-success/20 text-success size-16 rounded-full">
+                                    <span class="icon-[tabler--coins] size-8"></span>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <div class="stat-value text-success text-4xl" th:text="'€' + ${balanceAvailable}">€0.00</div>
+                                <p class="text-base-content/70">Total funds available across all users</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Overview -->
             <div class="mb-8">
                 <h2 class="text-2xl font-semibold text-base-content mb-6">System Overview</h2>
-                <div class="stats stats-vertical sm:stats-horizontal stats-border shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow w-full bg-base-100 rounded-lg">
+                <div class="stats stats-vertical sm:stats-horizontal stats-border w-full bg-base-100 rounded-lg shadow-lg border border-base-content/10">
                     <div class="stat">
                         <div class="stat-figure">
                             <div class="avatar avatar-placeholder">
@@ -65,25 +85,117 @@
                         <div class="stat-title">Max Balance</div>
                         <div class="stat-value text-warning" th:text="'€' + ${maxBalance}">€0.00</div>
                     </div>
-
                 </div>
             </div>
 
-            <!-- Total Balance Card -->
             <div class="mb-8">
-                <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow">
-                    <div class="card-body">
-                        <div class="flex items-center gap-4">
-                            <div class="avatar avatar-placeholder">
-                                <div class="bg-success/20 text-success size-16 rounded-full">
-                                    <span class="icon-[tabler--coins] size-8"></span>
-                                </div>
+                <h2 class="text-2xl font-semibold text-base-content mb-6">Monthly Breakdown</h2>
+                <div class="card bg-base-100 shadow-lg border border-base-content/10">
+                    <div class="card-body p-0">
+                        <div class="border-base-content/25 flex items-center border-b px-5 py-3 gap-3">
+                            <div>
+                                <h3 class="text-lg font-semibold text-base-content">Balance Breakdown</h3>
                             </div>
-                            <div class="flex-1">
-                                <h2 class="card-title text-2xl">Total Balance</h2>
-                                <div class="stat-value text-success text-4xl" th:text="'€' + ${balanceAvailable}">€0.00</div>
-                                <p class="text-base-content/70">Total funds available across all users</p>
+                            <div class="flex flex-1 items-center justify-end gap-3">
+                                <select
+                                        data-select='{
+                                            "placeholder": "Select month...",
+                                            "toggleTag": "<button type=\"button\" aria-expanded=\"false\"></button>",
+                                            "toggleClasses": "advance-select-toggle advance-select-sm max-sm:w-40 w-64",
+                                            "dropdownClasses": "advance-select-menu max-sm:w-44 w-72",
+                                            "optionClasses": "advance-select-option selected:select-active",
+                                            "optionTemplate": "<div class=\"flex justify-between items-center w-full\"><span data-title></span><span class=\"icon-[tabler--check] shrink-0 size-3 text-primary hidden selected:block \"></span></div>",
+                                            "extraMarkup": "<span class=\"icon-[tabler--caret-up-down] shrink-0 size-4 text-base-content absolute top-1/2 end-2 -translate-y-1/2 \"></span>"
+                                        }'
+                                        class="hidden"
+                                        id="yearmonth-select"
+                                        th:data-selected-yearmonth="${selectedYearMonth}">
+                                    <option th:each="yearMonth : ${allPossibleMonths}"
+                                            th:value="${yearMonth}"
+                                            th:text="${#strings.capitalize(#temporals.format(yearMonth.atDay(1), 'MMMM yyyy'))}"
+                                            th:selected="${yearMonth.equals(selectedYearMonth)}">
+                                        January 2025
+                                    </option>
+                                </select>
                             </div>
+                        </div>
+
+                        <div class="w-full overflow-x-auto h-fit">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th class="text-right">Transactions</th>
+                                    <th class="text-right">Amount</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr class="font-bold bg-base-200/70">
+                                    <td>Incoming</td>
+                                    <td class="text-right"></td>
+                                    <td class="text-right font-mono text-success"
+                                        th:text="'€' + ${#numbers.formatDecimal(monthlyBreakdown.totalIncoming(), 1, 2)}">€0.00</td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-8">Top-ups</td>
+                                    <td class="text-right font-semibold" th:text="${monthlyBreakdown.topUpsTransactionCount}">0</td>
+                                    <td class="text-right font-mono text-success font-semibold"
+                                        th:text="'€' + ${#numbers.formatDecimal(monthlyBreakdown.topUpsAmount, 1, 2)}">€0.00</td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-8">Refunds</td>
+                                    <td class="text-right font-semibold" th:text="${monthlyBreakdown.refundsTransactionCount}">0</td>
+                                    <td class="text-right font-mono text-success font-semibold"
+                                        th:text="'€' + ${#numbers.formatDecimal(monthlyBreakdown.refundsAmount, 1, 2)}">€0.00</td>
+                                </tr>
+
+                                <tr class="font-bold bg-base-200/70">
+                                    <td>Outgoing</td>
+                                    <td class="text-right"></td>
+                                    <td class="text-right font-mono text-error"
+                                        th:text="'-€' + ${#numbers.formatDecimal(monthlyBreakdown.totalOutgoing(), 1, 2)}">-€0.00</td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-8">Payments</td>
+                                    <td class="text-right font-semibold"
+                                        th:text="${monthlyBreakdown.totalOutgoingPaymentsTransactionCount()}">0</td>
+                                    <td class="text-right font-mono text-error font-semibold"
+                                        th:text="'-€' + ${#numbers.formatDecimal(monthlyBreakdown.totalOutgoingPayments(), 1, 2)}">-€0.00</td>
+                                </tr>
+                                <tr th:each="paymentLine : ${monthlyBreakdown.paymentsByRequest}">
+                                    <td class="ps-14">
+                                        <span th:text="${paymentLine.requestDescription}">Request description</span>
+                                    </td>
+                                    <td class="text-right"
+                                        th:text="${paymentLine.transactionCount}">0</td>
+                                    <td class="text-right font-mono text-error"
+                                        th:text="'-€' + ${#numbers.formatDecimal(paymentLine.amount, 1, 2)}">-€0.00</td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-8">External payments</td>
+                                    <td class="text-right font-semibold"
+                                        th:text="${monthlyBreakdown.totalOutgoingExternalPaymentsTransactionCount()}">0</td>
+                                    <td class="text-right font-mono text-error font-semibold"
+                                        th:text="'-€' + ${#numbers.formatDecimal(monthlyBreakdown.totalOutgoingExternalPayments(), 1, 2)}">-€0.00</td>
+                                </tr>
+                                <tr th:each="externalLine : ${monthlyBreakdown.externalPaymentsByClient}">
+                                    <td class="ps-14" th:text="${externalLine.clientName}">API client</td>
+                                    <td class="text-right"
+                                        th:text="${externalLine.transactionCount}">0</td>
+                                    <td class="text-right font-mono text-error"
+                                        th:text="'-€' + ${#numbers.formatDecimal(externalLine.amount, 1, 2)}">-€0.00</td>
+                                </tr>
+                                </tbody>
+                                <tfoot>
+                                <tr class="font-bold bg-base-200/70">
+                                    <td>Net Change</td>
+                                    <td></td>
+                                    <td class="text-right font-mono"
+                                        th:classappend="${monthlyBreakdown.difference() >= 0} ? 'text-success' : 'text-error'"
+                                        th:text="${monthlyBreakdown.difference() >= 0 ? '+€' : '-€'} + ${#numbers.formatDecimal(monthlyBreakdown.difference().abs(), 1, 2)}">+€0.00</td>
+                                </tr>
+                                </tfoot>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -91,6 +203,23 @@
 
         </div>
     </div>
+
+    <th:block layout:fragment="script">
+        <script>
+            window.addEventListener('load', () => {
+                const yearMonthSelect = document.querySelector('#yearmonth-select');
+                if (!yearMonthSelect) {
+                    return;
+                }
+                yearMonthSelect.addEventListener('change', function () {
+                    const selectedYearMonth = this.value;
+                    if (!selectedYearMonth) {
+                        return;
+                    }
+                    window.location.href = `/admin?yearMonth=${selectedYearMonth}`;
+                });
+            });
+        </script>
+    </th:block>
 </body>
-</html>
 </html>

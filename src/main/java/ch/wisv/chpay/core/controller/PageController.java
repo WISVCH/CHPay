@@ -10,6 +10,9 @@ public abstract class PageController {
   /** Model attr Is Admin. */
   public static final String MODEL_ATTR_IS_ADMIN = "isAdmin";
 
+  /** Model attr Is Super Admin. */
+  public static final String MODEL_ATTR_IS_SUPER_ADMIN = "isSuperAdmin";
+
   /** Model attr System Frozen. */
   public static final String MODEL_ATTR_SYSTEM_FROZEN = "systemFrozen";
 

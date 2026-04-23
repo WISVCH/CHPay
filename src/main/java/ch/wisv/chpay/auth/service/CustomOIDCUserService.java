@@ -44,7 +44,8 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class CustomOIDCUserService extends OidcUserService {
 
-  @Getter @Setter private List<String> adminGroups;
+  @Getter @Setter private List<String> adminGroups = List.of();
+  @Getter @Setter private List<String> superAdminGroups = List.of();
   @Getter @Setter private String claimName;
 
   private final UserRepository userRepository;
@@ -90,7 +91,13 @@ public class CustomOIDCUserService extends OidcUserService {
     if (user.getBanned()) {
       authorities.add(new SimpleGrantedAuthority("ROLE_BANNED"));
     }
-    if (groups.stream().anyMatch(adminGroups::contains)) {
+    boolean isSuperAdmin = groups.stream().anyMatch(superAdminGroups::contains);
+    boolean isAdmin = groups.stream().anyMatch(adminGroups::contains);
+
+    if (isSuperAdmin) {
+      authorities.add(new SimpleGrantedAuthority("ROLE_SUPERADMIN"));
+      authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+    } else if (isAdmin) {
       authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
     }
 

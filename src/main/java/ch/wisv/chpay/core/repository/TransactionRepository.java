@@ -17,6 +17,30 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
+  interface AmountCountProjection {
+    BigDecimal getTotalAmount();
+
+    Long getTransactionCount();
+  }
+
+  interface PaymentRequestAggregateProjection {
+    UUID getRequestId();
+
+    String getRequestDescription();
+
+    BigDecimal getTotalAmount();
+
+    Long getTransactionCount();
+  }
+
+  interface ExternalApiAggregateProjection {
+    String getApiClientName();
+
+    BigDecimal getTotalAmount();
+
+    Long getTransactionCount();
+  }
+
   List<Transaction> findByUser(User user);
 
   long countByUserAndStatusInAndTypeIn(
@@ -78,22 +102,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
 
   @Query("SELECT t.id FROM Transaction t WHERE t.status = :status AND t.timestamp < :cutoff")
   List<UUID> findExpiredTransactionIds(Transaction.TransactionStatus status, LocalDateTime cutoff);
-
-  /**
-   * Find all transactions for a given PaymentRequest ID whose status is SUCCESSFUL, ordered by
-   * timestamp ascendingly.
-   */
-  @Query(
-      """
-        SELECT t
-          FROM Transaction t
-          JOIN t.request r
-         WHERE r.request_id = :requestId
-           AND t.status      = :status
-         ORDER BY t.timestamp ASC
-      """)
-  List<Transaction> findAllSuccessfulForRequest(
-      @Param("requestId") UUID requestId, @Param("status") TransactionStatus status);
 
   /**
    * Find all transactions for a given PaymentRequest ID whose status is SUCCESSFUL, ordered by
@@ -203,4 +211,66 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
                       ORDER BY YEAR(t.timestamp) DESC, MONTH(t.timestamp) DESC
                     """)
   List<Object[]> countFulfilmentsByRequestIdPerMonth(@Param("requestId") UUID requestId);
+
+  /** Aggregate successful top-ups for a month. */
+  @Query(
+      """
+        SELECT COALESCE(SUM(t.amount), 0) AS totalAmount,
+               COUNT(t) AS transactionCount
+        FROM Transaction t
+        WHERE t.timestamp >= :start
+          AND t.timestamp < :end
+          AND t.type = 'TOP_UP'
+          AND t.status = 'SUCCESSFUL'
+      """)
+  AmountCountProjection findTopUpAggregateForPeriod(
+      @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+  /** Aggregate successful refunds for a month. */
+  @Query(
+      """
+        SELECT COALESCE(SUM(t.amount), 0) AS totalAmount,
+               COUNT(t) AS transactionCount
+        FROM Transaction t
+        WHERE t.timestamp >= :start
+          AND t.timestamp < :end
+          AND t.type = 'REFUND'
+          AND t.status = 'SUCCESSFUL'
+      """)
+  AmountCountProjection findRefundAggregateForPeriod(
+      @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+  /** Aggregate outgoing internal payments grouped by request for a month. */
+  @Query(
+      """
+        SELECT pt.request.request_id AS requestId,
+               pt.request.description AS requestDescription,
+               COALESCE(SUM(pt.amount), 0) AS totalAmount,
+               COUNT(pt) AS transactionCount
+        FROM PaymentTransaction pt
+        WHERE pt.timestamp >= :start
+          AND pt.timestamp < :end
+          AND pt.status IN ('SUCCESSFUL', 'REFUNDED', 'PARTIALLY_REFUNDED')
+        GROUP BY pt.request.request_id, pt.request.description
+        ORDER BY COALESCE(SUM(pt.amount), 0) ASC
+      """)
+  List<PaymentRequestAggregateProjection> findPaymentRequestAggregatesForPeriod(
+      @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+  /** Aggregate outgoing external payments grouped by API client for a month. */
+  @Query(
+      """
+        SELECT COALESCE(ac.name, 'Unknown') AS apiClientName,
+               COALESCE(SUM(et.amount), 0) AS totalAmount,
+               COUNT(et) AS transactionCount
+        FROM ExternalTransaction et
+        LEFT JOIN et.apiClient ac
+        WHERE et.timestamp >= :start
+          AND et.timestamp < :end
+          AND et.status IN ('SUCCESSFUL', 'REFUNDED', 'PARTIALLY_REFUNDED')
+        GROUP BY ac.id, ac.name
+        ORDER BY COALESCE(SUM(et.amount), 0) ASC
+      """)
+  List<ExternalApiAggregateProjection> findExternalPaymentAggregatesForPeriod(
+      @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 }

@@ -1,5 +1,6 @@
 package ch.wisv.chpay.core.service;
 
+import ch.wisv.chpay.api.ledstrip.LedWebSocketHandler;
 import ch.wisv.chpay.core.aop.CheckSystemNotFrozen;
 import ch.wisv.chpay.core.exception.IllegalRefundException;
 import ch.wisv.chpay.core.exception.InsufficientBalanceException;
@@ -31,15 +32,18 @@ public class TransactionService {
   private final BalanceService balanceService;
   private final RequestRepository requestRepository;
   private static final Logger logger = LoggerFactory.getLogger(TransactionService.class);
+  private final LedWebSocketHandler ledHandler;
 
   @Autowired
   TransactionService(
       TransactionRepository transactionRepository,
       BalanceService balanceService,
-      RequestRepository requestRepository) {
+      RequestRepository requestRepository,
+      LedWebSocketHandler ledHandler) {
     this.transactionRepository = transactionRepository;
     this.balanceService = balanceService;
     this.requestRepository = requestRepository;
+    this.ledHandler = ledHandler;
   }
 
   /**
@@ -218,6 +222,7 @@ public class TransactionService {
     if (request != null) {
       request.addFulfilment();
       requestRepository.save(request);
+      ledHandler.broadcastPaymentSuccess(55, 125, 255, "random"); // Customize RGB/pattern as needed
     }
 
     return result;

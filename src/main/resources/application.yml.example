@@ -65,16 +65,17 @@ mollie:
   transaction_fee: ${TRANSACTION_FEE:0.32}
 chpay:
   admin_groups:
-    - beheer
     - bestuur
     - vc
+  super_admin_groups:
+    - beheer
+    - pccom
   claim_name: google_groups
   transactions:
     expire_every_minutes: ${EXPIRE_EVERY_MINUTE:20}
     expiration_fixed_rate: ${EXPIRATION_FIXED_RATE:1}
   settings:
     mintopup: ${MIN_TOPUP:2}
-  api_key: ${EVENTS_API_KEY:} #Api key to be used when redirecting from events, just set it to whatever
 logging:
   level:
     org.hibernate.loader.Loader: WARN

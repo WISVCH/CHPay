@@ -45,11 +45,15 @@ public class GlobalModelAttributes {
       if (authentication.getPrincipal() instanceof OidcUser oidcUser) {
         boolean isAdmin =
             oidcUser.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        boolean isSuperAdmin =
+            oidcUser.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_SUPERADMIN"));
         model.addAttribute(PageController.MODEL_ATTR_IS_ADMIN, isAdmin);
+        model.addAttribute(PageController.MODEL_ATTR_IS_SUPER_ADMIN, isSuperAdmin);
       } else if (authentication
           .getAuthorities()
           .contains(new SimpleGrantedAuthority("ROLE_API_USER"))) {
         model.addAttribute(PageController.MODEL_ATTR_IS_ADMIN, false);
+        model.addAttribute(PageController.MODEL_ATTR_IS_SUPER_ADMIN, false);
       }
     }
   }

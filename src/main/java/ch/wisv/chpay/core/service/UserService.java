@@ -3,7 +3,6 @@ package ch.wisv.chpay.core.service;
 import ch.wisv.chpay.core.model.User;
 import ch.wisv.chpay.core.repository.UserRepository;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -63,38 +62,5 @@ public class UserService {
   @PreAuthorize("hasRole('ADMIN')")
   public User getUserByIdForUpdate(UUID openID) {
     return userRepository.findByIdForUpdate(openID);
-  }
-
-  /**
-   * Changes a user's RFID id.
-   *
-   * @param openId of the user to perform the change on
-   * @param newRfid to replace the old RFID with
-   */
-  @Transactional
-  @PreAuthorize("hasRole('ADMIN')")
-  public void changeUserRfid(String openId, String newRfid) {
-    User user =
-        userRepository
-            .findByOpenID(openId)
-            .orElseThrow(() -> new NoSuchElementException("No user found for OpenID: " + openId));
-    user.setRfid(newRfid);
-    userRepository.save(user);
-  }
-
-  /**
-   * Clears a given user's RFID.
-   *
-   * @param openId
-   */
-  @Transactional
-  @PreAuthorize("hasRole('ADMIN')")
-  public void clearUserRfid(String openId) {
-    User user =
-        userRepository
-            .findByOpenID(openId)
-            .orElseThrow(() -> new NoSuchElementException("User not found: " + openId));
-    user.setRfid(null);
-    userRepository.save(user);
   }
 }

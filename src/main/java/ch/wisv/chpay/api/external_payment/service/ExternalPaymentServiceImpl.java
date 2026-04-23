@@ -1,5 +1,7 @@
 package ch.wisv.chpay.api.external_payment.service;
 
+import ch.wisv.chpay.api.client.model.ApiClient;
+import ch.wisv.chpay.api.client.service.ApiClientService;
 import ch.wisv.chpay.api.external_payment.model.CHPaymentRequest;
 import ch.wisv.chpay.api.external_payment.model.CHPaymentResponse;
 import ch.wisv.chpay.core.model.PendingWebhook;
@@ -7,6 +9,8 @@ import ch.wisv.chpay.core.model.transaction.ExternalTransaction;
 import ch.wisv.chpay.core.repository.PendingWebhookRepository;
 import ch.wisv.chpay.core.repository.TransactionRepository;
 import java.time.Instant;
+import java.util.NoSuchElementException;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,14 +37,17 @@ public class ExternalPaymentServiceImpl implements ExternalPaymentService {
 
   private static final Logger logger = LoggerFactory.getLogger(ExternalPaymentServiceImpl.class);
   private final TransactionRepository repository;
+  private final ApiClientService apiClientService;
 
   public ExternalPaymentServiceImpl(
       TransactionRepository repository,
       PendingWebhookRepository webhookRepo,
-      RestTemplate restTemplate) {
+      RestTemplate restTemplate,
+      ApiClientService apiClientService) {
     this.repository = repository;
     this.webhookRepo = webhookRepo;
     this.restTemplate = restTemplate;
+    this.apiClientService = apiClientService;
   }
 
   /**
@@ -54,11 +61,17 @@ public class ExternalPaymentServiceImpl implements ExternalPaymentService {
    */
   @Override
   @Transactional
-  public CHPaymentResponse createTransaction(CHPaymentRequest request) {
+  public CHPaymentResponse createTransaction(CHPaymentRequest request, UUID apiClientId) {
+    ApiClient apiClient =
+        apiClientService
+            .findClientById(apiClientId)
+            .orElseThrow(() -> new NoSuchElementException("API client not found"));
+
     logger.info(
-        "Creating external transaction for amount: {}, consumer: {}",
+        "Creating external transaction for amount: {}, consumer: {}, apiClientId: {}",
         request.getAmount(),
-        request.getConsumerEmail());
+        request.getConsumerEmail(),
+        apiClient.getId());
 
     ExternalTransaction tx =
         ExternalTransaction.createExternalTransaction(
@@ -66,7 +79,8 @@ public class ExternalPaymentServiceImpl implements ExternalPaymentService {
             request.getDescription(),
             request.getRedirectURL(),
             request.getWebhookURL(),
-            request.getFallbackURL());
+            request.getFallbackURL(),
+            apiClient);
     repository.save(tx);
 
     String checkoutUrl = CHPayUri + "/payment/transaction/" + tx.getId();

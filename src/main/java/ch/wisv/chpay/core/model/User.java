@@ -16,7 +16,6 @@ import lombok.Setter;
     indexes = {
       @Index(name = "idx_user_email", columnList = "email"),
       @Index(name = "idx_user_openid", columnList = "open_id"),
-      @Index(name = "idx_user_rfid", columnList = "rfid"),
       @Index(name = "idx_users_confetti_id", columnList = "confetti_id")
     })
 @Getter
@@ -37,10 +36,6 @@ public class User {
   @Setter
   @Column(nullable = false, unique = true)
   private String email;
-
-  @Setter
-  @Column(nullable = true, unique = true)
-  private String rfid;
 
   @Setter
   @ManyToOne(fetch = FetchType.EAGER)

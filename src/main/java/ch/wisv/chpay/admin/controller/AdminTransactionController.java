@@ -1,5 +1,6 @@
 package ch.wisv.chpay.admin.controller;
 
+import ch.wisv.chpay.core.model.transaction.ExternalTransaction;
 import ch.wisv.chpay.core.model.transaction.PaymentTransaction;
 import ch.wisv.chpay.core.model.transaction.RefundTransaction;
 import ch.wisv.chpay.core.model.transaction.Transaction;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -33,7 +35,7 @@ public class AdminTransactionController extends AdminController {
     this.notificationService = notificationService;
   }
 
-  @GetMapping(value = "/{tx}/refund")
+  @PostMapping(value = "/{tx}/refund")
   public String processRefund(
       Model model,
       @PathVariable String tx,
@@ -86,6 +88,11 @@ public class AdminTransactionController extends AdminController {
     // check for payment transaction and get the request id if present
     if (transaction.getClass() == PaymentTransaction.class) {
       requestId = ((PaymentTransaction) transaction).getRequest().getRequest_id().toString();
+    }
+
+    model.addAttribute("externalApiClient", null);
+    if (transaction instanceof ExternalTransaction externalTransaction) {
+      model.addAttribute("externalApiClient", externalTransaction.getApiClient());
     }
 
     model.addAttribute(MODEL_ATTR_TRANSACTION, transaction);

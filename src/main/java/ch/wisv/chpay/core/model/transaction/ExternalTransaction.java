@@ -1,9 +1,12 @@
 package ch.wisv.chpay.core.model.transaction;
 
+import ch.wisv.chpay.api.client.model.ApiClient;
 import ch.wisv.chpay.core.model.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import java.math.BigDecimal;
 import lombok.Getter;
 
@@ -23,16 +26,23 @@ public class ExternalTransaction extends Transaction {
   @Column(nullable = false)
   private String fallbackUrl;
 
+  @Getter
+  @ManyToOne(optional = true)
+  @JoinColumn(name = "api_client_id")
+  private ApiClient apiClient;
+
   private ExternalTransaction(
       BigDecimal amount,
       String description,
       String redirectUrl,
       String webhookUrl,
-      String fallbackUrl) {
+      String fallbackUrl,
+      ApiClient apiClient) {
     super(amount, description, TransactionStatus.PENDING, TransactionType.EXTERNAL_PAYMENT);
     this.redirectUrl = redirectUrl;
     this.webhookUrl = webhookUrl;
     this.fallbackUrl = fallbackUrl;
+    this.apiClient = apiClient;
   }
 
   protected ExternalTransaction() {
@@ -55,7 +65,8 @@ public class ExternalTransaction extends Transaction {
       String description,
       String redirectUrl,
       String webhookUrl,
-      String fallbackUrl) {
+      String fallbackUrl,
+      ApiClient apiClient) {
     if (amount.compareTo(BigDecimal.ZERO) >= 0) {
       throw new IllegalArgumentException("The amount of a payment must be negative");
     }
@@ -71,7 +82,8 @@ public class ExternalTransaction extends Transaction {
     if (fallbackUrl == null || fallbackUrl.trim().isEmpty()) {
       throw new IllegalArgumentException("Fallback URL cannot be null or empty");
     }
-    return new ExternalTransaction(amount, description, redirectUrl, webhookUrl, fallbackUrl);
+    return new ExternalTransaction(
+        amount, description, redirectUrl, webhookUrl, fallbackUrl, apiClient);
   }
 
   /**

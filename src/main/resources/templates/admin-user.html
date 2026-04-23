@@ -76,26 +76,6 @@
                         <div class="font-mono text-sm" th:text="${user.openID}">user123</div>
                     </div>
 
-                    <!-- RFID -->
-                    <div class="py-2 border-b border-base-content/10">
-                        <div class="text-base-content/70 text-sm mb-1">RFID</div>
-                        <div class="flex items-center justify-between">
-                            <span class="font-mono text-sm" th:text="${user.rfid} ?: 'Not available'">Not available</span>
-                            <div class="flex gap-2">
-                                <button class="btn btn-secondary btn-sm" id="change-rfid-button">
-                                    <span class="icon-[tabler--edit] size-4"></span>
-                                    Change
-                                </button>
-                                <button th:if="${user.rfid != null}" 
-                                        class="btn btn-error btn-sm" 
-                                        id="clear-rfid-button">
-                                    <span class="icon-[tabler--trash] size-4"></span>
-                                    Clear
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- User ID -->
                     <div class="py-2 border-b border-base-content/10">
                         <div class="text-base-content/70 text-sm mb-1">User ID</div>
@@ -200,12 +180,9 @@
         // User management functionality
         window.addEventListener('load', () => {
             const banUserBtn = document.querySelector('.ban-user-btn');
-            const changeRfidBtn = document.getElementById('change-rfid-button');
-            const clearRfidBtn = document.getElementById('clear-rfid-button');
             
             const currentUserId = [[${currentUser.getId()}]];
             const csrfToken = [[${_csrf.token}]];
-            const userOpenId = [[${user.getOpenID()}]];
 
 
             // Ban/unban confirmation function (same as admin-user-table.html)
@@ -313,28 +290,8 @@
                     confirmBanAction(this);
                 });
             }
-
-            // RFID functionality (minimal changes from original)
-            if (changeRfidBtn) {
-                changeRfidBtn.addEventListener('click', function() {
-                    // Trigger existing RFID change functionality
-                    if (typeof changeRfid === 'function') {
-                        changeRfid();
-                    }
-                });
-            }
-
-            if (clearRfidBtn) {
-                clearRfidBtn.addEventListener('click', function() {
-                    // Trigger existing RFID clear functionality
-                    if (typeof clearRfid === 'function') {
-                        clearRfid();
-                    }
-                });
-            }
         });
     </script>
-    <script th:src="@{/js/rfid-change.js}"></script>
 </th:block>
 </body>
 </html>

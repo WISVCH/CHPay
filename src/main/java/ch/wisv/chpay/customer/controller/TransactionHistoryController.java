@@ -13,8 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -132,23 +130,14 @@ public class TransactionHistoryController extends CustomerController {
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
       }
 
-      // Check if user is admin
-      Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-      boolean isAdmin =
-          authentication.getAuthorities().stream()
-              .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
-
-      // Get the transaction to verify ownership
       Optional<Transaction> transactionOpt =
           transactionService.getTransactionById(UUID.fromString(id));
       if (transactionOpt.isEmpty()) {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
       }
-
-      Transaction transaction = transactionOpt.get();
-
-      // Check if user owns the transaction or is admin
-      if (!isAdmin && !transaction.getUser().getId().equals(currentUser.getId())) {
+      try {
+        assertCurrentUserOwnsTransaction(currentUser, transactionOpt.get());
+      } catch (org.springframework.security.access.AccessDeniedException ex) {
         return new ResponseEntity<>(HttpStatus.FORBIDDEN);
       }
 

@@ -1,6 +1,6 @@
 package ch.wisv.chpay.auth.config;
 
-import ch.wisv.chpay.auth.component.ApiKeyFilter;
+import ch.wisv.chpay.api.client.model.ApiClientRole;
 import ch.wisv.chpay.auth.component.CustomAccessDeniedHandler;
 import ch.wisv.chpay.auth.component.OAuth2FailureHandler;
 import ch.wisv.chpay.auth.service.CustomOIDCUserService;
@@ -18,12 +18,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInitiatedLogoutSuccessHandler;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -48,9 +50,6 @@ public class AuthSecConfig {
 
   @Autowired private ClientRegistrationRepository clientRegistrationRepository;
 
-  @Value("${chpay.api_key}")
-  private String apiKey;
-
   @Bean
   public SessionRegistry sessionRegistry() {
     return new SessionRegistryImpl();
@@ -68,13 +67,9 @@ public class AuthSecConfig {
    * @throws Exception if there is an error during configuration
    */
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+  public SecurityFilterChain filterChain(HttpSecurity http, OpaqueTokenIntrospector introspector)
+      throws Exception {
     configureRequestAuthorization(http);
-
-    // Add API key filter before OAuth2 login
-    // Create the filter directly with the configured API key
-    ApiKeyFilter apiKeyFilter = new ApiKeyFilter(apiKey);
-    http.addFilterBefore(apiKeyFilter, UsernamePasswordAuthenticationFilter.class);
 
     // Create and configure the success handler
     SavedRequestAwareAuthenticationSuccessHandler successHandler =
@@ -90,6 +85,8 @@ public class AuthSecConfig {
                         userInfo -> {
                           userInfo.oidcUserService(customOidcUserService);
                         }))
+        .oauth2ResourceServer(
+            oauth2 -> oauth2.opaqueToken(opaqueToken -> opaqueToken.introspector(introspector)))
         .sessionManagement(
             s -> s.maximumSessions(1).sessionRegistry(sessionRegistry()).expiredUrl("/expired"))
         .headers(
@@ -113,6 +110,10 @@ public class AuthSecConfig {
   private void configureRequestAuthorization(HttpSecurity http) throws Exception {
     http.authorizeHttpRequests(
             authz -> {
+              authz
+                  .requestMatchers("/api/v1/leds/stream/**")
+                  .hasAuthority(ApiClientRole.LEDSTRIP.authority());
+
               // Base permitted paths
               authz
                   .requestMatchers(
@@ -136,26 +137,34 @@ public class AuthSecConfig {
                 authz.requestMatchers("/test/**").permitAll();
               }
 
-              // All other requests require authentication - authorization is handled at controller
+              // All other requests require authentication - authorization is handled at
+              // controller
               // level
               authz.anyRequest().authenticated();
             })
-        .csrf(
-            csrf ->
-                csrf.ignoringRequestMatchers(
-                    "/topup/status", "/transactions/email-receipt/**", "/api/**"))
+        .csrf(csrf -> csrf.ignoringRequestMatchers("/topup/status", "/api/**"))
         .exceptionHandling(
             exceptions -> exceptions.accessDeniedHandler(customAccessDeniedHandler)
             /*
-             * This code has tested my resolve like nothing has since that time I was stabbed. When
-             * Spring Security's filter chain throws an exception, even if it does so because you
-             * coded it that way, you are NOT able to intercept this exception with the exception
-             * handler (with the annotations SPRING provides) because the exception is thrown BEFORE
+             * This code has tested my resolve like nothing has since that time I was
+             * stabbed. When
+             * Spring Security's filter chain throws an exception, even if it does so
+             * because you
+             * coded it that way, you are NOT able to intercept this exception with the
+             * exception
+             * handler (with the annotations SPRING provides) because the exception is
+             * thrown BEFORE
              * the request reaches Spring MVC's DispatcherServlet. As a result,
-             * the @RestControllerAdvice exception handler never sees this exception. So we had to
+             * the @RestControllerAdvice exception handler never sees this exception. So we
+             * had to
              * implement it in a custom handler.
              */
             );
+  }
+
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
   }
 
   /**

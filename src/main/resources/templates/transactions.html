@@ -242,7 +242,9 @@
 
     <!-- Scripts -->
     <th:block layout:fragment="script">
-        <script>
+        <script th:inline="javascript">
+            const csrfToken = [[${_csrf.token}]];
+
             // Column filter
             window.addEventListener('load', () => {
                 setTimeout(() => {
@@ -333,6 +335,9 @@
                         
                         fetch(`/transactions/email-receipt/${transactionId}`, {
                             method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken
+                            }
                         })
                         .then(response => {
                             if (response.ok) {
