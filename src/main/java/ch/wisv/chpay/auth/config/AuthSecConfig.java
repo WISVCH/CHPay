@@ -119,7 +119,6 @@ public class AuthSecConfig {
                       "/",
                       "/expired",
                       "/login",
-                      "/ws/ledstrip",
                       "/error",
                       "/logout-success",
                       "/css/**",
