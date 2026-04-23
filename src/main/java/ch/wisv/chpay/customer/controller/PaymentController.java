@@ -102,7 +102,15 @@ public class PaymentController extends CustomerController {
             .getTransactionById(UUID.fromString(tx))
             .orElseThrow(() -> new NoSuchElementException("Transaction not found"));
     User currentUser = (User) model.getAttribute("currentUser");
-    assertCurrentUserOwnsTransaction(currentUser, transaction);
+    // External checkout links are created without a user and are intended to be claimable by the
+    // first authenticated user that completes the payment.
+    boolean isClaimableExternalCheckout =
+        transaction.getType() == Transaction.TransactionType.EXTERNAL_PAYMENT
+            && transaction.getUser() == null
+            && transaction.getStatus() == Transaction.TransactionStatus.PENDING;
+    if (!isClaimableExternalCheckout) {
+      assertCurrentUserOwnsTransaction(currentUser, transaction);
+    }
 
     if (transaction.getStatus().equals(Transaction.TransactionStatus.FAILED)
         || transaction.getStatus().equals(Transaction.TransactionStatus.SUCCESSFUL)) {
