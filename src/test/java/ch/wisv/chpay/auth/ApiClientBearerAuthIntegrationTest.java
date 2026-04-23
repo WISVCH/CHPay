@@ -1,7 +1,7 @@
 package ch.wisv.chpay.auth;
 
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -44,8 +44,11 @@ class ApiClientBearerAuthIntegrationTest {
     mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
     transactionRepository.deleteAll();
     apiClientRepository.deleteAll();
-    externalPaymentToken = createClientToken("events-client", "token-ext", "secret-ext", Set.of(ApiClientRole.EXTERNAL_PAYMENT));
-    ledstripToken = createClientToken("led-client", "token-led", "secret-led", Set.of(ApiClientRole.LEDSTRIP));
+    externalPaymentToken =
+        createClientToken(
+            "events-client", "token-ext", "secret-ext", Set.of(ApiClientRole.EXTERNAL_PAYMENT));
+    ledstripToken =
+        createClientToken("led-client", "token-led", "secret-led", Set.of(ApiClientRole.LEDSTRIP));
   }
 
   @Test

@@ -14,12 +14,7 @@ public record MonthlyBalanceBreakdown(
 
   public static MonthlyBalanceBreakdown empty() {
     return new MonthlyBalanceBreakdown(
-        BigDecimal.ZERO,
-        0L,
-        BigDecimal.ZERO,
-        0L,
-        List.of(),
-        List.of());
+        BigDecimal.ZERO, 0L, BigDecimal.ZERO, 0L, List.of(), List.of());
   }
 
   public BigDecimal totalIncoming() {

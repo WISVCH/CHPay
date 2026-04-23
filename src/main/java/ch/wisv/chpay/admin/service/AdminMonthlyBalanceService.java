@@ -53,7 +53,9 @@ public class AdminMonthlyBalanceService {
             .map(
                 row ->
                     new MonthlyBalanceBreakdown.ExternalClientLine(
-                        row.getApiClientName(), row.getTotalAmount().abs(), row.getTransactionCount()))
+                        row.getApiClientName(),
+                        row.getTotalAmount().abs(),
+                        row.getTransactionCount()))
             .toList();
 
     return new MonthlyBalanceBreakdown(

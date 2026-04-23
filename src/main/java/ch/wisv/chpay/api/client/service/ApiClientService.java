@@ -30,7 +30,8 @@ public class ApiClientService {
   private final PasswordEncoder passwordEncoder;
   private final SecureRandom secureRandom = new SecureRandom();
 
-  public ApiClientService(ApiClientRepository apiClientRepository, PasswordEncoder passwordEncoder) {
+  public ApiClientService(
+      ApiClientRepository apiClientRepository, PasswordEncoder passwordEncoder) {
     this.apiClientRepository = apiClientRepository;
     this.passwordEncoder = passwordEncoder;
   }
@@ -169,5 +170,6 @@ public class ApiClientService {
 
   public record IssuedToken(ApiClient client, String bearerToken) {}
 
-  public record AuthenticatedApiClient(ApiClient client, Collection<GrantedAuthority> authorities) {}
+  public record AuthenticatedApiClient(
+      ApiClient client, Collection<GrantedAuthority> authorities) {}
 }

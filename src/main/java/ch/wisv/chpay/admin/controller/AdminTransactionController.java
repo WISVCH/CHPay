@@ -1,7 +1,7 @@
 package ch.wisv.chpay.admin.controller;
 
-import ch.wisv.chpay.core.model.transaction.PaymentTransaction;
 import ch.wisv.chpay.core.model.transaction.ExternalTransaction;
+import ch.wisv.chpay.core.model.transaction.PaymentTransaction;
 import ch.wisv.chpay.core.model.transaction.RefundTransaction;
 import ch.wisv.chpay.core.model.transaction.Transaction;
 import ch.wisv.chpay.core.service.NotificationService;

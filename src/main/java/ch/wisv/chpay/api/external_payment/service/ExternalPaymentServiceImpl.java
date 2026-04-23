@@ -1,9 +1,9 @@
 package ch.wisv.chpay.api.external_payment.service;
 
-import ch.wisv.chpay.api.external_payment.model.CHPaymentRequest;
-import ch.wisv.chpay.api.external_payment.model.CHPaymentResponse;
 import ch.wisv.chpay.api.client.model.ApiClient;
 import ch.wisv.chpay.api.client.service.ApiClientService;
+import ch.wisv.chpay.api.external_payment.model.CHPaymentRequest;
+import ch.wisv.chpay.api.external_payment.model.CHPaymentResponse;
 import ch.wisv.chpay.core.model.PendingWebhook;
 import ch.wisv.chpay.core.model.transaction.ExternalTransaction;
 import ch.wisv.chpay.core.repository.PendingWebhookRepository;

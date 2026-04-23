@@ -16,13 +16,15 @@ final class YearMonthSelectionSupport {
       Supplier<YearMonth> getMostRecentYearMonth,
       Function<YearMonth, String> buildRedirectUrl) {
     if (yearMonth == null || yearMonth.trim().isEmpty()) {
-      throw new RedirectException(buildRedirectUrlWithPreservedParams(request, getMostRecentYearMonth, buildRedirectUrl));
+      throw new RedirectException(
+          buildRedirectUrlWithPreservedParams(request, getMostRecentYearMonth, buildRedirectUrl));
     }
 
     try {
       return YearMonth.parse(yearMonth);
     } catch (DateTimeParseException e) {
-      throw new RedirectException(buildRedirectUrlWithPreservedParams(request, getMostRecentYearMonth, buildRedirectUrl));
+      throw new RedirectException(
+          buildRedirectUrlWithPreservedParams(request, getMostRecentYearMonth, buildRedirectUrl));
     }
   }
 
@@ -34,7 +36,8 @@ final class YearMonthSelectionSupport {
     String queryString = request.getQueryString();
     String preservedParams = "";
     if (queryString != null && !queryString.isEmpty()) {
-      preservedParams = queryString.replaceAll("(&?)yearMonth=[^&]*(&?)", "").replaceAll("^&|&$", "");
+      preservedParams =
+          queryString.replaceAll("(&?)yearMonth=[^&]*(&?)", "").replaceAll("^&|&$", "");
     }
     return buildRedirectUrl.apply(selectedYearMonth)
         + (preservedParams.isEmpty() ? "" : "&" + preservedParams);

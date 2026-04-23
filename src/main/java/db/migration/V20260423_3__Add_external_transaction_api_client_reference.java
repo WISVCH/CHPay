@@ -5,8 +5,7 @@ import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
 
 /** Adds nullable API client reference to external transactions. */
-public class V20260423_3__Add_external_transaction_api_client_reference
-    extends BaseJavaMigration {
+public class V20260423_3__Add_external_transaction_api_client_reference extends BaseJavaMigration {
 
   @Override
   public void migrate(Context context) throws Exception {
