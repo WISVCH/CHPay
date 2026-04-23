@@ -1,4 +1,4 @@
-package ch.wisv.chpay.core.websocket;
+package ch.wisv.chpay.api.ledstrip;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;

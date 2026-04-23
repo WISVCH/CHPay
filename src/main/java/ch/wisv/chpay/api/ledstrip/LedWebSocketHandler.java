@@ -1,4 +1,4 @@
-package ch.wisv.chpay.core.websocket;
+package ch.wisv.chpay.api.ledstrip;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;

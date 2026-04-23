@@ -9,7 +9,7 @@ import ch.wisv.chpay.core.model.User;
 import ch.wisv.chpay.core.model.transaction.*;
 import ch.wisv.chpay.core.repository.RequestRepository;
 import ch.wisv.chpay.core.repository.TransactionRepository;
-import ch.wisv.chpay.core.websocket.LedWebSocketHandler;
+import ch.wisv.chpay.api.ledstrip.LedWebSocketHandler;
 import jakarta.persistence.LockTimeoutException;
 import java.math.BigDecimal;
 import java.util.*;
