@@ -1,6 +1,7 @@
 package ch.wisv.chpay.admin.controller;
 
 import ch.wisv.chpay.core.model.transaction.PaymentTransaction;
+import ch.wisv.chpay.core.model.transaction.ExternalTransaction;
 import ch.wisv.chpay.core.model.transaction.RefundTransaction;
 import ch.wisv.chpay.core.model.transaction.Transaction;
 import ch.wisv.chpay.core.service.NotificationService;
@@ -86,6 +87,11 @@ public class AdminTransactionController extends AdminController {
     // check for payment transaction and get the request id if present
     if (transaction.getClass() == PaymentTransaction.class) {
       requestId = ((PaymentTransaction) transaction).getRequest().getRequest_id().toString();
+    }
+
+    model.addAttribute("externalApiClient", null);
+    if (transaction instanceof ExternalTransaction externalTransaction) {
+      model.addAttribute("externalApiClient", externalTransaction.getApiClient());
     }
 
     model.addAttribute(MODEL_ATTR_TRANSACTION, transaction);

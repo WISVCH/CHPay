@@ -9,7 +9,10 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -40,8 +43,10 @@ public class ExternalPaymentController {
   @PreAuthorize("hasAuthority('SCOPE_external_payment')")
   @PostMapping
   public ResponseEntity<CHPaymentResponse> createExternalPayment(
-      @RequestBody CHPaymentRequest request) {
-    CHPaymentResponse response = externalPaymentService.createTransaction(request);
+      @RequestBody CHPaymentRequest request,
+      @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
+    UUID apiClientId = extractApiClientId(principal);
+    CHPaymentResponse response = externalPaymentService.createTransaction(request, apiClientId);
     return ResponseEntity.ok(response);
   }
 
@@ -64,5 +69,20 @@ public class ExternalPaymentController {
 
     Transaction.TransactionStatus status = tx.get().getStatus();
     return ResponseEntity.ok(status);
+  }
+
+  private UUID extractApiClientId(OAuth2AuthenticatedPrincipal principal) {
+    if (principal == null) {
+      throw new AccessDeniedException("Missing API client principal");
+    }
+    Object rawClientId = principal.getAttributes().get("client_id");
+    if (!(rawClientId instanceof String clientIdValue)) {
+      throw new AccessDeniedException("Missing API client ID");
+    }
+    try {
+      return UUID.fromString(clientIdValue);
+    } catch (IllegalArgumentException ex) {
+      throw new AccessDeniedException("Invalid API client ID", ex);
+    }
   }
 }

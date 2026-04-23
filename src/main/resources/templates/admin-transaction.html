@@ -95,6 +95,14 @@
                     </div>
                 </div>
 
+                <div th:if="${transaction.type.name() == 'EXTERNAL_PAYMENT'}" class="py-2 border-b border-base-content/10">
+                    <div class="text-base-content/70 text-sm mb-1">API Client</div>
+                    <div th:if="${externalApiClient != null}">
+                        <div th:text="${externalApiClient.name}">Client Name</div>
+                    </div>
+                    <div th:if="${externalApiClient == null}" class="text-base-content/70">Unknown</div>
+                </div>
+
                 <!-- Status -->
                 <div class="py-2 border-b border-base-content/10">
                     <div class="text-base-content/70 text-sm mb-1">Status</div>
