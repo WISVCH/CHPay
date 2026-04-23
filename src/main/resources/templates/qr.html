@@ -4,16 +4,6 @@
       layout:decorate="~{layouts/basic-layout}">
 <head>
     <title>QR Payment</title>
-    <th:block layout:fragment="script">
-        <meta name="_csrf" th:content="${_csrf.token}"/>
-        <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
-        <script th:inline="javascript">
-            window.paymentRequestId = [[${paymentRequestId}]];
-            window.isMultiUse = [[${paymentRequest.multiUse}]];
-        </script>
-        <script th:src="@{/js/qr.js}"></script>
-        <script th:src="@{/js/rfid.js}"></script>
-    </th:block>
 </head>
 <body>
     <div layout:fragment="main-content">
@@ -63,20 +53,12 @@
 
                             <!-- Instructions -->
                             <div class="text-sm text-base-content/60">
-                                Scan the QR code with your phone or use NFC to complete the payment
+                                Scan the QR code with your phone to complete the payment
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- NFC Icon in Top Right of Card -->
-                <div class="absolute top-6 right-6">
-                    <div class="avatar avatar-placeholder">
-                        <div class="bg-error/20 text-error size-12 rounded-full nfc-icon">
-                            <span class="icon-[tabler--nfc] size-6"></span>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
