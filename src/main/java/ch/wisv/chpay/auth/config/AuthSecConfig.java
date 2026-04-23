@@ -144,8 +144,7 @@ public class AuthSecConfig {
             })
         .csrf(
             csrf ->
-                csrf.ignoringRequestMatchers(
-                    "/topup/status", "/transactions/email-receipt/**", "/api/**"))
+                csrf.ignoringRequestMatchers("/topup/status", "/api/**"))
         .exceptionHandling(
             exceptions -> exceptions.accessDeniedHandler(customAccessDeniedHandler)
             /*
