@@ -241,11 +241,17 @@
 
 <!-- Scripts -->
 <th:block layout:fragment="script">
+    <form id="expire-request-form"
+          th:action="@{/admin/payment-request/{id}/expire(id=${paymentRequest.request_id})}"
+          method="post"
+          class="hidden">
+    </form>
     <script th:inline="javascript">
         // Payment request management functionality
         window.addEventListener('load', () => {
             const expireBtn = document.getElementById('expire-payment-request-btn');
             const confirmExpireBtn = document.getElementById('confirmExpireBtn');
+            const expireRequestForm = document.getElementById('expire-request-form');
             const expireDateForm = document.getElementById('expire-date-form');
             const expireDateInput = document.getElementById('expireDateUpdate');
             const expireDateDisplay = document.getElementById('expireDateDisplay');
@@ -253,8 +259,6 @@
             const expireDateActionIcon = document.getElementById('expire-date-action-icon');
             const expireDateActionText = document.getElementById('expire-date-action-text');
             let expireDatePicker = null;
-            
-            const paymentRequestId = [[${paymentRequest.getRequest_id()}]];
 
             // Expire payment request functionality
             if (expireBtn) {
@@ -278,7 +282,7 @@
                     
                     // Small delay to show the notification, then redirect
                     setTimeout(() => {
-                        window.location.href = `/admin/payment-request/${paymentRequestId}/expire`;
+                        expireRequestForm?.submit();
                     }, 500);
                 });
             }

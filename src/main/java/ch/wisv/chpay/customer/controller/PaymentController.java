@@ -19,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestClientException;
@@ -121,16 +122,15 @@ public class PaymentController extends PageController {
    * @param redirectAttributes attributes used to pass temporary data during a redirect
    * @return a redirect string to the main index page after processing the transaction
    */
-  @PreAuthorize("hasRole('USER') and !hasRole('BANNED')")
-  @GetMapping(value = "pay")
-  public String getPage(
+  @PostMapping(value = "pay")
+  public String processPayment(
       Model model, @RequestParam(name = "tx") String tx, RedirectAttributes redirectAttributes) {
     Transaction transaction =
         transactionService
             .getTransactionById(UUID.fromString(tx))
             .orElseThrow(() -> new NoSuchElementException("Transaction not found"));
     if (transaction.getType().equals(Transaction.TransactionType.EXTERNAL_PAYMENT)) {
-      return "redirect:/payment/externalcomplete/" + transaction.getId();
+      return completeExternalTransactionInternal(tx, model);
     }
 
     transactionService.fullfillTransaction(
@@ -179,9 +179,13 @@ public class PaymentController extends PageController {
    * @throws RestClientException If an error occurs while calling {@code
    *     externalPaymentServiceImpl.postToWebhook()}.
    */
-  @PreAuthorize("hasRole('USER') and !hasRole('BANNED')")
-  @GetMapping("/externalcomplete/{id}")
+  @PostMapping("/externalcomplete/{id}")
   public String completeExternalTransaction(@PathVariable String id, Model model)
+      throws RestClientException {
+    return completeExternalTransactionInternal(id, model);
+  }
+
+  private String completeExternalTransactionInternal(String id, Model model)
       throws RestClientException {
     ExternalTransaction transaction =
         (ExternalTransaction)

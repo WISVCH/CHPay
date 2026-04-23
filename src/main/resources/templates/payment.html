@@ -37,11 +37,15 @@
                     <!-- Action buttons -->
                     <div class="grid grid-rows-2 sm:grid-cols-2 sm:grid-rows-1 gap-4 w-full">
                         <!-- Pay Button -->
-                        <a th:if="${transaction.amount.abs()}<=${currentUser.balance}" 
-                           th:href="@{/payment/pay(tx=${transaction.id})}"
-                           class="btn btn-primary btn-xl sm:btn-lg">
-                            Pay
-                        </a>
+                        <form th:if="${transaction.amount.abs()}<=${currentUser.balance}"
+                              th:action="@{/payment/pay}"
+                              method="post"
+                              class="contents">
+                            <input type="hidden" name="tx" th:value="${transaction.id}" />
+                            <button type="submit" class="btn btn-primary btn-xl sm:btn-lg">
+                                Pay
+                            </button>
+                        </form>
                         <a th:unless="${transaction.amount.abs()}<=${currentUser.balance}" 
                            class="btn btn-primary btn-xl sm:btn-lg btn-disabled" 
                            aria-disabled="true">
