@@ -153,14 +153,14 @@
                                     <td>Outgoing</td>
                                     <td class="text-right"></td>
                                     <td class="text-right font-mono text-error"
-                                        th:text="'-€' + ${#numbers.formatDecimal(monthlyBreakdown.totalOutgoing(), 1, 2)}">-€0.00</td>
+                                        th:text="'€-' + ${#numbers.formatDecimal(monthlyBreakdown.totalOutgoing(), 1, 2)}">€-0.00</td>
                                 </tr>
                                 <tr>
                                     <td class="ps-8">Payments</td>
                                     <td class="text-right font-semibold"
                                         th:text="${monthlyBreakdown.totalOutgoingPaymentsTransactionCount()}">0</td>
                                     <td class="text-right font-mono text-error font-semibold"
-                                        th:text="'-€' + ${#numbers.formatDecimal(monthlyBreakdown.totalOutgoingPayments(), 1, 2)}">-€0.00</td>
+                                        th:text="'€-' + ${#numbers.formatDecimal(monthlyBreakdown.totalOutgoingPayments(), 1, 2)}">€-0.00</td>
                                 </tr>
                                 <tr th:each="paymentLine : ${monthlyBreakdown.paymentsByRequest}">
                                     <td class="ps-14">
@@ -169,21 +169,21 @@
                                     <td class="text-right"
                                         th:text="${paymentLine.transactionCount}">0</td>
                                     <td class="text-right font-mono text-error"
-                                        th:text="'-€' + ${#numbers.formatDecimal(paymentLine.amount, 1, 2)}">-€0.00</td>
+                                        th:text="'€-' + ${#numbers.formatDecimal(paymentLine.amount, 1, 2)}">€-0.00</td>
                                 </tr>
                                 <tr>
                                     <td class="ps-8">External payments</td>
                                     <td class="text-right font-semibold"
                                         th:text="${monthlyBreakdown.totalOutgoingExternalPaymentsTransactionCount()}">0</td>
                                     <td class="text-right font-mono text-error font-semibold"
-                                        th:text="'-€' + ${#numbers.formatDecimal(monthlyBreakdown.totalOutgoingExternalPayments(), 1, 2)}">-€0.00</td>
+                                        th:text="'€-' + ${#numbers.formatDecimal(monthlyBreakdown.totalOutgoingExternalPayments(), 1, 2)}">€-0.00</td>
                                 </tr>
                                 <tr th:each="externalLine : ${monthlyBreakdown.externalPaymentsByClient}">
                                     <td class="ps-14" th:text="${externalLine.clientName}">API client</td>
                                     <td class="text-right"
                                         th:text="${externalLine.transactionCount}">0</td>
                                     <td class="text-right font-mono text-error"
-                                        th:text="'-€' + ${#numbers.formatDecimal(externalLine.amount, 1, 2)}">-€0.00</td>
+                                        th:text="'€-' + ${#numbers.formatDecimal(externalLine.amount, 1, 2)}">€-0.00</td>
                                 </tr>
                                 </tbody>
                                 <tfoot>
@@ -192,7 +192,7 @@
                                     <td></td>
                                     <td class="text-right font-mono"
                                         th:classappend="${monthlyBreakdown.difference() >= 0} ? 'text-success' : 'text-error'"
-                                        th:text="${monthlyBreakdown.difference() >= 0 ? '+€' : '-€'} + ${#numbers.formatDecimal(monthlyBreakdown.difference().abs(), 1, 2)}">+€0.00</td>
+                                        th:text="${monthlyBreakdown.difference() >= 0 ? '€' : '€-'} + ${#numbers.formatDecimal(monthlyBreakdown.difference().abs(), 1, 2)}">+€0.00</td>
                                 </tr>
                                 </tfoot>
                             </table>
