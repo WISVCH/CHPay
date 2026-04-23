@@ -137,7 +137,12 @@ public class GlobalExceptionHandler {
       status = ((ResponseStatusException) ex).getStatusCode();
     } else {
       message = ex.getMessage();
-      status = HttpStatus.INTERNAL_SERVER_ERROR;
+      status = HttpStatus.FORBIDDEN;
+    }
+
+    // API requests should receive proper HTTP responses instead of redirects.
+    if (request.getRequestURI() != null && request.getRequestURI().startsWith("/api/")) {
+      return ResponseEntity.status(status).body(NotificationPayload.error(message));
     }
 
     // Set status code and error attributes for the error page

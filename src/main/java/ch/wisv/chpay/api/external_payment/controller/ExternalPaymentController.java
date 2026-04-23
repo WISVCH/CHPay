@@ -37,7 +37,7 @@ public class ExternalPaymentController {
    * @param request the request dto
    * @return the created response entity
    */
-  @PreAuthorize("hasRole('API_USER')")
+  @PreAuthorize("hasAuthority('SCOPE_external_payment')")
   @PostMapping
   public ResponseEntity<CHPaymentResponse> createExternalPayment(
       @RequestBody CHPaymentRequest request) {
@@ -53,7 +53,7 @@ public class ExternalPaymentController {
    * @return Response entity containing the status ( one of {@code FAILED}, {@code PENDING} {@code
    *     SUCCESSFUL}
    */
-  @PreAuthorize("hasRole('API_USER')")
+  @PreAuthorize("hasAuthority('SCOPE_external_payment')")
   @GetMapping("/status")
   public ResponseEntity<Transaction.TransactionStatus> getExternalPaymentStatus(
       @RequestParam UUID PaymentId) {

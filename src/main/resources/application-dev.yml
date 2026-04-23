@@ -87,7 +87,6 @@ chpay:
     expiration_fixed_rate: 1
   settings:
     mintopup: 2
-  api_key: "dev-api-key"
 
 vite:
   mode: dev

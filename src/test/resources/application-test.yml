@@ -64,7 +64,6 @@ mollie:
   transaction_fee: 0.32
 
 chpay:
-  api_key: test-api-key
   admin_groups: [bestuur, vc]
   super_admin_groups: [beheer, pccom]
   claim_name: google_groups

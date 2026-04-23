@@ -18,6 +18,10 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
       HttpServletResponse response,
       AccessDeniedException accessDeniedException)
       throws IOException, ServletException {
+    if (request.getRequestURI().startsWith("/api/")) {
+      response.sendError(HttpStatus.FORBIDDEN.value(), HttpStatus.FORBIDDEN.getReasonPhrase());
+      return;
+    }
 
     request.setAttribute("statuscode", HttpStatus.FORBIDDEN.value());
     request.setAttribute("errorname", HttpStatus.FORBIDDEN.getReasonPhrase());
