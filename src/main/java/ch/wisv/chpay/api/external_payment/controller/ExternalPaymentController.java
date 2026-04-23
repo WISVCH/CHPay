@@ -13,7 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/events")
+@RequestMapping("/api/v1/external-payment")
 public class ExternalPaymentController {
 
   private final ExternalPaymentServiceImpl externalPaymentService;
