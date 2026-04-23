@@ -9,6 +9,7 @@ import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -37,6 +38,11 @@ public class ApiClientService {
   @Transactional(readOnly = true)
   public List<ApiClient> findAllClients() {
     return apiClientRepository.findAllByOrderByNameAsc();
+  }
+
+  @Transactional(readOnly = true)
+  public Optional<ApiClient> findClientById(UUID clientId) {
+    return apiClientRepository.findById(clientId);
   }
 
   @Transactional

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}">
+<head>
+    <title>New API Client</title>
+</head>
+
+<body>
+<div layout:fragment="breadcrumbs">
+    <div class="breadcrumbs">
+        <ul>
+            <li>
+                <a href="/admin/api-clients">API Clients</a>
+            </li>
+            <li class="breadcrumbs-separator rtl:rotate-180"><span class="icon-[tabler--chevron-right]"></span></li>
+            <li aria-current="page">New API Client</li>
+        </ul>
+    </div>
+</div>
+
+<div layout:fragment="main-content">
+    <div class="container max-w-4xl mx-auto">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-base-content mb-2">New API Client</h1>
+            <p class="text-base-content/70 text-lg">Create a bearer-token client for machine access</p>
+        </div>
+
+        <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow">
+            <div class="card-body">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="avatar avatar-placeholder">
+                        <div class="bg-primary/20 text-primary size-12 rounded-full">
+                            <span class="icon-[tabler--key] size-6"></span>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="card-title text-xl">Client Configuration</h3>
+                        <p class="text-base-content/70">Set a name and select API roles</p>
+                    </div>
+                </div>
+
+                <form id="api-client-create-form" th:action="@{/admin/api-clients/new}" method="post" class="grid gap-y-4">
+                    <div>
+                        <label class="label-text" for="name">Client Name</label>
+                        <input id="name"
+                               name="name"
+                               type="text"
+                               class="input"
+                               placeholder="client-name"
+                               required />
+                    </div>
+
+                    <div>
+                        <label class="label-text mb-2 block">Roles</label>
+                        <div class="space-y-3">
+                            <label class="flex items-center gap-3">
+                                <input class="checkbox checkbox-primary" type="checkbox" name="roles" value="external_payment"/>
+                                <span>External Payment</span>
+                            </label>
+                            <label class="flex items-center gap-3">
+                                <input class="checkbox checkbox-primary" type="checkbox" name="roles" value="ledstrip"/>
+                                <span>Ledstrip</span>
+                            </label>
+                        </div>
+                        <span id="roles-error" class="error-message">Select at least one role.</span>
+                    </div>
+
+                    <div class="card-actions justify-end pt-4 border-base-content/10 mt-2">
+                        <button type="submit" class="btn btn-primary w-full sm:w-auto">
+                            <span class="icon-[tabler--plus] size-4"></span>
+                            Create API Client
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="script">
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('api-client-create-form');
+            const roleInputs = Array.from(form.querySelectorAll('input[name="roles"]'));
+            const rolesError = document.getElementById('roles-error');
+
+            const validateRoles = () => {
+                const hasRole = roleInputs.some(input => input.checked);
+                rolesError.style.display = hasRole ? 'none' : rolesError.style.display;
+                return hasRole;
+            };
+
+            roleInputs.forEach(input => input.addEventListener('change', () => {
+                if (validateRoles()) {
+                    rolesError.style.display = 'none';
+                }
+            }));
+
+            form.addEventListener('submit', event => {
+                if (!validateRoles()) {
+                    event.preventDefault();
+                    rolesError.style.display = 'block';
+                }
+            });
+
+            rolesError.style.display = 'none';
+        });
+    </script>
+</th:block>
+</body>
+</html>

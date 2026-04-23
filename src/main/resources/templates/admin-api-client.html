@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}">
+<head>
+    <title>API Client Details</title>
+</head>
+
+<body>
+<div layout:fragment="breadcrumbs">
+    <div class="breadcrumbs">
+        <ul>
+            <li>
+                <a href="/admin/api-clients">API Clients</a>
+            </li>
+            <li class="breadcrumbs-separator rtl:rotate-180"><span class="icon-[tabler--chevron-right]"></span></li>
+            <li aria-current="page" th:text="${apiClient.name}">API Client</li>
+        </ul>
+    </div>
+</div>
+
+<div layout:fragment="main-content">
+        <div class="container max-w-4xl mx-auto">
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-base-content mb-2">API Client Details</h1>
+                <p class="text-base-content/70 text-lg">View and update roles and token lifecycle</p>
+            </div>
+
+        <div class="card bg-base-100 shadow-lg border border-base-content/10 hover:shadow-xl transition-shadow">
+            <div class="card-body">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="avatar avatar-placeholder">
+                        <div class="bg-primary/20 text-primary size-12 rounded-full">
+                            <span class="icon-[tabler--key] size-6"></span>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="card-title text-xl">Client Configuration</h3>
+                        <p class="text-base-content/70">Manage roles and token lifecycle</p>
+                    </div>
+                </div>
+
+                <div th:if="${issuedBearerToken != null}" class="rounded-box border border-warning/40 bg-warning/10 p-4 mb-6">
+                    <p class="text-sm font-semibold text-warning mb-2">Bearer token (shown once)</p>
+                    <label class="input w-full flex space-x-3">
+                        <span class="icon-[tabler--key] text-base-content/80 my-auto size-5 shrink-0"></span>
+                        <input id="clipboard-bearer-token"
+                               type="text"
+                               class="grow font-mono text-sm"
+                               readonly
+                               aria-label="API bearer token"
+                               th:value="${issuedBearerToken}" />
+                        <button type="button"
+                                class="js-clipboard my-auto size-5"
+                                aria-label="Copy bearer token"
+                                data-clipboard-target="#clipboard-bearer-token"
+                                data-clipboard-action="copy"
+                                title="Copy bearer token">
+                            <span class="js-clipboard-default icon-[tabler--clipboard] size-5 transition"></span>
+                            <span class="js-clipboard-success icon-[tabler--clipboard-check] text-primary hidden size-5"></span>
+                        </button>
+                    </label>
+                </div>
+
+                <form id="api-client-update-form"
+                      th:action="@{/admin/api-clients/{id}(id=${apiClient.id})}"
+                      method="post"
+                      class="grid gap-y-4">
+                    <div>
+                        <label class="label-text mb-2 block">Roles</label>
+                        <div class="space-y-3">
+                            <label class="flex items-center gap-3">
+                                <input class="checkbox checkbox-primary"
+                                       type="checkbox"
+                                       name="roles"
+                                       value="external_payment"
+                                       th:checked="${apiClient.roles.contains(T(ch.wisv.chpay.api.client.model.ApiClientRole).EXTERNAL_PAYMENT)}"/>
+                                <span>External Payment</span>
+                            </label>
+                            <label class="flex items-center gap-3">
+                                <input class="checkbox checkbox-primary"
+                                       type="checkbox"
+                                       name="roles"
+                                       value="ledstrip"
+                                       th:checked="${apiClient.roles.contains(T(ch.wisv.chpay.api.client.model.ApiClientRole).LEDSTRIP)}"/>
+                                <span>Ledstrip</span>
+                            </label>
+                        </div>
+                        <span id="roles-error" class="error-message">Select at least one role.</span>
+                    </div>
+                </form>
+
+                <div class="bg-base-200/50 rounded-lg p-4 mt-2">
+                    <div class="grid gap-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-base-content/70">Client Name</span>
+                            <span th:text="${apiClient.name}">client-name</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-base-content/70">Status</span>
+                            <span th:text="${apiClient.enabled} ? 'Enabled' : 'Disabled'">Enabled</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-base-content/70">Token ID</span>
+                            <span class="font-mono" th:text="${apiClient.tokenId}">token-id</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-base-content/70">Last Used</span>
+                            <span th:if="${apiClient.lastUsedAt != null}"
+                                  th:text="${#temporals.format(apiClient.lastUsedAt, 'dd-MM-yyyy HH:mm:ss')}">01-01-2026 12:00:00</span>
+                            <span th:unless="${apiClient.lastUsedAt != null}">Never</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-base-content/70">Created</span>
+                            <span th:text="${#temporals.format(apiClient.createdAt, 'dd-MM-yyyy HH:mm:ss')}">01-01-2026 12:00:00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-base-content/70">Updated</span>
+                            <span th:text="${#temporals.format(apiClient.updatedAt, 'dd-MM-yyyy HH:mm:ss')}">01-01-2026 12:00:00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-actions justify-end pt-4 border-base-content/10 mt-4">
+                    <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                        <button type="submit" form="api-client-update-form" class="btn btn-primary w-full sm:w-auto">
+                            <span class="icon-[tabler--device-floppy] size-4"></span>
+                            Save Changes
+                        </button>
+                        <form th:action="@{/admin/api-clients/{id}/rotate-token(id=${apiClient.id})}" method="post">
+                            <button type="submit" class="btn btn-warning w-full sm:w-auto">
+                                <span class="icon-[tabler--refresh] size-4"></span>
+                                Rotate Token
+                            </button>
+                        </form>
+                        <form th:if="${apiClient.enabled}"
+                              th:action="@{/admin/api-clients/{id}/disable(id=${apiClient.id})}"
+                              method="post">
+                            <button type="submit" class="btn btn-error w-full sm:w-auto">
+                                <span class="icon-[tabler--player-pause] size-4"></span>
+                                Disable Client
+                            </button>
+                        </form>
+                        <form th:unless="${apiClient.enabled}"
+                              th:action="@{/admin/api-clients/{id}/enable(id=${apiClient.id})}"
+                              method="post">
+                            <button type="submit" class="btn btn-success w-full sm:w-auto">
+                                <span class="icon-[tabler--player-play] size-4"></span>
+                                Enable Client
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="script">
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('api-client-update-form');
+            const roleInputs = Array.from(form.querySelectorAll('input[name="roles"]'));
+            const rolesError = document.getElementById('roles-error');
+
+            const validateRoles = () => {
+                const hasRole = roleInputs.some(input => input.checked);
+                rolesError.style.display = hasRole ? 'none' : rolesError.style.display;
+                return hasRole;
+            };
+
+            roleInputs.forEach(input => input.addEventListener('change', () => {
+                if (validateRoles()) {
+                    rolesError.style.display = 'none';
+                }
+            }));
+
+            form.addEventListener('submit', event => {
+                if (!validateRoles()) {
+                    event.preventDefault();
+                    rolesError.style.display = 'block';
+                }
+            });
+
+            rolesError.style.display = 'none';
+        });
+    </script>
+</th:block>
+</body>
+</html>
