@@ -79,7 +79,8 @@ mollie:
   transaction_fee: ${TRANSACTION_FEE:0.32}
 
 chpay:
-  admin_groups: [beheer, bestuur, vc]
+  admin_groups: [bestuur, vc]
+  super_admin_groups: [beheer, pccom]
   claim_name: google_groups
   transactions:
     expire_every_minutes: 20

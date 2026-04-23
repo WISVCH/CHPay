@@ -65,7 +65,8 @@ mollie:
 
 chpay:
   api_key: test-api-key
-  admin_groups: [beheer, bestuur, vc]
+  admin_groups: [bestuur, vc]
+  super_admin_groups: [beheer, pccom]
   claim_name: google_groups
   transactions:
     expire_every_minutes: 20

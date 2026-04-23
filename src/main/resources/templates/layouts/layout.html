@@ -165,7 +165,7 @@
                               Confetti
                           </a>
                       </li>
-                      <li>
+                      <li th:if="${isSuperAdmin}">
                           <a href="/admin/log" th:class="${urlPage == 'adminLogs'} ? 'menu-active' : ''">
                               <span class="icon-[tabler--file-text] size-5"></span>
                               Error Log
