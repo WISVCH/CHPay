@@ -142,9 +142,7 @@ public class AuthSecConfig {
               // level
               authz.anyRequest().authenticated();
             })
-        .csrf(
-            csrf ->
-                csrf.ignoringRequestMatchers("/topup/status", "/api/**"))
+        .csrf(csrf -> csrf.ignoringRequestMatchers("/topup/status", "/api/**"))
         .exceptionHandling(
             exceptions -> exceptions.accessDeniedHandler(customAccessDeniedHandler)
             /*
