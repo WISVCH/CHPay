@@ -145,7 +145,7 @@ public class TopUpController extends CustomerController {
       }
     } catch (Exception e) {
       notificationService.addErrorMessage(
-          redirectAttributes, "An unexpected error occurred: " + e.getMessage());
+          redirectAttributes, "An unexpected error occurred. Please try again.");
     }
     return "redirect:/topup";
   }

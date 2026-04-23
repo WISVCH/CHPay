@@ -33,7 +33,7 @@ public class ApiClientOpaqueTokenIntrospector implements OpaqueTokenIntrospector
               "token_id", authenticated.client().getTokenId()),
           authenticated.authorities());
     } catch (InvalidApiClientTokenException ex) {
-      throw new OAuth2AuthenticationException(INVALID_TOKEN_ERROR, ex.getMessage(), ex);
+      throw new OAuth2AuthenticationException(INVALID_TOKEN_ERROR, "Invalid bearer token", ex);
     }
   }
 }

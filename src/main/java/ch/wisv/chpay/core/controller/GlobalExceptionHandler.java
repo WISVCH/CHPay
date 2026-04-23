@@ -37,8 +37,7 @@ public class GlobalExceptionHandler {
       NumberFormatException ex, HttpServletRequest request, RedirectAttributes redirectAttributes) {
     logger.error("NumberFormatException occurred: {}", ex.getMessage(), ex);
     // Add error notification
-    notificationService.addErrorMessage(
-        redirectAttributes, "Invalid amount format: " + ex.getMessage());
+    notificationService.addErrorMessage(redirectAttributes, "Invalid amount format.");
 
     // Get the request URI and referer
     String requestURI = request.getRequestURI();
@@ -70,8 +69,7 @@ public class GlobalExceptionHandler {
       RedirectAttributes redirectAttributes) {
     logger.error("JsonProcessingException occurred: {}", ex.getMessage(), ex);
     // Add error notification
-    notificationService.addErrorMessage(
-        redirectAttributes, "Error fetching object: " + ex.getMessage());
+    notificationService.addErrorMessage(redirectAttributes, "Error fetching object.");
 
     // Get the request URI and referer
     String requestURI = request.getRequestURI();
@@ -93,7 +91,7 @@ public class GlobalExceptionHandler {
       RedirectAttributes redirectAttributes) {
     logger.error("DateTimeParseException occurred: {}", ex.getMessage(), ex);
     // Add error notification
-    notificationService.addErrorMessage(redirectAttributes, "Invalid Date: " + ex.getMessage());
+    notificationService.addErrorMessage(redirectAttributes, "Invalid date.");
 
     // Get the request URI and referer
     String requestURI = request.getRequestURI();
@@ -117,38 +115,24 @@ public class GlobalExceptionHandler {
   @ExceptionHandler({AccessDeniedException.class, ResponseStatusException.class})
   public Object handleForbiddenExceptions(
       Exception ex, HttpServletRequest request, RedirectAttributes redirectAttributes) {
-    // Log the exception (optional, useful for debugging)
     logger.error("Forbidden/AccessDenied Exception occurred: {}", ex.getMessage(), ex);
-    // Handle ResponseStatusException differently if it's not FORBIDDEN
-    if (ex instanceof ResponseStatusException) {
-      ResponseStatusException statusEx = (ResponseStatusException) ex;
-      if (statusEx.getStatusCode() != HttpStatus.FORBIDDEN) {
-        // For other status codes, use a ResponseEntity
-        return ResponseEntity.status(statusEx.getStatusCode())
-            .body(NotificationPayload.error(statusEx.getReason()));
-      }
-    }
-
-    // Get appropriate message based on exception type
-    String message;
-    HttpStatusCode status;
-    if (ex instanceof ResponseStatusException) {
-      message = ((ResponseStatusException) ex).getReason();
-      status = ((ResponseStatusException) ex).getStatusCode();
-    } else {
-      message = ex.getMessage();
-      status = HttpStatus.FORBIDDEN;
-    }
+    HttpStatusCode status =
+        ex instanceof ResponseStatusException responseStatusException
+            ? responseStatusException.getStatusCode()
+            : HttpStatus.FORBIDDEN;
+    String safeMessage = safeMessageForStatus(status);
 
     // API requests should receive proper HTTP responses instead of redirects.
     if (request.getRequestURI() != null && request.getRequestURI().startsWith("/api/")) {
-      return ResponseEntity.status(status).body(NotificationPayload.error(message));
+      return ResponseEntity.status(status).body(NotificationPayload.error(safeMessage));
     }
 
     // Set status code and error attributes for the error page
     redirectAttributes.addFlashAttribute("statuscode", status.value());
-    redirectAttributes.addFlashAttribute("errorname", HttpStatus.FORBIDDEN.getReasonPhrase());
-    redirectAttributes.addFlashAttribute("message", message);
+    HttpStatus resolvedStatus = HttpStatus.resolve(status.value());
+    redirectAttributes.addFlashAttribute(
+        "errorname", resolvedStatus != null ? resolvedStatus.getReasonPhrase() : "Error");
+    redirectAttributes.addFlashAttribute("message", safeMessage);
 
     // Redirect to the error page
     return new RedirectView("/error");
@@ -199,9 +183,7 @@ public class GlobalExceptionHandler {
     }
 
     // Add error notification
-    notificationService.addErrorMessage(
-        redirectAttributes, ex.getMessage() // Modified to avoid using ex.getRequestURL()
-        );
+    notificationService.addErrorMessage(redirectAttributes, safeMessageForDomainException(ex));
 
     // Redirect to the previous page
     return new RedirectView(referer);
@@ -222,9 +204,7 @@ public class GlobalExceptionHandler {
     }
 
     // Add error notification
-    notificationService.addErrorMessage(
-        redirectAttributes, ex.getMessage() // Modified to avoid using ex.getRequestURL()
-        );
+    notificationService.addErrorMessage(redirectAttributes, "Refund could not be processed.");
 
     // Redirect to the previous page
     return new RedirectView(referer);
@@ -234,7 +214,8 @@ public class GlobalExceptionHandler {
   public RedirectView transactionAlreadyFulfilledException(
       TransactionAlreadyFulfilled ex, RedirectAttributes redirectAttributes) {
     logger.warn("TransactionAlreadyFulfilledException occurred: {}", ex.getMessage());
-    notificationService.addErrorMessage(redirectAttributes, ex.getMessage());
+    notificationService.addErrorMessage(
+        redirectAttributes, "This transaction has already been completed.");
     return new RedirectView("/index");
   }
 
@@ -243,18 +224,9 @@ public class GlobalExceptionHandler {
       OAuth2AuthenticationException ex,
       HttpServletRequest request,
       RedirectAttributes redirectAttributes) {
-    // Log the exception (optional, useful for debugging)
     logger.error("OAuth2AuthenticationException occurred: {}", ex.getMessage(), ex);
-    String message = ex.getMessage();
-
-    HttpStatus status;
-    if (ex.getMessage().contains("User not found")) {
-      status = HttpStatus.NOT_FOUND;
-    } else if (ex.getMessage().contains("Multiple users found")) {
-      status = HttpStatus.CONFLICT;
-    } else status = HttpStatus.INTERNAL_SERVER_ERROR;
-
-    notificationService.addErrorMessage(redirectAttributes, message);
+    notificationService.addErrorMessage(
+        redirectAttributes, "Authentication failed. Please try again.");
 
     return new RedirectView("/login");
   }
@@ -263,8 +235,34 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(Exception.class)
   public ResponseEntity<Map<String, String>> handleAnyException(Exception ex, WebRequest request) {
     logger.error("An unhandled exception occurred: {}", ex.getMessage(), ex);
-    // Send as a red error notification
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .body(NotificationPayload.error(ex.getMessage()));
+        .body(NotificationPayload.error("An unexpected error occurred."));
+  }
+
+  private String safeMessageForStatus(HttpStatusCode status) {
+    return switch (status.value()) {
+      case 400 -> "Invalid request.";
+      case 401 -> "Authentication is required.";
+      case 403 -> "Access denied.";
+      case 404 -> "The requested resource was not found.";
+      case 409 -> "Request conflicts with the current state.";
+      default -> "Request could not be processed.";
+    };
+  }
+
+  private String safeMessageForDomainException(Exception ex) {
+    if (ex instanceof InsufficientBalanceException) {
+      return "Insufficient balance.";
+    }
+    if (ex instanceof NoSuchElementException) {
+      return "The requested resource was not found.";
+    }
+    if (ex instanceof IllegalArgumentException) {
+      return "Invalid request.";
+    }
+    if (ex instanceof IllegalStateException) {
+      return "This action is not allowed right now.";
+    }
+    return "Request could not be processed.";
   }
 }
