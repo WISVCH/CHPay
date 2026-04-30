@@ -35,28 +35,37 @@
                     </div>
 
                     <!-- Action buttons -->
-                    <div class="grid grid-rows-2 sm:grid-cols-2 sm:grid-rows-1 gap-4 w-full">
-                        <!-- Pay Button -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+                        <!-- Pay Button (row 1 on desktop, full width always) -->
                         <form th:if="${transaction.amount.abs()}<=${currentUser.balance}"
                               th:action="@{/payment/pay}"
                               method="post"
-                              class="contents">
+                              class="sm:col-span-2">
                             <input type="hidden" name="tx" th:value="${transaction.id}" />
-                            <button type="submit" class="btn btn-primary btn-xl sm:btn-lg">
+                            <button type="submit" class="btn btn-primary btn-xl sm:btn-lg w-full">
                                 Pay
                             </button>
                         </form>
-                        <a th:unless="${transaction.amount.abs()}<=${currentUser.balance}" 
-                           class="btn btn-primary btn-xl sm:btn-lg btn-disabled" 
+                        <a th:unless="${transaction.amount.abs()}<=${currentUser.balance}"
+                           class="btn btn-primary btn-xl sm:btn-lg w-full btn-disabled sm:col-span-2"
                            aria-disabled="true">
                             Pay
                         </a>
 
-                        <!-- Top-Up Button -->
-                        <a th:href="@{/topup(redirect=${transaction.id})}" class="btn btn-outline btn-m sm:btn-lg">
-                                <span class="icon-[tabler--plus] size-5"></span>
-                                Top-Up Balance
+                        <!-- Top-Up Button (row 2 on desktop) -->
+                        <a th:href="@{/topup(redirect=${transaction.id})}" class="btn btn-outline btn-m sm:btn-lg w-full">
+                            <span class="icon-[tabler--plus] size-5"></span>
+                            Top-Up Balance
                         </a>
+
+                        <!-- Cancel Button (row 2 on desktop) -->
+                        <form th:action="@{/payment/cancel}" method="post">
+                            <input type="hidden" name="tx" th:value="${transaction.id}" />
+                            <button type="submit" class="btn btn-outline btn-error btn-m sm:btn-lg w-full">
+                                <span class="icon-[tabler--x] size-5"></span>
+                                Cancel Payment
+                            </button>
+                        </form>
                     </div>
 
                     <!-- Transaction ID -->
