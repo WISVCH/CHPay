@@ -78,7 +78,14 @@ public class TransactionService {
       throw new IllegalRefundException("Transaction already refunded.");
     }
 
-    BigDecimal refundAmount = original.getAmount();
+    BigDecimal totalRefunded =
+        transactionRepository.findByRefundOf(original).stream()
+            .map(RefundTransaction::getAmount)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    BigDecimal refundAmount = original.getAmount().subtract(totalRefunded);
+    if (refundAmount.compareTo(BigDecimal.ZERO) <= 0) {
+      throw new IllegalRefundException("Transaction already refunded.");
+    }
     User originalUser = original.getUser();
 
     User lockedUser = balanceService.refund(originalUser, refundAmount);
