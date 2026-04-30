@@ -126,4 +126,8 @@ public class Transaction {
   public boolean isRefundable() {
     return false;
   }
+
+  public boolean isExternalPayment() {
+    return this.type == TransactionType.EXTERNAL_PAYMENT;
+  }
 }

@@ -230,7 +230,7 @@ public class TransactionService {
       throw new IllegalStateException("User is not the same as the one who created the transaction");
     }
 
-    User lockedUser = balanceService.pay(user, lockedTransaction.getAmount());
+    User lockedUser = balanceService.pay(user, lockedTransaction.getAmount().negate());
     if (lockedTransaction.getUser() == null) {
       lockedTransaction.setUser(lockedUser);
     }
@@ -291,7 +291,7 @@ public class TransactionService {
       throw new IllegalStateException("User is not the same as the one who created the transaction");
     }
 
-    User lockedUser = balanceService.pay(user, lockedTransaction.getAmount());
+    User lockedUser = balanceService.pay(user, lockedTransaction.getAmount().negate());
     if (lockedTransaction.getUser() == null) {
       lockedTransaction.setUser(lockedUser);
     }
@@ -354,6 +354,34 @@ public class TransactionService {
 
     BigDecimal originalPaid = transaction.getAmount();
     return originalPaid.subtract(totalRefunded);
+  }
+
+  @CheckSystemNotFrozen
+  @Transactional
+  public Transaction cancelTransaction(UUID transactionId, User user) {
+    Transaction transaction =
+        transactionRepository
+            .findById(transactionId)
+            .orElseThrow(() -> new NoSuchElementException("Transaction not found"));
+
+    if (transaction.getType() != Transaction.TransactionType.PAYMENT
+        && transaction.getType() != Transaction.TransactionType.EXTERNAL_PAYMENT) {
+      throw new IllegalStateException("Only payment transactions can be cancelled");
+    }
+
+    if (transaction.getStatus() != Transaction.TransactionStatus.PENDING) {
+      throw new IllegalStateException("Transaction is not in pending state");
+    }
+
+    if (transaction.getType() == Transaction.TransactionType.EXTERNAL_PAYMENT
+        && transaction.getUser() == null) {
+      transaction.setUser(user);
+    } else if (!transaction.getUser().getId().equals(user.getId())) {
+      throw new IllegalStateException("User is not the same as the one who created the transaction");
+    }
+
+    transaction.setStatus(Transaction.TransactionStatus.CANCELLED);
+    return transactionRepository.save(transaction);
   }
 
   /**

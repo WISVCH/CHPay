@@ -179,7 +179,7 @@ public class TopUpController extends CustomerController {
       case Transaction.TransactionStatus.PENDING -> "pending";
       case Transaction.TransactionStatus.SUCCESSFUL -> "successful";
       case Transaction.TransactionStatus.FAILED -> "failed";
-      case Transaction.TransactionStatus.CANCELLED -> "failed";
+      case Transaction.TransactionStatus.CANCELLED -> "cancelled";
       default -> "error";
     };
   }

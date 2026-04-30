@@ -30,6 +30,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class PaymentController extends CustomerController {
   /** Model attr of the Transaction. */
   private static final String MODEL_ATTR_TX = MODEL_ATTR_TRANSACTION;
+  private enum PaymentAction {
+    PAY,
+    CANCEL
+  }
 
   private final RequestService requestService;
   private final TransactionService transactionService;
@@ -102,13 +106,7 @@ public class PaymentController extends CustomerController {
             .getTransactionById(UUID.fromString(tx))
             .orElseThrow(() -> new NoSuchElementException("Transaction not found"));
     User currentUser = (User) model.getAttribute("currentUser");
-    // External checkout links are created without a user and are intended to be claimable by the
-    // first authenticated user that completes the payment.
-    boolean isClaimableExternalCheckout =
-        transaction.getType() == Transaction.TransactionType.EXTERNAL_PAYMENT
-            && transaction.getUser() == null
-            && transaction.getStatus() == Transaction.TransactionStatus.PENDING;
-    if (!isClaimableExternalCheckout) {
+    if (!isClaimableExternalCheckout(transaction)) {
       assertCurrentUserOwnsTransaction(currentUser, transaction);
     }
 
@@ -140,14 +138,65 @@ public class PaymentController extends CustomerController {
             .getTransactionById(UUID.fromString(tx))
             .orElseThrow(() -> new NoSuchElementException("Transaction not found"));
     User currentUser = (User) model.getAttribute("currentUser");
-    if (transaction.getType().equals(Transaction.TransactionType.EXTERNAL_PAYMENT)) {
-      return completeExternalTransactionInternal(tx, model);
+    if (transaction.isExternalPayment()) {
+      return handleExternalPaymentAction(
+          tx, (ExternalTransaction) transaction, currentUser, PaymentAction.PAY);
+    }
+    return handleInternalPaymentAction(
+        tx, transaction, currentUser, redirectAttributes, PaymentAction.PAY);
+  }
+
+  @PostMapping(value = "cancel")
+  public String cancelPayment(
+      Model model, @RequestParam(name = "tx") String tx, RedirectAttributes redirectAttributes) {
+    Transaction transaction =
+        transactionService
+            .getTransactionById(UUID.fromString(tx))
+            .orElseThrow(() -> new NoSuchElementException("Transaction not found"));
+    User currentUser = (User) model.getAttribute("currentUser");
+
+    if (transaction.isExternalPayment()) {
+      return handleExternalPaymentAction(
+          tx, (ExternalTransaction) transaction, currentUser, PaymentAction.CANCEL);
+    }
+    return handleInternalPaymentAction(
+        tx, transaction, currentUser, redirectAttributes, PaymentAction.CANCEL);
+  }
+
+  private String handleExternalPaymentAction(
+      String tx, ExternalTransaction transaction, User currentUser, PaymentAction action) {
+    if (transaction.getStatus() != Transaction.TransactionStatus.PENDING) {
+      return "redirect:" + transaction.getFallbackUrl();
+    }
+
+    if (isClaimableExternalCheckout(transaction)) {
+      transaction.setUser(currentUser);
+      transaction = transactionRepository.save(transaction);
     }
     assertCurrentUserOwnsTransaction(currentUser, transaction);
 
-    transactionService.fullfillTransaction(transaction.getId(), currentUser);
+    if (action == PaymentAction.PAY) {
+      transactionService.fullfillExternalTransaction(transaction.getId(), currentUser);
+    } else {
+      transactionService.cancelTransaction(transaction.getId(), currentUser);
+    }
+    return externalPaymentServiceImpl.postToWebhook(tx, transaction);
+  }
 
-    notificationService.addSuccessMessage(redirectAttributes, "Authorized Transaction");
+  private String handleInternalPaymentAction(
+      String tx,
+      Transaction transaction,
+      User currentUser,
+      RedirectAttributes redirectAttributes,
+      PaymentAction action) {
+    assertCurrentUserOwnsTransaction(currentUser, transaction);
+    if (action == PaymentAction.PAY) {
+      transactionService.fullfillTransaction(transaction.getId(), currentUser);
+      notificationService.addSuccessMessage(redirectAttributes, "Authorized Transaction");
+    } else {
+      transactionService.cancelTransaction(transaction.getId(), currentUser);
+      notificationService.addSuccessMessage(redirectAttributes, "Cancelled Transaction");
+    }
     return "redirect:/payment/complete/" + tx;
   }
 
@@ -176,53 +225,14 @@ public class PaymentController extends CustomerController {
       case Transaction.TransactionStatus.PENDING -> "pending";
       case Transaction.TransactionStatus.SUCCESSFUL -> "successful";
       case Transaction.TransactionStatus.FAILED -> "failed";
-      case Transaction.TransactionStatus.CANCELLED -> "failed";
+      case Transaction.TransactionStatus.CANCELLED -> "cancelled";
       default -> "error";
     };
   }
 
-  /**
-   * Processes an external transaction, coming from events by fulfilling it and redirecting the user
-   * back to the events payment complete page, by calling {@code
-   * externalPaymentServiceImpl.postToWebhook()}. Errors during the processing lead to a redirect to
-   * the fallback URL, currently the error page.
-   *
-   * @param id The id of the external transaction to process.
-   * @param model the model holding attributes for the current HTTP session
-   * @return A redirect string to the events payment complete page.
-   * @throws RestClientException If an error occurs while calling {@code
-   *     externalPaymentServiceImpl.postToWebhook()}.
-   */
-  @PostMapping("/externalcomplete/{id}")
-  public String completeExternalTransaction(@PathVariable String id, Model model)
-      throws RestClientException {
-    return completeExternalTransactionInternal(id, model);
-  }
-
-  private String completeExternalTransactionInternal(String id, Model model)
-      throws RestClientException {
-    ExternalTransaction transaction =
-        (ExternalTransaction)
-            transactionRepository
-                .findById(UUID.fromString(id))
-                .orElseThrow(() -> new NoSuchElementException("Transaction not found"));
-
-    if (transaction.getStatus() != ExternalTransaction.TransactionStatus.PENDING) {
-      return "redirect:" + transaction.getFallbackUrl(); // already paid, just redirect to events.
-    }
-
-    User currentUser = (User) model.getAttribute("currentUser");
-
-    // If transaction doesn't have a user (anonymous), link the current user to it.
-    if (transaction.getUser() == null) {
-      transaction.linkUser(currentUser);
-      transactionRepository.save(transaction);
-    } else {
-      assertCurrentUserOwnsTransaction(currentUser, transaction);
-    }
-
-    transactionService.fullfillExternalTransaction(transaction.getId(), transaction.getUser());
-
-    return externalPaymentServiceImpl.postToWebhook(id, transaction);
+  private boolean isClaimableExternalCheckout(Transaction transaction) {
+    return transaction.isExternalPayment()
+        && transaction.getUser() == null
+        && transaction.getStatus() == Transaction.TransactionStatus.PENDING;
   }
 }
