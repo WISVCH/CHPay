@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -30,6 +29,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class PaymentController extends CustomerController {
   /** Model attr of the Transaction. */
   private static final String MODEL_ATTR_TX = MODEL_ATTR_TRANSACTION;
+
   private enum PaymentAction {
     PAY,
     CANCEL

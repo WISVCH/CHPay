@@ -227,7 +227,8 @@ public class TransactionService {
     }
 
     if (lockedTransaction.getUser() != null && !lockedTransaction.getUser().equals(user)) {
-      throw new IllegalStateException("User is not the same as the one who created the transaction");
+      throw new IllegalStateException(
+          "User is not the same as the one who created the transaction");
     }
 
     User lockedUser = balanceService.pay(user, lockedTransaction.getAmount().negate());
@@ -288,7 +289,8 @@ public class TransactionService {
     }
 
     if (lockedTransaction.getUser() != null && !lockedTransaction.getUser().equals(user)) {
-      throw new IllegalStateException("User is not the same as the one who created the transaction");
+      throw new IllegalStateException(
+          "User is not the same as the one who created the transaction");
     }
 
     User lockedUser = balanceService.pay(user, lockedTransaction.getAmount().negate());
@@ -377,7 +379,8 @@ public class TransactionService {
         && transaction.getUser() == null) {
       transaction.setUser(user);
     } else if (!transaction.getUser().getId().equals(user.getId())) {
-      throw new IllegalStateException("User is not the same as the one who created the transaction");
+      throw new IllegalStateException(
+          "User is not the same as the one who created the transaction");
     }
 
     transaction.setStatus(Transaction.TransactionStatus.CANCELLED);

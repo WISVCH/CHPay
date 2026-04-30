@@ -19,8 +19,7 @@ public class BalanceService {
   private final SettingService settingService;
 
   @Autowired
-  public BalanceService(
-      UserRepository userRepository, SettingService settingService) {
+  public BalanceService(UserRepository userRepository, SettingService settingService) {
     this.userRepository = userRepository;
     this.settingService = settingService;
   }
