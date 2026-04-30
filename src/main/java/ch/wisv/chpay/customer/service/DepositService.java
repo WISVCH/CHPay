@@ -13,7 +13,6 @@ import ch.wisv.chpay.core.model.transaction.TopupTransaction;
 import ch.wisv.chpay.core.model.transaction.Transaction;
 import ch.wisv.chpay.core.repository.TransactionRepository;
 import ch.wisv.chpay.core.repository.UserRepository;
-import ch.wisv.chpay.core.service.BalanceService;
 import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -30,9 +29,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class DepositService {
 
-  private final BalanceService balanceService;
   private final UserRepository userRepository;
   private final Client mollieClient;
+  private final TopUpLifecycleService topUpLifecycleService;
 
   @Value("${mollie.redirect_url}")
   private String redirectUrl;
@@ -45,35 +44,29 @@ public class DepositService {
 
   private final TransactionRepository transactionRepository;
 
-  private final MailService mailService;
-
   private static final Logger logger = LoggerFactory.getLogger(DepositService.class);
 
   @Autowired
   public DepositService(
-      BalanceService balanceService,
       UserRepository userRepository,
       @Value("${mollie.api_key}") String apiKey,
       TransactionRepository transactionRepository,
-      MailService mailService) {
-    this.balanceService = balanceService;
+      TopUpLifecycleService topUpLifecycleService) {
     this.userRepository = userRepository;
     this.mollieClient = new ClientBuilder().withApiKey(apiKey).build();
     this.transactionRepository = transactionRepository;
-    this.mailService = mailService;
+    this.topUpLifecycleService = topUpLifecycleService;
   }
 
   public DepositService(
-      BalanceService balanceService,
       UserRepository userRepository,
       Client mollie,
       TransactionRepository transactionRepository,
-      MailService mailService) {
-    this.balanceService = balanceService;
+      TopUpLifecycleService topUpLifecycleService) {
     this.userRepository = userRepository;
     this.mollieClient = mollie;
     this.transactionRepository = transactionRepository;
-    this.mailService = mailService;
+    this.topUpLifecycleService = topUpLifecycleService;
   }
 
   /**
@@ -104,34 +97,21 @@ public class DepositService {
    */
   @Transactional
   public TopupTransaction validateTransaction(UUID transactionId) {
-    TopupTransaction transaction = transactionRepository.findByIdForUpdateTopup(transactionId);
+    TopupTransaction transaction =
+        transactionRepository
+            .findById(transactionId)
+            .filter(TopupTransaction.class::isInstance)
+            .map(TopupTransaction.class::cast)
+            .orElseThrow(() -> new java.util.NoSuchElementException("Transaction not found"));
 
     try {
       PaymentResponse pr = mollieClient.payments().getPayment(transaction.getMollieId());
-      switch (pr.getStatus()) {
-        case PENDING -> {
-          transaction.setStatus(Transaction.TransactionStatus.PENDING);
-        }
-        case CANCELED, EXPIRED -> {
-          balanceService.markTopUpAsFailed(transaction);
-          try {
-            mailService.sendDepositFailEmail(transaction, transaction.getAmount());
-          } catch (Exception e) {
-            logger.error("Failed to send deposit fail email for transaction {}", transactionId, e);
-          }
-        }
-        case PAID -> {
-          transaction.setStatus(Transaction.TransactionStatus.SUCCESSFUL);
-          balanceService.markTopUpAsPaid(transaction);
-          try {
-            mailService.sendDepositSuccessEmail(transaction, transaction.getAmount());
-          } catch (Exception e) {
-            logger.error(
-                "Failed to send deposit success email for transaction {}", transactionId, e);
-          }
-        }
-      }
-      return transactionRepository.saveAndFlush(transaction);
+      return switch (pr.getStatus()) {
+        case PENDING -> topUpLifecycleService.markPending(transactionId);
+        case PAID -> topUpLifecycleService.markPaid(transactionId);
+        case CANCELED, EXPIRED -> topUpLifecycleService.markCancelled(transactionId);
+        default -> topUpLifecycleService.markFailed(transactionId);
+      };
     } catch (MollieException e) {
       handleMollieError(e);
       return transaction;

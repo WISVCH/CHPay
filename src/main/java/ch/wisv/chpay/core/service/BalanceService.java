@@ -6,7 +6,6 @@ import ch.wisv.chpay.core.exception.InsufficientBalanceException;
 import ch.wisv.chpay.core.exception.UserNotFoundException;
 import ch.wisv.chpay.core.model.User;
 import ch.wisv.chpay.core.model.transaction.RefundTransaction;
-import ch.wisv.chpay.core.model.transaction.TopupTransaction;
 import ch.wisv.chpay.core.model.transaction.Transaction;
 import ch.wisv.chpay.core.repository.TransactionRepository;
 import ch.wisv.chpay.core.repository.UserRepository;
@@ -161,40 +160,15 @@ public class BalanceService {
         "Pessimistic lock exception while trying to refund transaction");
   }
 
-  /**
-   * Marks a top-up transaction as paid. Changes the status of the transaction to SUCCESSFUL and
-   * adds the amount to the user's balance.
-   *
-   * @param tx The transaction to be marked as paid. Must be a PENDING transaction.
-   */
   @CheckSystemNotFrozen
   @Transactional
-  public void markTopUpAsPaid(TopupTransaction tx)
-      throws IllegalStateException, IllegalArgumentException {
-    User lockedFrom = userRepository.findByIdForUpdate(tx.getUser().getId());
-
+  public User topup(User user, java.math.BigDecimal amount) {
+    User lockedFrom = userRepository.findByIdForUpdate(user.getId());
     if (lockedFrom == null) {
       throw new UserNotFoundException("User not found");
     }
-
-    credit(lockedFrom, tx.getAmount());
-
-    userRepository.save(lockedFrom);
-
-    tx.setStatus(Transaction.TransactionStatus.SUCCESSFUL);
-    transactionRepository.save(tx);
-  }
-
-  /**
-   * Marks a top-up transaction as failed. Changes the status of the transaction to FAILED.
-   *
-   * @param tx The transaction to be marked as failed. Must be a PENDING transaction.
-   */
-  @CheckSystemNotFrozen
-  @Transactional
-  public void markTopUpAsFailed(TopupTransaction tx) {
-    tx.setStatus(Transaction.TransactionStatus.FAILED);
-    transactionRepository.save(tx);
+    credit(lockedFrom, amount);
+    return lockedFrom;
   }
 
   /**
