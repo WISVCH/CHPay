@@ -113,6 +113,7 @@ public class PaymentController extends CustomerController {
     }
 
     if (transaction.getStatus().equals(Transaction.TransactionStatus.FAILED)
+        || transaction.getStatus().equals(Transaction.TransactionStatus.CANCELLED)
         || transaction.getStatus().equals(Transaction.TransactionStatus.SUCCESSFUL)) {
       throw new TransactionAlreadyFulfilled("This payment has already been fulfilled, or failed.");
     }
@@ -175,6 +176,7 @@ public class PaymentController extends CustomerController {
       case Transaction.TransactionStatus.PENDING -> "pending";
       case Transaction.TransactionStatus.SUCCESSFUL -> "successful";
       case Transaction.TransactionStatus.FAILED -> "failed";
+      case Transaction.TransactionStatus.CANCELLED -> "failed";
       default -> "error";
     };
   }

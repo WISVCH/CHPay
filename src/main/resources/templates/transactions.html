@@ -137,6 +137,7 @@
                                         <li class="dropdown-item status-filter-item">Successful</li>
                                         <li class="dropdown-item status-filter-item">Pending</li>
                                         <li class="dropdown-item status-filter-item">Failed</li>
+                                        <li class="dropdown-item status-filter-item">Cancelled</li>
                                         <li class="dropdown-item status-filter-item">Refunded</li>
                                         <li class="dropdown-item status-filter-item">Partial Refund</li>
                                     </ul>
@@ -185,6 +186,10 @@
                             <div th:if="${transaction.status.name() == 'FAILED'}" class="flex items-center gap-2">
                                 <div aria-label="status" class="status status-error"></div>
                                 <span class="text-error">Failed</span>
+                            </div>
+                            <div th:if="${transaction.status.name() == 'CANCELLED'}" class="flex items-center gap-2">
+                                <div aria-label="status" class="status status-error"></div>
+                                <span class="text-error">Cancelled</span>
                             </div>
                             <div th:if="${transaction.status.name() == 'REFUNDED'}" class="flex items-center gap-2">
                                 <div aria-label="status" class="status status-info"></div>
@@ -307,6 +312,7 @@
                             'successful': 'SUCCESSFUL',
                             'pending': 'PENDING',
                             'failed': 'FAILED',
+                            'cancelled': 'CANCELLED',
                             'refunded': 'REFUNDED',
                             'partial refund': 'PARTIALLY_REFUNDED'
                         }

@@ -34,7 +34,8 @@ public class Transaction {
     PENDING,
     FAILED,
     REFUNDED,
-    PARTIALLY_REFUNDED
+    PARTIALLY_REFUNDED,
+    CANCELLED
   }
 
   @Id

@@ -110,6 +110,7 @@
                         <span th:if="${transaction.status.name() == 'SUCCESSFUL'}" class="badge badge-soft badge-success badge-sm">Successful</span>
                         <span th:if="${transaction.status.name() == 'PENDING'}" class="badge badge-soft badge-warning badge-sm">Pending</span>
                         <span th:if="${transaction.status.name() == 'FAILED'}" class="badge badge-soft badge-error badge-sm">Failed</span>
+                        <span th:if="${transaction.status.name() == 'CANCELLED'}" class="badge badge-soft badge-error badge-sm">Cancelled</span>
                         <span th:if="${transaction.status.name() == 'REFUNDED'}" class="badge badge-soft badge-info badge-sm">Refunded</span>
                         <span th:if="${transaction.status.name() == 'PARTIALLY_REFUNDED'}" class="badge badge-soft badge-info badge-sm">Partial Refund</span>
                     </div>
