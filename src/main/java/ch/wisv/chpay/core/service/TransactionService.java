@@ -81,8 +81,10 @@ public class TransactionService {
     BigDecimal refundAmount = original.getAmount();
     User originalUser = original.getUser();
 
-    RefundTransaction refund = balanceService.refund(originalUser, refundAmount.negate(), original);
+    User lockedUser = balanceService.refund(originalUser, refundAmount);
+    RefundTransaction refund = RefundTransaction.createRefund(lockedUser, refundAmount, original);
     original.setStatus(Transaction.TransactionStatus.REFUNDED);
+    transactionRepository.save(original);
     return transactionRepository.save(refund);
   }
 
@@ -130,17 +132,17 @@ public class TransactionService {
             .map(RefundTransaction::getAmount)
             .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-    BigDecimal originalPaid = original.getAmount().abs();
+    BigDecimal originalPaid = original.getAmount();
     BigDecimal remainingAmount = originalPaid.subtract(totalRefunded);
 
     if (refundAmount.compareTo(remainingAmount) > 0) {
       throw new IllegalRefundException("Refund amount exceeds remaining refundable amount");
     }
 
-    RefundTransaction refund =
-        balanceService.refund(original.getUser(), refundAmount.negate(), original);
+    User lockedUser = balanceService.refund(original.getUser(), refundAmount);
+    RefundTransaction refund = RefundTransaction.createRefund(lockedUser, refundAmount, original);
 
-    if ((refundAmount.add(totalRefunded)).compareTo(original.getAmount().abs()) == 0) {
+    if ((refundAmount.add(totalRefunded)).compareTo(original.getAmount()) == 0) {
       original.setStatus(Transaction.TransactionStatus.REFUNDED);
     } else {
       original.setStatus(Transaction.TransactionStatus.PARTIALLY_REFUNDED);
@@ -217,7 +219,16 @@ public class TransactionService {
       throw new IllegalStateException("Request has already been fulfilled");
     }
 
-    Transaction result = balanceService.pay(user, lockedTransaction);
+    if (lockedTransaction.getUser() != null && !lockedTransaction.getUser().equals(user)) {
+      throw new IllegalStateException("User is not the same as the one who created the transaction");
+    }
+
+    User lockedUser = balanceService.pay(user, lockedTransaction.getAmount());
+    if (lockedTransaction.getUser() == null) {
+      lockedTransaction.setUser(lockedUser);
+    }
+    lockedTransaction.setStatus(Transaction.TransactionStatus.SUCCESSFUL);
+    Transaction result = transactionRepository.save(lockedTransaction);
 
     if (request != null) {
       request.addFulfilment();
@@ -269,7 +280,16 @@ public class TransactionService {
       throw new IllegalStateException("Transaction is not in pending state");
     }
 
-    return balanceService.pay(user, lockedTransaction);
+    if (lockedTransaction.getUser() != null && !lockedTransaction.getUser().equals(user)) {
+      throw new IllegalStateException("User is not the same as the one who created the transaction");
+    }
+
+    User lockedUser = balanceService.pay(user, lockedTransaction.getAmount());
+    if (lockedTransaction.getUser() == null) {
+      lockedTransaction.setUser(lockedUser);
+    }
+    lockedTransaction.setStatus(Transaction.TransactionStatus.SUCCESSFUL);
+    return transactionRepository.save(lockedTransaction);
   }
 
   @Recover
@@ -325,7 +345,7 @@ public class TransactionService {
             .map(Transaction::getAmount)
             .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-    BigDecimal originalPaid = transaction.getAmount().abs();
+    BigDecimal originalPaid = transaction.getAmount();
     return originalPaid.subtract(totalRefunded);
   }
 

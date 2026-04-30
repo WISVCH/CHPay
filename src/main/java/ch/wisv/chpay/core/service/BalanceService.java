@@ -5,20 +5,10 @@ import ch.wisv.chpay.core.exception.IllegalRefundException;
 import ch.wisv.chpay.core.exception.InsufficientBalanceException;
 import ch.wisv.chpay.core.exception.UserNotFoundException;
 import ch.wisv.chpay.core.model.User;
-import ch.wisv.chpay.core.model.transaction.RefundTransaction;
-import ch.wisv.chpay.core.model.transaction.Transaction;
-import ch.wisv.chpay.core.repository.TransactionRepository;
 import ch.wisv.chpay.core.repository.UserRepository;
-import jakarta.persistence.LockTimeoutException;
 import java.math.BigDecimal;
 import java.util.NoSuchElementException;
-import org.hibernate.dialect.lock.PessimisticEntityLockException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Recover;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,138 +16,35 @@ import org.springframework.transaction.annotation.Transactional;
 public class BalanceService {
 
   private final UserRepository userRepository;
-  private final TransactionRepository transactionRepository;
   private final SettingService settingService;
-  private static final Logger logger = LoggerFactory.getLogger(BalanceService.class);
 
   @Autowired
   public BalanceService(
-      UserRepository userRepository,
-      TransactionRepository transactionRepository,
-      SettingService settingService) {
+      UserRepository userRepository, SettingService settingService) {
     this.userRepository = userRepository;
-    this.transactionRepository = transactionRepository;
     this.settingService = settingService;
   }
 
-  /**
-   * Creates a new transaction tied to the user with the given description and amount, changing the
-   * balance accordingly.
-   *
-   * @param user The user to top up.
-   */
   @CheckSystemNotFrozen
   @Transactional
-  protected Transaction pay(User user, Transaction pendingTransaction)
-      throws InsufficientBalanceException,
-          UserNotFoundException,
-          IllegalStateException,
-          NoSuchElementException {
+  protected User pay(User user, BigDecimal amount)
+      throws InsufficientBalanceException, UserNotFoundException, NoSuchElementException {
     User lockedFrom = userRepository.findByIdForUpdate(user.getId());
 
     if (lockedFrom == null) {
       throw new UserNotFoundException("User not found");
     }
 
-    // For external transactions, the user might be null initially (anonymous transactions)
-    // In that case, we allow any user to pay for it
-    if (pendingTransaction.getUser() != null && !lockedFrom.equals(pendingTransaction.getUser())) {
-      throw new IllegalStateException(
-          "User is not the same as the one who created the transaction");
+    if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+      throw new IllegalArgumentException("Payment amount must be positive");
     }
-
-    BigDecimal amount = pendingTransaction.getAmount();
 
     if (lockedFrom.getBalance().compareTo(amount) < 0) {
-      throw new InsufficientBalanceException(
-          "Insufficient balance for payment for payment" + pendingTransaction.getId());
+      throw new InsufficientBalanceException("Insufficient balance for payment");
     }
 
-    debit(lockedFrom, amount.abs());
-    pendingTransaction.setStatus(Transaction.TransactionStatus.SUCCESSFUL);
-
-    // If this was an anonymous transaction, link the user to it now
-    if (pendingTransaction.getUser() == null) {
-      pendingTransaction.setUser(lockedFrom);
-    }
-
-    return transactionRepository.save(pendingTransaction);
-  }
-
-  /**
-   * Refunds a transaction. Changes the status of the transaction to REFUNDED and creates a new
-   * REFUND transaction for logging purposes. The money is added to the user's balance again.
-   *
-   * @param user The user to refund the transaction for.
-   * @param amount The amount to refund. Should be negative as only payments can be refunded.
-   * @param original The original transaction to be refunded. Must be a payment or top-up. If the
-   *     transaction is a refund, the original must be a refund of a payment or top-up.
-   * @return The refund transaction.
-   */
-  @CheckSystemNotFrozen
-  @Transactional
-  @Retryable(
-      retryFor = {PessimisticEntityLockException.class, LockTimeoutException.class},
-      notRecoverable = {
-        IllegalRefundException.class,
-        UserNotFoundException.class,
-        IllegalStateException.class,
-        NoSuchElementException.class
-      },
-      backoff = @Backoff(delay = 200, multiplier = 2))
-  protected RefundTransaction refund(User user, BigDecimal amount, Transaction original)
-      throws IllegalStateException,
-          IllegalArgumentException,
-          IllegalRefundException,
-          UserNotFoundException {
-    User lockedFrom = userRepository.findByIdForUpdate(user.getId());
-
-    if (lockedFrom == null) {
-      throw new UserNotFoundException("User not found");
-    }
-
-    if (amount.compareTo(BigDecimal.ZERO) >= 0) {
-      throw new IllegalRefundException(
-          "Can only refund payments for events/services, not for top-ups");
-    }
-
-    if (!lockedFrom.equals(original.getUser())) {
-      throw new IllegalStateException("User is not the same as the one who originally paid");
-    }
-
-    credit(lockedFrom, amount.abs());
-
-    RefundTransaction refund = RefundTransaction.createRefund(lockedFrom, amount.abs(), original);
-
-    return transactionRepository.save(refund);
-  }
-
-  @Recover
-  protected RefundTransaction recoverRefundFromLockTimeout(
-      LockTimeoutException e, User user, BigDecimal amount, Transaction original) {
-    logger.error(
-        "Refund failed due to lock timeout. userId={}, txId={}, amount={}. Exception: {}",
-        user.getId(),
-        original.getId(),
-        amount,
-        e.getMessage(),
-        e);
-
-    throw new IllegalStateException("Lock timeout while trying to refund transaction");
-  }
-
-  @Recover
-  protected RefundTransaction recoverRefundFromPessimisticLock(
-      PessimisticEntityLockException e, User user, BigDecimal amount, Transaction original) {
-    logger.error(
-        "Refund failed due to lock exception. userId={}, txId={}, amount={}. Exception: {}",
-        user.getId(),
-        original.getId(),
-        amount,
-        e.getMessage(),
-        e);
-    throw new IllegalStateException(
-        "Pessimistic lock exception while trying to refund transaction");
+    debit(lockedFrom, amount);
+    return lockedFrom;
   }
 
   @CheckSystemNotFrozen
@@ -166,6 +53,21 @@ public class BalanceService {
     User lockedFrom = userRepository.findByIdForUpdate(user.getId());
     if (lockedFrom == null) {
       throw new UserNotFoundException("User not found");
+    }
+    credit(lockedFrom, amount);
+    return lockedFrom;
+  }
+
+  @CheckSystemNotFrozen
+  @Transactional
+  protected User refund(User user, BigDecimal amount)
+      throws IllegalStateException, IllegalArgumentException, IllegalRefundException {
+    User lockedFrom = userRepository.findByIdForUpdate(user.getId());
+    if (lockedFrom == null) {
+      throw new UserNotFoundException("User not found");
+    }
+    if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+      throw new IllegalRefundException("Refund amount must be positive");
     }
     credit(lockedFrom, amount);
     return lockedFrom;
