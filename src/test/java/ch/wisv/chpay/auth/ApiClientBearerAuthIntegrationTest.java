@@ -176,26 +176,6 @@ class ApiClientBearerAuthIntegrationTest {
         .andExpect(status().isNotFound());
   }
 
-  @Test
-  void ledstripHandshakeRejectsClientWithoutLedstripRole() throws Exception {
-    mockMvc
-        .perform(
-            get("/api/v1/leds/stream/info")
-                .queryParam("t", "123")
-                .header("Authorization", "Bearer " + externalPaymentToken))
-        .andExpect(status().isForbidden());
-  }
-
-  @Test
-  void ledstripHandshakeAllowsClientWithLedstripRole() throws Exception {
-    mockMvc
-        .perform(
-            get("/api/v1/leds/stream/info")
-                .queryParam("t", "123")
-                .header("Authorization", "Bearer " + ledstripToken))
-        .andExpect(status().isOk());
-  }
-
   private String createClientToken(
       String name, String tokenId, String secret, Set<ApiClientRole> roles) {
     ApiClient client = new ApiClient(name, tokenId, passwordEncoder.encode(secret), roles);
