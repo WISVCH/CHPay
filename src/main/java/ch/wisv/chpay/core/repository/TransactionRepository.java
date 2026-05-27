@@ -196,6 +196,9 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
       """)
   List<Object[]> findDistinctYearMonthCombinationsByRequestId(@Param("requestId") UUID requestId);
 
+  Optional<Transaction> findFirstByTypeInAndStatusInOrderByTimestampDesc(
+      List<TransactionType> types, List<TransactionStatus> statuses);
+
   /** Count fulfilments per month for a specific payment request. */
   @Query(
       """
