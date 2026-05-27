@@ -1,6 +1,5 @@
 package ch.wisv.chpay.core.service;
 
-import ch.wisv.chpay.api.ledstrip.LedWebSocketHandler;
 import ch.wisv.chpay.core.aop.CheckSystemNotFrozen;
 import ch.wisv.chpay.core.exception.IllegalRefundException;
 import ch.wisv.chpay.core.exception.InsufficientBalanceException;
@@ -28,22 +27,20 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TransactionService {
+
   private final TransactionRepository transactionRepository;
   private final BalanceService balanceService;
   private final RequestRepository requestRepository;
   private static final Logger logger = LoggerFactory.getLogger(TransactionService.class);
-  private final LedWebSocketHandler ledHandler;
 
   @Autowired
   TransactionService(
       TransactionRepository transactionRepository,
       BalanceService balanceService,
-      RequestRepository requestRepository,
-      LedWebSocketHandler ledHandler) {
+      RequestRepository requestRepository) {
     this.transactionRepository = transactionRepository;
     this.balanceService = balanceService;
     this.requestRepository = requestRepository;
-    this.ledHandler = ledHandler;
   }
 
   /**
@@ -189,12 +186,15 @@ public class TransactionService {
    */
   @CheckSystemNotFrozen
   @Retryable(
-      retryFor = {PessimisticEntityLockException.class, LockTimeoutException.class},
+      retryFor = {
+        PessimisticEntityLockException.class,
+        LockTimeoutException.class,
+      },
       notRecoverable = {
         InsufficientBalanceException.class,
         UserNotFoundException.class,
         IllegalStateException.class,
-        NoSuchElementException.class
+        NoSuchElementException.class,
       },
       backoff = @Backoff(delay = 200, multiplier = 2))
   @Transactional
@@ -241,7 +241,6 @@ public class TransactionService {
     if (request != null) {
       request.addFulfilment();
       requestRepository.save(request);
-      ledHandler.broadcastPaymentSuccess(55, 125, 255, "random"); // Customize RGB/pattern as needed
     }
 
     return result;
@@ -261,12 +260,15 @@ public class TransactionService {
    */
   @CheckSystemNotFrozen
   @Retryable(
-      retryFor = {PessimisticEntityLockException.class, LockTimeoutException.class},
+      retryFor = {
+        PessimisticEntityLockException.class,
+        LockTimeoutException.class,
+      },
       notRecoverable = {
         InsufficientBalanceException.class,
         UserNotFoundException.class,
         IllegalStateException.class,
-        NoSuchElementException.class
+        NoSuchElementException.class,
       },
       backoff = @Backoff(delay = 200, multiplier = 2))
   @Transactional
