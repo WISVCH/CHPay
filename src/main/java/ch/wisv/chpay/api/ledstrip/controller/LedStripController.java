@@ -1,5 +1,7 @@
 package ch.wisv.chpay.api.ledstrip.controller;
 
+import ch.wisv.chpay.core.model.LedPattern;
+import ch.wisv.chpay.core.model.User;
 import ch.wisv.chpay.core.model.transaction.Transaction;
 import ch.wisv.chpay.core.repository.TransactionRepository;
 import java.time.LocalDateTime;
@@ -28,7 +30,13 @@ public class LedStripController {
   }
 
   public record LatestTransactionResponse(
-      String description, LocalDateTime timestamp, Transaction.TransactionType type) {}
+      String description,
+      LocalDateTime timestamp,
+      Transaction.TransactionType type,
+      Integer r,
+      Integer g,
+      Integer b,
+      String pattern) {}
 
   @GetMapping("/ping")
   public ResponseEntity<Void> ping() {
@@ -40,10 +48,17 @@ public class LedStripController {
     return transactionRepository
         .findFirstByTypeInAndStatusInOrderByTimestampDesc(PAYMENT_TYPES, FULFILLED_STATUSES)
         .map(
-            t ->
-                ResponseEntity.ok(
-                    new LatestTransactionResponse(
-                        t.getDescription(), t.getTimestamp(), t.getType())))
+            t -> {
+              User user = t.getUser();
+              Integer r = user != null ? user.getLedR() : null;
+              Integer g = user != null ? user.getLedG() : null;
+              Integer b = user != null ? user.getLedB() : null;
+              LedPattern ledPattern = user != null ? user.getLedPattern() : null;
+              String pattern = ledPattern != null ? ledPattern.name() : null;
+              return ResponseEntity.ok(
+                  new LatestTransactionResponse(
+                      t.getDescription(), t.getTimestamp(), t.getType(), r, g, b, pattern));
+            })
         .orElseGet(() -> ResponseEntity.noContent().build());
   }
 }
