@@ -29,7 +29,7 @@ public class LedStripController {
   }
 
   public record LatestTransactionResponse(
-      String description, BigDecimal amount, LocalDateTime timestamp) {}
+      String description, LocalDateTime timestamp, Transaction.TransactionType type) {}
 
   @GetMapping("/ping")
   public ResponseEntity<Void> ping() {
