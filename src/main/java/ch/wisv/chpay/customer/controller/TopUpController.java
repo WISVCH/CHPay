@@ -124,8 +124,8 @@ public class TopUpController extends CustomerController {
             return "redirect:/topup";
           }
 
-          if (redirectTx.getUser() == null
-              || !redirectTx.getUser().getId().equals(currentUser.getId())) {
+          if (redirectTx.getUser() != null
+              && !redirectTx.getUser().getId().equals(currentUser.getId())) {
             notificationService.addErrorMessage(
                 redirectAttributes, "Invalid redirect payment reference.");
             return "redirect:/topup";
