@@ -17,8 +17,7 @@
         <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             <div th:each="card : ${confettiCards}"
                  class="card bg-base-100 border border-base-content/10 shadow-sm hover:shadow-md transition-shadow"
-                 th:classappend="${card.unlocked} ? ' cursor-pointer' : ' opacity-60 cursor-not-allowed'"
-                 th:attr="data-confetti-card=${card.unlocked} ? 'true' : null">
+                 th:classappend="${!card.unlocked} ? ' opacity-60 cursor-not-allowed' : ''">
                 <div class="card-body">
                     <div class="flex items-center gap-3">
                         <span th:if="${card.unlocked}" class="icon-[tabler--sparkles] size-6 text-primary"></span>
@@ -30,11 +29,12 @@
                         Requires 0 transactions
                     </p>
 
-                    <div class="mt-4 flex items-center justify-between">
+                    <div class="mt-4 flex items-center">
                         <form th:if="${card.unlocked}"
                               th:action="@{/confetti/{id}/equip(id=${card.confetti.id})}"
                               method="post"
-                              class="ml-auto">
+                              class="ml-auto flex items-center gap-4">
+                            <a href="#" class="link text-sm" data-confetti-preview>Preview</a>
                             <button type="submit"
                                     class="btn btn-primary btn-sm"
                                     th:if="${selectedConfettiId == null or selectedConfettiId != card.confetti.id}">
@@ -73,6 +73,9 @@
 
 <th:block layout:fragment="script">
     <script th:src="@{/js/confetti-shared.js}"></script>
+    <script>
+        confettiUtils.bindPreviewButtons({ rowSelector: '.card' });
+    </script>
 </th:block>
 </body>
 </html>
