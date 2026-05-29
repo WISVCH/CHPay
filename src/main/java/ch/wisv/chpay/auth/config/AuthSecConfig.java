@@ -129,9 +129,7 @@ public class AuthSecConfig {
                       "/topup/status",
                       "/actuator/health/liveness",
                       "/actuator/health/readiness",
-                      "/actuator/health",
-                      "/api/v1/leds/ping",
-                      "/api/v1/leds/latest")
+                      "/actuator/health")
                   .permitAll();
 
               // Only permit test endpoints when test profile is active
