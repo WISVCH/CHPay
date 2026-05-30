@@ -79,7 +79,7 @@ public class TransactionService {
         transactionRepository.findByRefundOf(original).stream()
             .map(RefundTransaction::getAmount)
             .reduce(BigDecimal.ZERO, BigDecimal::add);
-    BigDecimal refundAmount = original.getAmount().subtract(totalRefunded);
+    BigDecimal refundAmount = original.getAmount().negate().subtract(totalRefunded);
     if (refundAmount.compareTo(BigDecimal.ZERO) <= 0) {
       throw new IllegalRefundException("Transaction already refunded.");
     }
@@ -137,7 +137,7 @@ public class TransactionService {
             .reduce(BigDecimal.ZERO, BigDecimal::add);
 
     BigDecimal originalPaid = original.getAmount();
-    BigDecimal remainingAmount = originalPaid.subtract(totalRefunded);
+    BigDecimal remainingAmount = originalPaid.negate().subtract(totalRefunded);
 
     if (refundAmount.compareTo(remainingAmount) > 0) {
       throw new IllegalRefundException("Refund amount exceeds remaining refundable amount");
@@ -146,7 +146,7 @@ public class TransactionService {
     User lockedUser = balanceService.refund(original.getUser(), refundAmount);
     RefundTransaction refund = RefundTransaction.createRefund(lockedUser, refundAmount, original);
 
-    if ((refundAmount.add(totalRefunded)).compareTo(original.getAmount()) == 0) {
+    if ((refundAmount.add(totalRefunded)).compareTo(original.getAmount().negate()) == 0) {
       original.setStatus(Transaction.TransactionStatus.REFUNDED);
     } else {
       original.setStatus(Transaction.TransactionStatus.PARTIALLY_REFUNDED);
@@ -357,7 +357,7 @@ public class TransactionService {
             .reduce(BigDecimal.ZERO, BigDecimal::add);
 
     BigDecimal originalPaid = transaction.getAmount();
-    return originalPaid.subtract(totalRefunded);
+    return originalPaid.negate().subtract(totalRefunded);
   }
 
   @CheckSystemNotFrozen
