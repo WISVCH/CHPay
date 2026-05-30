@@ -140,7 +140,7 @@ public class MailService {
                                             </body>
                                         </html>
                                     """,
-              t.getTimestamp(), t.getDescription(), t.getAmount(), t.getStatus());
+              t.getTimestamp(), t.getDescription(), t.getAmount().abs(), t.getStatus());
       helper.setText(htmlContent, true);
 
       ClassPathResource image = new ClassPathResource("static/images/ch-logo-small.png");
