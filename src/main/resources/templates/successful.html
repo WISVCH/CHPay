@@ -52,7 +52,7 @@
                     </div>
 
                     <!-- Redirect Notice -->
-                    <div class="grid grid-rows-2 sm:grid-cols-2 sm:grid-rows-1 gap-4 w-full mb-6">
+                    <div class="grid sm:grid-cols-2 gap-4 w-full mb-6">
                         <div th:if="${redirect} != null">
                             <p class="text-base-content">
                                 We’ll redirect you to your payment in a moment.<br>
@@ -61,7 +61,8 @@
                             </p>
                         </div>
 
-                        <a th:unless="${redirect} != null" href="/" class="btn btn-primary btn-xl sm:btn-lg">
+                        <a th:unless="${redirect} != null" href="/" class="btn btn-primary btn-xl sm:btn-lg"
+                           th:classappend="${paymentRequest == null or not paymentRequest.multiUse} ? 'sm:col-span-2 sm:w-1/2 sm:mx-auto' : ''">
                             <span class="icon-[tabler--home] size-5"></span>
                             Go to Homepage
                         </a>
