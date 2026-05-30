@@ -46,36 +46,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
   long countByUserAndStatusInAndTypeIn(
       User user, List<TransactionStatus> statuses, List<TransactionType> types);
 
-  @Query(
-      "SELECT SUM(t.amount) FROM Transaction t WHERE t.type='TOP_UP' AND t.status='SUCCESSFUL' AND t.timestamp BETWEEN :dateStart AND :dateEnd")
-  BigDecimal getIncomingSum(LocalDateTime dateStart, LocalDateTime dateEnd);
-
-  @Query(
-      "SELECT SUM(t.amount) FROM Transaction t WHERE t.type='TOP_UP' AND t.status='SUCCESSFUL' AND t.user=:user AND t.timestamp BETWEEN :dateStart AND :dateEnd")
-  BigDecimal getIncomingSumUser(LocalDateTime dateStart, LocalDateTime dateEnd, User user);
-
-  @Query(
-      "SELECT SUM(t.amount) FROM Transaction t WHERE t.type='PAYMENT' AND (t.status='SUCCESSFUL' OR  t.status='REFUNDED' OR t.status='PARTIALLY_REFUNDED') AND t.timestamp BETWEEN :dateStart AND :dateEnd")
-  BigDecimal getPaymentSum(LocalDateTime dateStart, LocalDateTime dateEnd);
-
-  @Query(
-      "SELECT SUM(t.amount) FROM Transaction t WHERE t.type='PAYMENT' AND (t.status='SUCCESSFUL' OR  t.status='REFUNDED' OR t.status='PARTIALLY_REFUNDED') AND t.user=:user AND t.timestamp BETWEEN :dateStart AND :dateEnd")
-  BigDecimal getPaymentSumUser(LocalDateTime dateStart, LocalDateTime dateEnd, User user);
-
-  @Query(
-      "SELECT SUM(t.amount) FROM Transaction t WHERE t.type='REFUND' AND t.status='SUCCESSFUL' AND t.timestamp BETWEEN :dateStart AND :dateEnd")
-  BigDecimal getRefundSum(LocalDateTime dateStart, LocalDateTime dateEnd);
-
-  @Query(
-      "SELECT SUM(t.amount) FROM Transaction t WHERE t.type='REFUND' AND t.status='SUCCESSFUL' AND t.user=:user AND t.timestamp BETWEEN :dateStart AND :dateEnd")
-  BigDecimal getRefundSumUser(LocalDateTime dateStart, LocalDateTime dateEnd, User user);
-
-  long countTransactionByUserAndTimestampBetweenAndStatusIs(
-      User user,
-      LocalDateTime timestampAfter,
-      LocalDateTime timestampBefore,
-      Transaction.TransactionStatus status);
-
   @Lock(LockModeType.PESSIMISTIC_WRITE)
   @Query("SELECT t FROM TopupTransaction t WHERE t.id = :id")
   TopupTransaction findByIdForUpdateTopup(@Param("id") UUID id);
