@@ -57,8 +57,9 @@
                     <!-- Current Balance -->
                     <div class="py-2 border-b border-base-content/10">
                         <div class="text-base-content/70 text-sm mb-1">Current Balance</div>
-                        <div class="font-mono text-lg text-success" 
-                             th:text="'€' + ${#numbers.formatDecimal(user.balance, 1, 2)}">€0.00</div>
+                        <div class="font-mono text-lg"
+                             th:classappend="${user.balance < 0} ? 'text-error' : 'text-success'"
+                             th:text="${user.balance < 0 ? '-€' : '€'} + ${#numbers.formatDecimal(user.balance.abs(), 1, 2)}">€0.00</div>
                     </div>
 
                     <!-- Account Status -->

@@ -128,8 +128,8 @@
                                         
                                         <!-- Balance Column -->
                                         <td class="w-0 text-right font-mono whitespace-nowrap">
-                                            <span class="text-success" 
-                                                th:text="'€' + ${#numbers.formatDecimal(user.balance, 1, 2)}">€0.00</span>
+                                            <span th:classappend="${user.balance < 0} ? 'text-error' : 'text-success'"
+                                                  th:text="${user.balance < 0 ? '-€' : '€'} + ${#numbers.formatDecimal(user.balance.abs(), 1, 2)}">€0.00</span>
                                         </td>
                                         
                                         <!-- Actions Column -->

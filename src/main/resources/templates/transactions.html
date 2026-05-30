@@ -160,9 +160,9 @@
                             <span th:if="${transaction.amount >= 0}" 
                                     class="text-success" 
                                     th:text="'€' + ${#numbers.formatDecimal(transaction.amount, 1, 2)}">€0.00</span>
-                            <span th:if="${transaction.amount < 0}" 
-                                    class="text-error" 
-                                    th:text="'€' + ${#numbers.formatDecimal(transaction.amount, 1, 2)}">€0.00</span>
+                            <span th:if="${transaction.amount < 0}"
+                                    class="text-error"
+                                    th:text="'-€' + ${#numbers.formatDecimal(transaction.amount.abs(), 1, 2)}">-€0.00</span>
                         </td>
                         
                         <!-- Type Column -->
