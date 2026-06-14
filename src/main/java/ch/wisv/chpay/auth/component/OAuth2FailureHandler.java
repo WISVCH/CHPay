@@ -38,6 +38,6 @@ public class OAuth2FailureHandler implements AuthenticationFailureHandler {
 
     new SessionFlashMapManager().saveOutputFlashMap(flashMap, request, response);
 
-    response.sendRedirect("/login");
+    response.sendRedirect("/login?error");
   }
 }
