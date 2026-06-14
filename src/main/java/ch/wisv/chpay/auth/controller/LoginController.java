@@ -16,15 +16,14 @@ import org.springframework.web.bind.annotation.RequestParam;
  *
  * <p>- The root endpoint ("/") redirects users to either the dashboard or login page depending on
  * their authentication status. - The dashboard endpoint ("/dashboard") serves the main dashboard
- * page upon successful login. - The login endpoint ("/login") starts SSO for normal requests and
- * serves the login page only for recovery states. - The error endpoint ("/error") serves a generic
- * error page. - The logout-success endpoint ("/logout-success") serves a page confirming that
- * logout has been completed successfully.
+ * page upon successful login. - The login endpoint ("/login") serves the login page and optionally
+ * shows recovery messages. - The error endpoint ("/error") serves a generic error page. - The
+ * logout-success endpoint ("/logout-success") serves a page confirming that logout has been
+ * completed successfully.
  */
 @Controller
 public class LoginController extends PageController {
 
-  private static final String SSO_AUTHORIZATION_PATH = "/oauth2/authorization/wisvchconnect";
   private static final String NOTIFICATION_TYPE = "notificationType";
   private static final String NOTIFICATION_MESSAGE = "notificationMessage";
 
@@ -60,7 +59,7 @@ public class LoginController extends PageController {
       return "login";
     }
 
-    return "redirect:" + SSO_AUTHORIZATION_PATH;
+    return "login";
   }
 
   @GetMapping("/expired")

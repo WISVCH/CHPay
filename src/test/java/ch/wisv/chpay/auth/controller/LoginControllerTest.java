@@ -29,9 +29,14 @@ class LoginControllerTest {
   }
 
   @Test
-  void loginRedirectsAnonymousUsersToSso() throws Exception {
+  void loginRendersLoginPageForAnonymousUsers() throws Exception {
+    mockMvc.perform(get("/login")).andExpect(status().isOk()).andExpect(view().name("login"));
+  }
+
+  @Test
+  void protectedPageRedirectsAnonymousUsersToSso() throws Exception {
     mockMvc
-        .perform(get("/login"))
+        .perform(get("/index"))
         .andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/oauth2/authorization/wisvchconnect"));
   }

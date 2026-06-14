@@ -1,8 +1,9 @@
 package ch.wisv.chpay.customer.controller;
 
 import ch.wisv.chpay.core.controller.PageController;
-import ch.wisv.chpay.core.service.NotificationService;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -21,15 +22,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HomeController extends PageController {
 
-  private final NotificationService notificationService;
-
-  public HomeController(NotificationService notificationService) {
-    this.notificationService = notificationService;
-  }
-
   @GetMapping("/")
-  public String root() {
-    return "redirect:/index";
+  public String root(Authentication authentication) {
+    if (authentication != null
+        && authentication.isAuthenticated()
+        && !(authentication instanceof AnonymousAuthenticationToken)) {
+      return "redirect:/index";
+    }
+    return "login";
   }
 
   @PreAuthorize("hasAnyRole('USER', 'BANNED')")

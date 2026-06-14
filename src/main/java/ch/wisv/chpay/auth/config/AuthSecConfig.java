@@ -25,6 +25,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -41,6 +42,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 public class AuthSecConfig {
+
+  private static final String SSO_AUTHORIZATION_PATH = "/oauth2/authorization/wisvchconnect";
 
   @Autowired private CustomOIDCUserService customOidcUserService;
 
@@ -94,6 +97,7 @@ public class AuthSecConfig {
                 headers.httpStrictTransportSecurity(
                     hsts -> hsts.includeSubDomains(true).preload(true).maxAgeInSeconds(31536000)));
 
+    configureUnauthenticatedRedirect(http);
     configureLogout(http);
     return http.build();
   }
@@ -165,6 +169,14 @@ public class AuthSecConfig {
   @Bean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
+  }
+
+  private void configureUnauthenticatedRedirect(HttpSecurity http) throws Exception {
+    http.exceptionHandling(
+        exceptions ->
+            exceptions.defaultAuthenticationEntryPointFor(
+                new LoginUrlAuthenticationEntryPoint(SSO_AUTHORIZATION_PATH),
+                request -> !request.getRequestURI().startsWith("/api/")));
   }
 
   /**
