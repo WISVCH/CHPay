@@ -192,12 +192,14 @@
     <script>
         window.addEventListener('load', () => {
             setTimeout(() => {
-                const dataTable = $('#api-clients-datatable table').DataTable();
+                const dataTable = new DataTable('#api-clients-datatable table');
                 const searchInput = document.getElementById('api-clients-search');
 
                 if (searchInput) {
                     searchInput.addEventListener('input', () => {
-                        dataTable.columns().search('');
+                        dataTable.columns().every(function() {
+                            this.search('');
+                        });
                         dataTable.column(0).search(searchInput.value).draw();
                     });
                 }

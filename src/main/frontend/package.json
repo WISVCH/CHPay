@@ -11,10 +11,10 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "apexcharts": "^5.3.5",
+    "apexcharts": "^6.5.0",
     "canvas-confetti": "^1.9.3",
     "clipboard": "^2.0.11",
-    "datatables.net": "^2.3.4",
+    "datatables.net": "^3.0.0",
     "flatpickr": "^4.6.13",
     "flyonui": "^2.4.0",
     "jquery": "^4.0.0",
