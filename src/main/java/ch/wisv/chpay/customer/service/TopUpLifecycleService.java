@@ -7,26 +7,18 @@ import ch.wisv.chpay.core.repository.TransactionRepository;
 import ch.wisv.chpay.core.service.BalanceService;
 import java.util.NoSuchElementException;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TopUpLifecycleService {
-  private static final Logger logger = LoggerFactory.getLogger(TopUpLifecycleService.class);
-
   private final TransactionRepository transactionRepository;
   private final BalanceService balanceService;
-  private final MailService mailService;
 
   public TopUpLifecycleService(
-      TransactionRepository transactionRepository,
-      BalanceService balanceService,
-      MailService mailService) {
+      TransactionRepository transactionRepository, BalanceService balanceService) {
     this.transactionRepository = transactionRepository;
     this.balanceService = balanceService;
-    this.mailService = mailService;
   }
 
   @Transactional
@@ -57,11 +49,6 @@ public class TopUpLifecycleService {
     User lockedUser = balanceService.topup(tx.getUser(), tx.getAmount());
     tx.setUser(lockedUser);
     tx.setStatus(Transaction.TransactionStatus.SUCCESSFUL);
-    try {
-      mailService.sendDepositSuccessEmail(tx, tx.getAmount());
-    } catch (Exception e) {
-      logger.error("Failed to send deposit success email for transaction {}", tx.getId(), e);
-    }
     return transactionRepository.saveAndFlush(tx);
   }
 
@@ -75,11 +62,6 @@ public class TopUpLifecycleService {
       return tx;
     }
     tx.setStatus(Transaction.TransactionStatus.CANCELLED);
-    try {
-      mailService.sendDepositFailEmail(tx, tx.getAmount());
-    } catch (Exception e) {
-      logger.error("Failed to send deposit fail email for transaction {}", tx.getId(), e);
-    }
     return transactionRepository.saveAndFlush(tx);
   }
 
@@ -93,11 +75,6 @@ public class TopUpLifecycleService {
       return tx;
     }
     tx.setStatus(Transaction.TransactionStatus.FAILED);
-    try {
-      mailService.sendDepositFailEmail(tx, tx.getAmount());
-    } catch (Exception e) {
-      logger.error("Failed to send deposit fail email for transaction {}", tx.getId(), e);
-    }
     return transactionRepository.saveAndFlush(tx);
   }
 }

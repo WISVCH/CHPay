@@ -3,10 +3,7 @@ package ch.wisv.chpay.customer.controller;
 import ch.wisv.chpay.core.model.User;
 import ch.wisv.chpay.core.model.transaction.Transaction;
 import ch.wisv.chpay.core.service.TransactionService;
-import ch.wisv.chpay.customer.service.MailService;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,8 +13,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 public class TransactionHistoryController extends CustomerController {
@@ -25,17 +20,14 @@ public class TransactionHistoryController extends CustomerController {
   private final TransactionService transactionService;
   private final ch.wisv.chpay.core.service.OfxExportService ofxExportService;
   private final ch.wisv.chpay.core.service.CsvExportService csvExportService;
-  private final MailService mailService;
 
   @Autowired
   protected TransactionHistoryController(
       TransactionService transactionService,
-      MailService mailService,
       ch.wisv.chpay.core.service.OfxExportService ofxExportService,
       ch.wisv.chpay.core.service.CsvExportService csvExportService) {
     super();
     this.transactionService = transactionService;
-    this.mailService = mailService;
     this.ofxExportService = ofxExportService;
     this.csvExportService = csvExportService;
   }
@@ -111,41 +103,5 @@ public class TransactionHistoryController extends CustomerController {
     headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=transactions.csv");
     headers.setContentLength(csvBytes.length);
     return new ResponseEntity<>(csvBytes, headers, HttpStatus.OK);
-  }
-
-  /**
-   * Sends a user their receipt
-   *
-   * @param id the transaction's id
-   * @param model the model containing current user information
-   * @return ResponseEntity with appropriate HTTP status
-   */
-  @PreAuthorize("hasAnyRole('USER', 'BANNED')")
-  @PostMapping("/transactions/email-receipt/{id}")
-  public ResponseEntity<HttpStatus> emailReceipt(@PathVariable String id, Model model) {
-    try {
-      // Get current user from model
-      User currentUser = (User) model.getAttribute("currentUser");
-      if (currentUser == null) {
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-      }
-
-      Optional<Transaction> transactionOpt =
-          transactionService.getTransactionById(UUID.fromString(id));
-      if (transactionOpt.isEmpty()) {
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-      }
-      try {
-        assertCurrentUserOwnsTransaction(currentUser, transactionOpt.get());
-      } catch (org.springframework.security.access.AccessDeniedException ex) {
-        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-      }
-
-      // If authorized, send the receipt
-      mailService.sendReceiptByEmail(id);
-      return new ResponseEntity<>(HttpStatus.OK);
-    } catch (Exception e) {
-      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    }
   }
 }

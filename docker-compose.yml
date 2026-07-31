@@ -38,15 +38,6 @@ services:
       - ./pgadmin/pgpassfile:/pgpassfile.template:ro
       - ./pgadmin/bootstrap-pgpass.sh:/bootstrap-pgpass.sh:ro
 
-
-  mailcatcher:
-    image: dockage/mailcatcher:latest
-    container_name: chpay-mailcatcher
-    hostname: mailcatcher
-    ports:
-      - "3082:1080"
-      - "3587:1025"
-
   frontend-dev:
     image: node:20
     container_name: chpay-frontend-dev

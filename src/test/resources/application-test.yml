@@ -21,19 +21,6 @@ spring:
   flyway:
     enabled: false
 
-  mail:
-    host: localhost
-    port: 2525
-    username: test@chpay.invalid
-    password: ""
-    properties:
-      mail:
-        smtp:
-          auth: false
-          starttls:
-            enable: false
-            required: false
-
   security:
     oauth2:
       client:

@@ -39,17 +39,6 @@ spring:
           no-cache: true
           no-store: true
 
-  mail:
-    host: localhost
-    port: 3587
-    username: chpay.devcontainer@mailcatcher.local
-    password: ""
-    properties:
-      mail.smtp.auth: false
-      mail.smtp.starttls.enable: false
-      mail.smtp.starttls.required: false
-    disable: false
-
   cache:
     cache-names: systemFrozen, maxBalance, minTopUp
     caffeine:

@@ -4,18 +4,6 @@ spring:
   application:
     name: chpay
     baseurl: ${BASE_URL:http://localhost:8080}
-  mail:
-    host: ${SMTP_HOST:smtp.gmail.com}
-    port: ${SMTP_PORT:587}
-    username: ${MAIL_USERNAME:wisvchpay@gmail.com}
-    password: ${MAIL_PASSWORD:kjsy czls zvvn ldxg}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-            required: true
   cache:
     cache-names: systemFrozen, maxBalance, minTopUp
     caffeine:

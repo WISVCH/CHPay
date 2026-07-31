@@ -31,8 +31,6 @@ While the container is running:
 | Spring Boot app | http://localhost:3080 | CHPay web UI & API |
 | PostgreSQL 15 | localhost:35432 | Primary database (`postgres/postgres`) |
 | pgAdmin | http://localhost:3081 | Database administration (`admin@example.com` / `admin`) |
-| Mailcatcher UI | http://localhost:3082 | Test inbox |
-| Mailcatcher SMTP | localhost:3587 | SMTP endpoint for dev mail |
 | Mock Keycloak (OIDC) | http://localhost:3083 | Login flow, seeded users |
 | Vite dev server | http://localhost:3084 | Front-end HMR (`frontend-dev` service) |
 
@@ -49,7 +47,7 @@ The mock OIDC service includes two ready-made accounts:
 2. Start the shared services:
 
    ```bash
-   docker compose up -d db pgadmin mailcatcher oidc
+   docker compose up -d db pgadmin oidc
    ```
 
    (Stop them with `docker compose down` when you are done.)
@@ -75,8 +73,7 @@ All services listen on the same host ports listed in the table above.
 Configure everything yourself only if you cannot run Docker:
 
 1. **PostgreSQL** – create a database named `chpay`, reachable at `localhost:3080` for the app and `localhost:35432` for manual access (or update the connection in `application-dev.yml`).
-2. **Mail** – run a local SMTP server or update `spring.mail.*` in `application-dev.yml` with your provider.
-3. **OIDC provider** – register a Keycloak or other OIDC issuer and update:
+2. **OIDC provider** – register a Keycloak or other OIDC issuer and update:
 
    ```yaml
    spring:
@@ -93,9 +90,9 @@ Configure everything yourself only if you cannot run Docker:
                issuer-uri: https://login.ch.tudelft.nl/realms/wisvch
    ```
 
-4. **Mollie** – set `mollie.api_key`, `redirect_url`, and `webhook_url`.
-5. **Base URL** – match `spring.application.baseurl` (usually `http://localhost:3080`) and `server.port`.
-6. Once the configuration is in place, build and run with:
+3. **Mollie** – set `mollie.api_key`, `redirect_url`, and `webhook_url`.
+4. **Base URL** – match `spring.application.baseurl` (usually `http://localhost:3080`) and `server.port`.
+5. Once the configuration is in place, build and run with:
 
    ```bash
    ./gradlew bootRun --args='--spring.profiles.active=dev'
@@ -110,7 +107,6 @@ Production deployments require a publicly reachable base URL and hardened config
 - **Keycloak** – CHPay authenticates against Keycloak at `https://login.ch.tudelft.nl`. Create a client for the production domain and copy the `issuer-uri`, `client-id`, and `client-secret` into your production `application.yml`.
 - **Mollie** – enable a live Mollie account, configure the webhook to point to `${spring.application.baseurl}/topup/status`, and store the live API key in `mollie.api_key`.
 - **Persistence** – point `spring.datasource.*` to the production PostgreSQL instance and tighten credentials.
-- **Mail** – configure a real SMTP provider so receipts and admin notices are delivered.
 - **Security** – disable the mock services, review allowed origins, and ensure TLS termination in front of the application.
 
 Deployments typically use the same Gradle build (`./gradlew bootJar`) and run the fat jar with an environment-specific `application.yml`.

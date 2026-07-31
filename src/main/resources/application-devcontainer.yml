@@ -2,10 +2,6 @@ spring:
   datasource:
     url: jdbc:postgresql://db:5432/chpay
 
-  mail:
-    host: mailcatcher
-    port: 1025
-
   security:
     oauth2:
       client:

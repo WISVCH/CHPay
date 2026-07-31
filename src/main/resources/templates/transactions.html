@@ -28,7 +28,7 @@
                         "ordering": true,
                         "columnDefs": [
                             {
-                                "targets": [0, 1, 3, 4, 5],
+                                "targets": [0, 1, 3, 4],
                                 "orderable": false
                             }
                         ],
@@ -144,7 +144,6 @@
                                 </div>
                             </div>
                         </th>
-                        <th scope="col" class="w-auto --exclude-from-ordering">Receipt</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -201,16 +200,6 @@
                             </div>
                         </td>
                         
-                        <!-- Actions Column -->
-                        <td class="w-auto">
-                            <button 
-                                type="button" 
-                                class="btn btn-circle btn-text btn-sm email-receipt-btn"
-                                th:data-transaction-id="${transaction.id}"
-                                title="Email Receipt">
-                                <span class="icon-[tabler--mail] size-5"></span>
-                            </button>
-                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -248,8 +237,6 @@
     <!-- Scripts -->
     <th:block layout:fragment="script">
         <script th:inline="javascript">
-            const csrfToken = [[${_csrf.token}]];
-
             // Column filter
             window.addEventListener('load', () => {
                 setTimeout(() => {
@@ -332,53 +319,6 @@
                     // Initialize export link based on default active status
                     updateExportLink()
 
-                    // Email Receipt Function
-                    function emailReceipt(transactionId) {
-                        triggerNotificationFromData({
-                            type: 'message',
-                            message: 'Sending receipt...'
-                        });
-                        
-                        fetch(`/transactions/email-receipt/${transactionId}`, {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': csrfToken
-                            }
-                        })
-                        .then(response => {
-                            if (response.ok) {
-                                triggerNotificationFromData({
-                                    type: 'success',
-                                    message: 'Receipt emailed successfully.'
-                                });
-                            } else {
-                                triggerNotificationFromData({
-                                    type: 'error',
-                                    message: 'Failed to send receipt.'
-                                });
-                            }
-                        })
-                        .catch(error => {
-                            triggerNotificationFromData({
-                                type: 'error',
-                                message: 'An error occurred while sending the receipt.'
-                            });
-                        });
-                    }
-
-                    // Event delegation for email receipt buttons
-                    if (!window.emailReceiptListenerAttached) {
-                        document.addEventListener('click', function(event) {
-                            const button = event.target.closest('.email-receipt-btn');
-                            if (button) {
-                                const transactionId = button.getAttribute('data-transaction-id');
-                                if (transactionId) {
-                                    emailReceipt(transactionId);
-                                }
-                            }
-                        });
-                        window.emailReceiptListenerAttached = true;
-                    }
                 }, 100)
             })
         </script>
