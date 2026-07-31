@@ -201,10 +201,10 @@
             window.addEventListener('load', () => {
                 setTimeout(() => {
                     // Initialize DataTable
-                    const dataTable = $('#users-datatable table').DataTable()
+                    const dataTable = new DataTable('#users-datatable table')
 
                     // Custom search function for all columns including balance and user ID
-                    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                    DataTable.ext.search.push(function(settings, data, dataIndex) {
                         // Only apply to the users table
                         if (settings.nTable.id !== 'users-datatable') {
                             return true;

@@ -255,7 +255,7 @@
                 setTimeout(() => {
                     const typeFilterItems = document.querySelectorAll('.type-filter-item')
                     const statusFilterItems = document.querySelectorAll('.status-filter-item')
-                    const dataTable = $('#transactions-datatable table').DataTable()
+                    const dataTable = new DataTable('#transactions-datatable table')
 
                     // Type filter event listeners
                     typeFilterItems.forEach(element => {

@@ -234,7 +234,7 @@
         // Admin paymentRequest management functionality
         window.addEventListener('load', () => {
             setTimeout(() => {
-                const dataTable = $('#paymentRequests-datatable table').DataTable()
+                const dataTable = new DataTable('#paymentRequests-datatable table')
 
                 // Restore search state from URL parameters
                 const urlParams = new URLSearchParams(window.location.search);

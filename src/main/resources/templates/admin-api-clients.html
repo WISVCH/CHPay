@@ -192,7 +192,7 @@
     <script>
         window.addEventListener('load', () => {
             setTimeout(() => {
-                const dataTable = $('#api-clients-datatable table').DataTable();
+                const dataTable = new DataTable('#api-clients-datatable table');
                 const searchInput = document.getElementById('api-clients-search');
 
                 if (searchInput) {
