@@ -206,7 +206,7 @@
                     // Custom search function for all columns including balance and user ID
                     DataTable.ext.search.push(function(settings, data, dataIndex) {
                         // Only apply to the users table
-                        if (settings.nTable.id !== 'users-datatable') {
+                        if (!settings.table.closest('#users-datatable')) {
                             return true;
                         }
                         

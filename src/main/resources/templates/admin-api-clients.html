@@ -197,7 +197,9 @@
 
                 if (searchInput) {
                     searchInput.addEventListener('input', () => {
-                        dataTable.columns().search('');
+                        dataTable.columns().every(function() {
+                            this.search('');
+                        });
                         dataTable.column(0).search(searchInput.value).draw();
                     });
                 }
