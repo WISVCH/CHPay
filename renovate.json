@@ -3,7 +3,8 @@
   "extends": [
     "config:recommended",
     ":automergeStableNonMajor",
-    ":configMigration"
+    ":configMigration",
+    ":rebaseStalePrs"
   ],
   "ignorePaths": [
     ".devcontainer/docker-compose.yml",
