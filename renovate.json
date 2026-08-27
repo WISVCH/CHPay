@@ -4,5 +4,10 @@
     "config:recommended",
     ":automergeStableNonMajor",
     ":configMigration"
+  ],
+  "ignorePaths": [
+    ".devcontainer/docker-compose.yml",
+    "docker-compose.yml",
+    ".devcontainer/Dockerfile"
   ]
 }
