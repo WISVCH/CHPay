@@ -1,0 +1,13 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":automergeStableNonMajor",
+    ":configMigration"
+  ],
+  "ignorePaths": [
+    ".devcontainer/docker-compose.yml",
+    "docker-compose.yml",
+    ".devcontainer/Dockerfile"
+  ]
+}
