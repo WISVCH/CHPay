@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:15
+        image: postgres:18
         env:
           POSTGRES_DB: chpay
           POSTGRES_USER: postgres
