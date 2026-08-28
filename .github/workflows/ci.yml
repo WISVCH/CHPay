@@ -129,7 +129,7 @@ jobs:
         with:
           images: ghcr.io/wisvch/chpay
           tags: |
-            type=sha,prefix={{date 'YYYYMMDD'}}-
+            type=sha,prefix={{date 'YYYYMMDD'}}-${{ github.run_number }}-
 
       - name: Build Docker image
         uses: docker/build-push-action@v7
@@ -169,7 +169,7 @@ jobs:
         with:
           images: ghcr.io/wisvch/chpay
           tags: |
-            type=sha,prefix={{date 'YYYYMMDD'}}-
+            type=sha,prefix={{date 'YYYYMMDD'}}-${{ github.run_number }}-
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v7
