@@ -11,7 +11,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "apexcharts": "^6.5.0",
+    "apexcharts": "^7.0.0",
     "canvas-confetti": "^1.9.3",
     "clipboard": "^2.0.11",
     "datatables.net": "^3.0.0",
