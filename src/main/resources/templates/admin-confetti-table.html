@@ -29,11 +29,11 @@
                     "order": [[0, "asc"]],
                     "columnDefs": [
                         {
-                            "targets": [4, 5],
+                            "targets": [4, 5, 6],
                             "orderable": false
                         },
                         {
-                            "targets": [5],
+                            "targets": [6],
                             "visible": false
                         }
                     ],
@@ -115,6 +115,7 @@
                                         <span class="icon-[tabler--chevron-down] hidden datatable-ordering-desc:block"></span>
                                     </div>
                                 </th>
+                                <th scope="col" class="w-auto --exclude-from-ordering">Colors</th>
                                 <th scope="col" class="w-auto --exclude-from-ordering">Actions</th>
                                 <th scope="col" class="w-auto --exclude-from-ordering" style="display: none;">ID</th>
                             </tr>
@@ -139,6 +140,18 @@
                                 <td class="w-full"
                                     th:text="${confettiUsageCounts[confetti.id]} ?: 0">
                                     0
+                                </td>
+
+                                <!-- Colors Column -->
+                                <td class="w-auto">
+                                    <div class="flex items-center -space-x-1.5">
+                                        <div th:if="${confetti.ledColor != (confetti.colors.isEmpty() ? null : confetti.colors[0])}"
+                                             class="w-5 h-5 rounded-full border-2 border-base-100 ring-1 ring-base-content/20 shrink-0"
+                                             th:style="${'background-color: ' + confetti.ledColor + '; z-index: 50'}"></div>
+                                        <div th:each="color, s : ${confetti.colors}"
+                                             class="w-5 h-5 rounded-full border-2 border-base-100 ring-1 ring-base-content/20 shrink-0"
+                                             th:style="${'background-color: ' + color + '; z-index: ' + (49 - s.index)}"></div>
+                                    </div>
                                 </td>
 
                                 <!-- Actions Column -->
