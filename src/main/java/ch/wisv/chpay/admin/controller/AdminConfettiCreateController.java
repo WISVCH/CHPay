@@ -4,6 +4,7 @@ import ch.wisv.chpay.admin.service.AdminConfettiService;
 import ch.wisv.chpay.admin.service.ConfettiFormParser;
 import ch.wisv.chpay.admin.service.ConfettiFormParser.ConfettiFormResult;
 import ch.wisv.chpay.core.model.Confetti;
+import ch.wisv.chpay.core.model.LedPattern;
 import ch.wisv.chpay.core.service.NotificationService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,7 @@ public class AdminConfettiCreateController extends AdminController {
   @GetMapping
   public String showCreateForm(Model model) {
     model.addAttribute("confettiName", "");
-    model.addAttribute("colorsCsv", "");
+    model.addAttribute("colorValues", List.of("#ff0000"));
     model.addAttribute("scalarValue", Confetti.DEFAULT_SCALAR);
     model.addAttribute("minTransactionsValue", 0);
     model.addAttribute("groupValue", "");
@@ -47,6 +48,8 @@ public class AdminConfettiCreateController extends AdminController {
     model.addAttribute("defaultValue", false);
     model.addAttribute("shapeTypes", List.of("SQUARE"));
     model.addAttribute("shapeValues", List.of(""));
+    model.addAttribute("ledColorValue", "#ffffff");
+    model.addAttribute("ledPatternValue", LedPattern.oplopen.name());
     model.addAttribute(MODEL_ATTR_URL_PAGE, "adminConfetti");
     return "admin-confetti-create";
   }
@@ -54,7 +57,7 @@ public class AdminConfettiCreateController extends AdminController {
   @PostMapping
   public String createConfetti(
       @RequestParam("name") String name,
-      @RequestParam("colors") String colorsInput,
+      @RequestParam(value = "colors", required = false) List<String> colorsInput,
       @RequestParam("scalar") String scalarInput,
       @RequestParam("minTransactions") String minTransactionsInput,
       @RequestParam("group") String groupInput,
@@ -63,6 +66,8 @@ public class AdminConfettiCreateController extends AdminController {
       @RequestParam(value = "isDefault", defaultValue = "false") boolean isDefault,
       @RequestParam(value = "shapeType", required = false) List<String> shapeTypes,
       @RequestParam(value = "shapeValue", required = false) List<String> shapeValues,
+      @RequestParam("ledColor") String ledColor,
+      @RequestParam("ledPattern") String ledPattern,
       RedirectAttributes redirectAttributes) {
 
     ConfettiFormResult result =
@@ -76,7 +81,9 @@ public class AdminConfettiCreateController extends AdminController {
             hidden,
             isDefault,
             shapeTypes,
-            shapeValues);
+            shapeValues,
+            ledColor,
+            ledPattern);
     if (!result.isValid()) {
       notificationService.addErrorMessage(redirectAttributes, result.getErrorMessage());
       return "redirect:/admin/confetti/new";
@@ -92,7 +99,9 @@ public class AdminConfettiCreateController extends AdminController {
             result.getGroup(),
             result.isGroupStartsWith(),
             result.isHidden(),
-            result.isDefault());
+            result.isDefault(),
+            result.getLedColor(),
+            result.getLedPattern());
     notificationService.addSuccessMessage(redirectAttributes, "Confetti created successfully");
     return "redirect:/admin/confetti/" + confetti.getId();
   }

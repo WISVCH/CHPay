@@ -49,7 +49,7 @@ public class AdminConfettiDetailController extends AdminController {
     Confetti current = confetti.get();
     model.addAttribute(MODEL_ATTR_CONFETTI, current);
     model.addAttribute("confettiUserCount", adminConfettiService.getUsageCount(current));
-    model.addAttribute("colorsCsv", String.join(", ", current.getColors()));
+    model.addAttribute("colorValues", current.getColors());
     model.addAttribute("scalarValue", current.getScalar());
     model.addAttribute("minTransactionsValue", current.getMinimumTransactions());
     model.addAttribute("groupValue", current.getGroup());
@@ -65,6 +65,8 @@ public class AdminConfettiDetailController extends AdminController {
             .map(shape -> shape.getValue() == null ? "" : shape.getValue().trim())
             .toList());
 
+    model.addAttribute("ledColorValue", current.getLedColor());
+    model.addAttribute("ledPatternValue", current.getLedPattern().name());
     model.addAttribute(MODEL_ATTR_URL_PAGE, "adminConfetti");
     return "admin-confetti";
   }
@@ -73,7 +75,7 @@ public class AdminConfettiDetailController extends AdminController {
   public String updateConfetti(
       @PathVariable("id") UUID id,
       @RequestParam("name") String name,
-      @RequestParam("colors") String colorsInput,
+      @RequestParam(value = "colors", required = false) List<String> colorsInput,
       @RequestParam("scalar") String scalarInput,
       @RequestParam("minTransactions") String minTransactionsInput,
       @RequestParam("group") String groupInput,
@@ -82,6 +84,8 @@ public class AdminConfettiDetailController extends AdminController {
       @RequestParam(value = "isDefault", defaultValue = "false") boolean isDefault,
       @RequestParam(value = "shapeType", required = false) List<String> shapeTypes,
       @RequestParam(value = "shapeValue", required = false) List<String> shapeValues,
+      @RequestParam("ledColor") String ledColor,
+      @RequestParam("ledPattern") String ledPattern,
       RedirectAttributes redirectAttributes) {
 
     Optional<Confetti> confetti = adminConfettiService.getById(id);
@@ -101,7 +105,9 @@ public class AdminConfettiDetailController extends AdminController {
             hidden,
             isDefault,
             shapeTypes,
-            shapeValues);
+            shapeValues,
+            ledColor,
+            ledPattern);
     if (!result.isValid()) {
       notificationService.addErrorMessage(redirectAttributes, result.getErrorMessage());
       return "redirect:/admin/confetti/" + id;
@@ -118,7 +124,9 @@ public class AdminConfettiDetailController extends AdminController {
           result.getGroup(),
           result.isGroupStartsWith(),
           result.isHidden(),
-          result.isDefault());
+          result.isDefault(),
+          result.getLedColor(),
+          result.getLedPattern());
     } catch (IllegalStateException ex) {
       notificationService.addErrorMessage(redirectAttributes, ex.getMessage());
       return "redirect:/admin/confetti/" + id;

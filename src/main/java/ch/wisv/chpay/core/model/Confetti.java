@@ -57,6 +57,15 @@ public class Confetti {
   @Column(nullable = false)
   private LocalDateTime createdAt;
 
+  @Setter
+  @Column(name = "led_color", nullable = false, length = 7)
+  private String ledColor;
+
+  @Setter
+  @Enumerated(EnumType.STRING)
+  @Column(name = "led_pattern", nullable = false)
+  private LedPattern ledPattern;
+
   public Confetti(
       String name,
       List<ConfettiShape> shapes,
@@ -66,7 +75,9 @@ public class Confetti {
       String group,
       boolean groupStartsWith,
       boolean hidden,
-      boolean defaultConfetti) {
+      boolean defaultConfetti,
+      String ledColor,
+      LedPattern ledPattern) {
     this.name = name;
     this.colors.addAll(colors);
     this.shapes.addAll(shapes);
@@ -77,6 +88,8 @@ public class Confetti {
     this.hidden = hidden;
     this.defaultConfetti = defaultConfetti;
     this.createdAt = LocalDateTime.now();
+    this.ledColor = ledColor;
+    this.ledPattern = ledPattern;
   }
 
   public void updateDefinition(
@@ -88,7 +101,9 @@ public class Confetti {
       String group,
       boolean groupStartsWith,
       boolean hidden,
-      boolean defaultConfetti) {
+      boolean defaultConfetti,
+      String ledColor,
+      LedPattern ledPattern) {
     this.name = name;
     this.shapes.clear();
     this.shapes.addAll(shapes);
@@ -100,6 +115,8 @@ public class Confetti {
     this.groupStartsWith = normalizeGroupStartsWith(groupStartsWith, this.group);
     this.hidden = hidden;
     this.defaultConfetti = defaultConfetti;
+    this.ledColor = ledColor;
+    this.ledPattern = ledPattern;
   }
 
   public boolean hasShapeType(ConfettiShapeType type) {
