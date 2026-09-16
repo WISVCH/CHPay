@@ -11,7 +11,7 @@ plugins {
 group = 'CHPay'
 version = '0.0.1-SNAPSHOT'
 
-ext['tomcat.version'] = '11.0.25'
+ext['tomcat.version'] = '11.0.26'
 
 java {
 	toolchain {
