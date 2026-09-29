@@ -23,6 +23,20 @@
                         <span th:if="${card.unlocked}" class="icon-[tabler--sparkles] size-6 text-primary"></span>
                         <span th:if="${!card.unlocked}" class="icon-[tabler--lock] size-6 text-base-content/70"></span>
                         <h3 class="card-title text-base" th:text="${card.confetti.name}">Confetti</h3>
+                        <!-- Color dots -->
+                        <div class="flex items-center -space-x-1 ml-auto" th:if="${card.unlocked}">
+                            <div th:if="${card.confetti.ledColor != (card.confetti.colors.isEmpty() ? null : card.confetti.colors[0])}"
+                                 class="w-3.5 h-3.5 rounded-full border border-base-100 ring-1 ring-base-content/20 shrink-0"
+                                 th:style="${'background-color: ' + card.confetti.ledColor + '; z-index: 50'}"></div>
+                            <div th:each="color, s : ${card.confetti.colors}"
+                                 class="w-3.5 h-3.5 rounded-full border border-base-100 ring-1 ring-base-content/20 shrink-0"
+                                 th:style="${'background-color: ' + color + '; z-index: ' + (49 - s.index)}"></div>
+                        </div>
+                        <div class="flex items-center -space-x-1 ml-auto" th:if="${!card.unlocked}">
+                            <div class="w-3.5 h-3.5 rounded-full border border-base-100 ring-1 ring-base-content/20 shrink-0" style="z-index: 3; background-color: color-mix(in srgb, var(--color-base-content) 25%, var(--color-base-100))"></div>
+                            <div class="w-3.5 h-3.5 rounded-full border border-base-100 ring-1 ring-base-content/20 shrink-0" style="z-index: 2; background-color: color-mix(in srgb, var(--color-base-content) 25%, var(--color-base-100))"></div>
+                            <div class="w-3.5 h-3.5 rounded-full border border-base-100 ring-1 ring-base-content/20 shrink-0" style="z-index: 1; background-color: color-mix(in srgb, var(--color-base-content) 25%, var(--color-base-100))"></div>
+                        </div>
                     </div>
                     <p class="text-sm text-base-content/70 mt-1 min-h-[1.25rem]"
                        th:text="${card.confetti.minimumTransactions > 0} ? 'Requires ' + ${card.confetti.minimumTransactions} + ' ' + (${card.confetti.minimumTransactions} == 1 ? 'transaction' : 'transactions') : ''">
