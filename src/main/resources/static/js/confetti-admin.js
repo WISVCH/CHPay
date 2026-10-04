@@ -5,18 +5,48 @@ document.addEventListener('DOMContentLoaded', function () {
     const TEXT_PLACEHOLDER = 'Text for confetti shape';
     const DEFAULT_PLACEHOLDER = 'Value';
 
-    const parseColors = (value) => value.split(',')
-        .map(item => item.trim())
-        .filter(item => item.length > 0);
-
-    const isValidColor = (value) => /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(value);
-
     const getShapeWrapper = (form) => form.querySelector('[data-confetti-shape-list]');
 
     const getShapeRows = (form) => {
         const wrapper = getShapeWrapper(form);
         if (!wrapper) return [];
         return Array.from(wrapper.querySelectorAll('[data-confetti-shape-row]'));
+    };
+
+    const getColorWrapper = (form) => form.querySelector('[data-confetti-color-list]');
+
+    const getColorRows = (form) => {
+        const wrapper = getColorWrapper(form);
+        if (!wrapper) return [];
+        return Array.from(wrapper.querySelectorAll('[data-confetti-color-row]'));
+    };
+
+    const initializeColorRows = (form) => {
+        const wrapper = getColorWrapper(form);
+        if (!wrapper) return;
+        wrapper.querySelectorAll('[data-confetti-color-row]').forEach(row => {
+            if (row.hasAttribute('data-confetti-color-template')) {
+                row.removeAttribute('data-confetti-color-template');
+                row.removeAttribute('id');
+                row.classList.remove('hidden');
+                row.querySelectorAll('[disabled]').forEach(el => { el.disabled = false; });
+            }
+            const picker = row.querySelector('input[type="color"]');
+            const hex = row.querySelector('[data-confetti-color-hex]');
+            if (picker && hex) {
+                hex.textContent = picker.value;
+                picker.addEventListener('input', () => { hex.textContent = picker.value; });
+            }
+        });
+    };
+
+    const validateColors = (form) => {
+        const colorSelection = form.querySelector('#colorSelection');
+        if (!colorSelection) return true;
+        const isValid = getColorRows(form).length > 0;
+        colorSelection.setCustomValidity(isValid ? '' : 'Add at least one color');
+        colorSelection.value = isValid ? 'ok' : '';
+        return isValid;
     };
 
     const updateShapeRow = (row) => {
@@ -80,7 +110,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     forms.forEach(form => {
         const nameInput = form.querySelector('#name');
-        const colorsInput = form.querySelector('#colors');
         const scalarInput = form.querySelector('#scalar');
         const minTransactionsInput = form.querySelector('#minTransactions');
 
@@ -88,14 +117,6 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!nameInput) return true;
             const isValid = nameInput.value.trim().length > 0;
             nameInput.setCustomValidity(isValid ? '' : 'Name is required');
-            return isValid;
-        };
-
-        const validateColors = () => {
-            if (!colorsInput) return true;
-            const colors = parseColors(colorsInput.value);
-            const isValid = colors.length > 0 && colors.every(isValidColor);
-            colorsInput.setCustomValidity(isValid ? '' : 'Enter at least one valid hex color');
             return isValid;
         };
 
@@ -115,13 +136,22 @@ document.addEventListener('DOMContentLoaded', function () {
             return isValid;
         };
 
+        const ledColorInput = form.querySelector('#ledColor');
+        const ledColorHex = form.querySelector('#led-color-hex');
+        if (ledColorInput && ledColorHex) {
+            ledColorInput.addEventListener('input', () => {
+                ledColorHex.textContent = ledColorInput.value;
+            });
+        }
+
         initializeShapeRows(form);
         validateShapes(form);
+        initializeColorRows(form);
+        validateColors(form);
         validateScalar();
         validateMinTransactions();
 
         nameInput?.addEventListener('input', validateName);
-        colorsInput?.addEventListener('input', validateColors);
         scalarInput?.addEventListener('input', validateScalar);
         minTransactionsInput?.addEventListener('input', validateMinTransactions);
 
@@ -145,38 +175,43 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        const copyTrigger = form.querySelector('[data-copy-markup]');
-        copyTrigger?.addEventListener('click', () => {
+        form.querySelector('[data-confetti-add-shape]')?.addEventListener('click', () => {
             setTimeout(() => {
                 initializeShapeRows(form);
                 validateShapes(form);
             }, 0);
         });
 
+        form.querySelector('[data-confetti-add-color]')?.addEventListener('click', () => {
+            setTimeout(() => {
+                initializeColorRows(form);
+                validateColors(form);
+            }, 0);
+        });
+
         form.addEventListener('click', (event) => {
             const target = event.target;
             if (!(target instanceof HTMLElement)) return;
-            if (target.closest('[data-copy-markup-delete-item]')) {
-                setTimeout(() => {
-                    validateShapes(form);
-                }, 0);
+            if (target.closest('[data-confetti-remove-shape]')) {
+                setTimeout(() => { validateShapes(form); }, 0);
+            }
+            if (target.closest('[data-confetti-remove-color]')) {
+                setTimeout(() => { validateColors(form); }, 0);
             }
         });
 
         form.addEventListener('submit', (event) => {
             const nameValid = validateName();
-            const colorsValid = validateColors();
             const scalarValid = validateScalar();
             const minTransactionsValid = validateMinTransactions();
             const shapesValid = validateShapes(form);
+            const colorsValid = validateColors(form);
 
             if (!nameValid || !colorsValid || !scalarValid || !minTransactionsValid || !shapesValid) {
                 event.preventDefault();
                 event.stopPropagation();
                 if (!nameValid && nameInput) {
                     nameInput.focus();
-                } else if (!colorsValid && colorsInput) {
-                    colorsInput.focus();
                 } else if (!scalarValid && scalarInput) {
                     scalarInput.focus();
                 } else if (!minTransactionsValid && minTransactionsInput) {
