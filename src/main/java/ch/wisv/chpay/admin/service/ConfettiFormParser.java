@@ -2,8 +2,8 @@ package ch.wisv.chpay.admin.service;
 
 import ch.wisv.chpay.core.model.ConfettiShape;
 import ch.wisv.chpay.core.model.ConfettiShapeType;
+import ch.wisv.chpay.core.model.LedPattern;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -15,7 +15,7 @@ public class ConfettiFormParser {
 
   public ConfettiFormResult parse(
       String name,
-      String colorsInput,
+      List<String> colorsInput,
       String scalarInput,
       String minimumTransactionsInput,
       String groupInput,
@@ -23,14 +23,22 @@ public class ConfettiFormParser {
       boolean hidden,
       boolean isDefault,
       List<String> shapeTypes,
-      List<String> shapeValues) {
+      List<String> shapeValues,
+      String ledColorInput,
+      String ledPatternInput) {
 
     String trimmedName = name == null ? "" : name.trim();
     if (trimmedName.isEmpty()) {
       return ConfettiFormResult.error("Name is required");
     }
 
-    List<String> colors = parseColors(colorsInput);
+    List<String> colors =
+        colorsInput == null
+            ? List.of()
+            : colorsInput.stream()
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toList());
     if (colors.isEmpty() || colors.stream().anyMatch(color -> !isValidColor(color))) {
       return ConfettiFormResult.error("Please provide at least one valid hex color (e.g. #FF0000)");
     }
@@ -57,6 +65,18 @@ public class ConfettiFormParser {
       return ConfettiFormResult.error("Add at least one shape");
     }
 
+    String ledColor = ledColorInput == null ? "" : ledColorInput.trim();
+    if (!isValidLedColor(ledColor)) {
+      return ConfettiFormResult.error("Please provide a valid LED color (e.g. #FF0000)");
+    }
+
+    LedPattern ledPattern;
+    try {
+      ledPattern = LedPattern.valueOf(ledPatternInput == null ? "" : ledPatternInput.trim());
+    } catch (IllegalArgumentException e) {
+      return ConfettiFormResult.error("Please select a valid LED pattern");
+    }
+
     return ConfettiFormResult.success(
         trimmedName,
         colors,
@@ -66,21 +86,17 @@ public class ConfettiFormParser {
         normalizeGroup(groupInput),
         normalizeGroupStartsWith(groupStartsWith, groupInput),
         hidden,
-        isDefault);
-  }
-
-  private List<String> parseColors(String colorsInput) {
-    if (colorsInput == null) {
-      return List.of();
-    }
-    return Arrays.stream(colorsInput.split(","))
-        .map(String::trim)
-        .filter(value -> !value.isEmpty())
-        .collect(Collectors.toList());
+        isDefault,
+        ledColor,
+        ledPattern);
   }
 
   private boolean isValidColor(String color) {
     return color.matches("^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$");
+  }
+
+  private boolean isValidLedColor(String color) {
+    return color.matches("^#[0-9a-fA-F]{6}$");
   }
 
   private ScalarParseResult parseScalar(String scalarInput) {
@@ -197,6 +213,8 @@ public class ConfettiFormParser {
     private final boolean groupStartsWith;
     private final boolean hidden;
     private final boolean isDefault;
+    private final String ledColor;
+    private final LedPattern ledPattern;
     private final String errorMessage;
 
     private ConfettiFormResult(
@@ -209,6 +227,8 @@ public class ConfettiFormParser {
         boolean groupStartsWith,
         boolean hidden,
         boolean isDefault,
+        String ledColor,
+        LedPattern ledPattern,
         String errorMessage) {
       this.name = name;
       this.colors = colors;
@@ -219,6 +239,8 @@ public class ConfettiFormParser {
       this.groupStartsWith = groupStartsWith;
       this.hidden = hidden;
       this.isDefault = isDefault;
+      this.ledColor = ledColor;
+      this.ledPattern = ledPattern;
       this.errorMessage = errorMessage;
     }
 
@@ -231,7 +253,9 @@ public class ConfettiFormParser {
         String group,
         boolean groupStartsWith,
         boolean hidden,
-        boolean isDefault) {
+        boolean isDefault,
+        String ledColor,
+        LedPattern ledPattern) {
       return new ConfettiFormResult(
           name,
           colors,
@@ -242,12 +266,14 @@ public class ConfettiFormParser {
           groupStartsWith,
           hidden,
           isDefault,
+          ledColor,
+          ledPattern,
           null);
     }
 
     public static ConfettiFormResult error(String message) {
       return new ConfettiFormResult(
-          null, List.of(), List.of(), 0.0, 0, null, false, false, false, message);
+          null, List.of(), List.of(), 0.0, 0, null, false, false, false, null, null, message);
     }
 
     public boolean isValid() {
@@ -288,6 +314,14 @@ public class ConfettiFormParser {
 
     public boolean isDefault() {
       return isDefault;
+    }
+
+    public String getLedColor() {
+      return ledColor;
+    }
+
+    public LedPattern getLedPattern() {
+      return ledPattern;
     }
 
     public String getErrorMessage() {

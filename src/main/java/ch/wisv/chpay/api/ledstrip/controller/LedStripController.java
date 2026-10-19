@@ -1,5 +1,6 @@
 package ch.wisv.chpay.api.ledstrip.controller;
 
+import ch.wisv.chpay.core.model.Confetti;
 import ch.wisv.chpay.core.model.LedPattern;
 import ch.wisv.chpay.core.model.User;
 import ch.wisv.chpay.core.model.transaction.Transaction;
@@ -53,10 +54,15 @@ public class LedStripController {
         .map(
             t -> {
               User user = t.getUser();
-              Integer r = user != null ? user.getLedR() : null;
-              Integer g = user != null ? user.getLedG() : null;
-              Integer b = user != null ? user.getLedB() : null;
-              LedPattern ledPattern = user != null ? user.getLedPattern() : null;
+              Confetti confetti = user != null ? user.getConfetti() : null;
+              String ledColor = confetti != null ? confetti.getLedColor() : null;
+              LedPattern ledPattern = confetti != null ? confetti.getLedPattern() : null;
+              Integer r = null, g = null, b = null;
+              if (ledColor != null && ledColor.length() == 7) {
+                r = Integer.parseInt(ledColor.substring(1, 3), 16);
+                g = Integer.parseInt(ledColor.substring(3, 5), 16);
+                b = Integer.parseInt(ledColor.substring(5, 7), 16);
+              }
               String pattern = ledPattern != null ? ledPattern.name() : null;
               return ResponseEntity.ok(
                   new LatestTransactionResponse(

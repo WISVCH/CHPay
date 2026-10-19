@@ -2,6 +2,7 @@ package ch.wisv.chpay.admin.service;
 
 import ch.wisv.chpay.core.model.Confetti;
 import ch.wisv.chpay.core.model.ConfettiShape;
+import ch.wisv.chpay.core.model.LedPattern;
 import ch.wisv.chpay.core.repository.ConfettiRepository;
 import ch.wisv.chpay.core.repository.ConfettiUsageCount;
 import ch.wisv.chpay.core.repository.UserRepository;
@@ -78,7 +79,9 @@ public class AdminConfettiService {
       String group,
       boolean groupStartsWith,
       boolean hidden,
-      boolean isDefault) {
+      boolean isDefault,
+      String ledColor,
+      LedPattern ledPattern) {
     boolean shouldBeDefault = isDefault || confettiRepository.countByDefaultConfettiTrue() == 0;
     Confetti confetti =
         new Confetti(
@@ -90,7 +93,9 @@ public class AdminConfettiService {
             group,
             groupStartsWith,
             hidden,
-            shouldBeDefault);
+            shouldBeDefault,
+            ledColor,
+            ledPattern);
     Confetti saved = confettiRepository.save(confetti);
     enforceSingleDefault(saved.getId());
     return saved;
@@ -108,7 +113,9 @@ public class AdminConfettiService {
       String group,
       boolean groupStartsWith,
       boolean hidden,
-      boolean isDefault) {
+      boolean isDefault,
+      String ledColor,
+      LedPattern ledPattern) {
     if (!isDefault
         && confetti.isDefaultConfetti()
         && confettiRepository.countByDefaultConfettiTrue() == 1) {
@@ -123,7 +130,9 @@ public class AdminConfettiService {
         group,
         groupStartsWith,
         hidden,
-        isDefault);
+        isDefault,
+        ledColor,
+        ledPattern);
     Confetti saved = confettiRepository.save(confetti);
     enforceSingleDefault(saved.getId());
     return saved;
