@@ -42,23 +42,6 @@ public class User {
   @JoinColumn(name = "confetti_id")
   private Confetti confetti;
 
-  @Setter
-  @Column(name = "led_r")
-  private Integer ledR;
-
-  @Setter
-  @Column(name = "led_g")
-  private Integer ledG;
-
-  @Setter
-  @Column(name = "led_b")
-  private Integer ledB;
-
-  @Setter
-  @Enumerated(EnumType.STRING)
-  @Column(name = "led_pattern")
-  private LedPattern ledPattern;
-
   @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(name = "user_groups", joinColumns = @JoinColumn(name = "user_id"))
   @Column(name = "group_name", nullable = false, length = 255)
