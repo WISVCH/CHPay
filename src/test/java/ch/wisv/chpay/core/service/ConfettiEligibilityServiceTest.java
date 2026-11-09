@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import ch.wisv.chpay.core.model.Confetti;
+import ch.wisv.chpay.core.model.LedPattern;
 import ch.wisv.chpay.core.model.User;
 import ch.wisv.chpay.core.model.transaction.Transaction.TransactionStatus;
 import ch.wisv.chpay.core.model.transaction.Transaction.TransactionType;
@@ -175,7 +176,9 @@ class ConfettiEligibilityServiceTest {
         group,
         groupStartsWith,
         false,
-        isDefault);
+        isDefault,
+        "#ffffff",
+        LedPattern.oplopen);
   }
 
   private User buildUserWithId() {
